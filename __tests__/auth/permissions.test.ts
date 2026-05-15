@@ -7,6 +7,7 @@ import {
   removeRole,
 } from '@/lib/auth/permissions';
 import { createClient as createSupabaseClient } from '@supabase/supabase-js';
+import type { SupabaseClient } from '@supabase/supabase-js';
 
 // Mock Supabase
 jest.mock('@supabase/supabase-js', () => ({
@@ -14,14 +15,17 @@ jest.mock('@supabase/supabase-js', () => ({
 }));
 
 describe('Permission Functions', () => {
+  let mockCreateClient: jest.MockedFunction<typeof createSupabaseClient>;
+
   beforeEach(() => {
     jest.clearAllMocks();
+    mockCreateClient = jest.mocked(createSupabaseClient);
   });
 
   describe('getUserRole', () => {
     it('should return user role for clinic', async () => {
       const mockSingle = jest.fn().mockResolvedValue({
-        data: { roles: { name: 'doctor' } },
+        data: { roles: [{ name: 'doctor' }] },
         error: null,
       });
 
@@ -30,10 +34,9 @@ describe('Permission Functions', () => {
       const mockSelect = jest.fn().mockReturnValue({ eq: mockFirstEq });
       const mockFrom = jest.fn().mockReturnValue({ select: mockSelect });
 
-      const mockCreateClient = jest.mocked(createSupabaseClient);
       mockCreateClient.mockReturnValue({
         from: mockFrom,
-      } as ReturnType<typeof createSupabaseClient>);
+      } as unknown as SupabaseClient);
 
       const role = await getUserRole('user-123', 'clinic-456');
       expect(role).toBe('doctor');
@@ -50,17 +53,15 @@ describe('Permission Functions', () => {
       const mockSelect = jest.fn().mockReturnValue({ eq: mockFirstEq });
       const mockFrom = jest.fn().mockReturnValue({ select: mockSelect });
 
-      const mockCreateClient = jest.mocked(createSupabaseClient);
       mockCreateClient.mockReturnValue({
         from: mockFrom,
-      } as ReturnType<typeof createSupabaseClient>);
+      } as unknown as SupabaseClient);
 
       const role = await getUserRole('user-999', 'clinic-999');
       expect(role).toBeNull();
     });
 
     it('should handle errors gracefully', async () => {
-      const mockCreateClient = jest.mocked(createSupabaseClient);
       mockCreateClient.mockImplementation(() => {
         throw new Error('Connection error');
       });
@@ -73,7 +74,7 @@ describe('Permission Functions', () => {
   describe('hasRole', () => {
     it('should return true if user has role', async () => {
       const mockSingle = jest.fn().mockResolvedValue({
-        data: { roles: { name: 'admin' } },
+        data: { roles: [{ name: 'admin' }] },
         error: null,
       });
 
@@ -82,10 +83,9 @@ describe('Permission Functions', () => {
       const mockSelect = jest.fn().mockReturnValue({ eq: mockFirstEq });
       const mockFrom = jest.fn().mockReturnValue({ select: mockSelect });
 
-      const mockCreateClient = jest.mocked(createSupabaseClient);
       mockCreateClient.mockReturnValue({
         from: mockFrom,
-      } as ReturnType<typeof createSupabaseClient>);
+      } as unknown as SupabaseClient);
 
       const hasAdmin = await hasRole('user-123', 'clinic-456', 'admin');
       expect(hasAdmin).toBe(true);
@@ -93,7 +93,7 @@ describe('Permission Functions', () => {
 
     it('should return false if user does not have role', async () => {
       const mockSingle = jest.fn().mockResolvedValue({
-        data: { roles: { name: 'patient' } },
+        data: { roles: [{ name: 'patient' }] },
         error: null,
       });
 
@@ -102,10 +102,9 @@ describe('Permission Functions', () => {
       const mockSelect = jest.fn().mockReturnValue({ eq: mockFirstEq });
       const mockFrom = jest.fn().mockReturnValue({ select: mockSelect });
 
-      const mockCreateClient = jest.mocked(createSupabaseClient);
       mockCreateClient.mockReturnValue({
         from: mockFrom,
-      } as ReturnType<typeof createSupabaseClient>);
+      } as unknown as SupabaseClient);
 
       const hasAdmin = await hasRole('user-123', 'clinic-456', 'admin');
       expect(hasAdmin).toBe(false);
@@ -116,9 +115,11 @@ describe('Permission Functions', () => {
     it('should return true if user has permission', async () => {
       const mockSingle = jest.fn().mockResolvedValue({
         data: {
-          roles: {
-            permissions: ['read', 'write', 'manage_patients'],
-          },
+          roles: [
+            {
+              permissions: ['read', 'write', 'manage_patients'],
+            },
+          ],
         },
         error: null,
       });
@@ -128,10 +129,9 @@ describe('Permission Functions', () => {
       const mockSelect = jest.fn().mockReturnValue({ eq: mockFirstEq });
       const mockFrom = jest.fn().mockReturnValue({ select: mockSelect });
 
-      const mockCreateClient = jest.mocked(createSupabaseClient);
       mockCreateClient.mockReturnValue({
         from: mockFrom,
-      } as ReturnType<typeof createSupabaseClient>);
+      } as unknown as SupabaseClient);
 
       const hasWrite = await hasPermission('user-123', 'clinic-456', 'write');
       expect(hasWrite).toBe(true);
@@ -140,9 +140,11 @@ describe('Permission Functions', () => {
     it('should return false if user does not have permission', async () => {
       const mockSingle = jest.fn().mockResolvedValue({
         data: {
-          roles: {
-            permissions: ['read_own_data'],
-          },
+          roles: [
+            {
+              permissions: ['read_own_data'],
+            },
+          ],
         },
         error: null,
       });
@@ -152,10 +154,9 @@ describe('Permission Functions', () => {
       const mockSelect = jest.fn().mockReturnValue({ eq: mockFirstEq });
       const mockFrom = jest.fn().mockReturnValue({ select: mockSelect });
 
-      const mockCreateClient = jest.mocked(createSupabaseClient);
       mockCreateClient.mockReturnValue({
         from: mockFrom,
-      } as ReturnType<typeof createSupabaseClient>);
+      } as unknown as SupabaseClient);
 
       const canDelete = await hasPermission('user-123', 'clinic-456', 'delete');
       expect(canDelete).toBe(false);
@@ -163,7 +164,7 @@ describe('Permission Functions', () => {
 
     it('should handle missing permissions gracefully', async () => {
       const mockSingle = jest.fn().mockResolvedValue({
-        data: { roles: null },
+        data: { roles: [] },
         error: null,
       });
 
@@ -172,10 +173,9 @@ describe('Permission Functions', () => {
       const mockSelect = jest.fn().mockReturnValue({ eq: mockFirstEq });
       const mockFrom = jest.fn().mockReturnValue({ select: mockSelect });
 
-      const mockCreateClient = jest.mocked(createSupabaseClient);
       mockCreateClient.mockReturnValue({
         from: mockFrom,
-      } as ReturnType<typeof createSupabaseClient>);
+      } as unknown as SupabaseClient);
 
       const hasPerm = await hasPermission('user-999', 'clinic-999', 'read');
       expect(hasPerm).toBe(false);
@@ -186,8 +186,8 @@ describe('Permission Functions', () => {
     it('should return all roles for user across clinics', async () => {
       const mockEq = jest.fn().mockResolvedValue({
         data: [
-          { clinic_id: 'clinic-1', roles: { name: 'admin' } },
-          { clinic_id: 'clinic-2', roles: { name: 'doctor' } },
+          { clinic_id: 'clinic-1', roles: [{ name: 'admin' }] },
+          { clinic_id: 'clinic-2', roles: [{ name: 'doctor' }] },
         ],
         error: null,
       });
@@ -195,10 +195,9 @@ describe('Permission Functions', () => {
       const mockSelect = jest.fn().mockReturnValue({ eq: mockEq });
       const mockFrom = jest.fn().mockReturnValue({ select: mockSelect });
 
-      const mockCreateClient = jest.mocked(createSupabaseClient);
       mockCreateClient.mockReturnValue({
         from: mockFrom,
-      } as ReturnType<typeof createSupabaseClient>);
+      } as unknown as SupabaseClient);
 
       const roles = await getUserRoles('user-123');
       expect(roles).toHaveLength(2);
@@ -215,10 +214,9 @@ describe('Permission Functions', () => {
       const mockSelect = jest.fn().mockReturnValue({ eq: mockEq });
       const mockFrom = jest.fn().mockReturnValue({ select: mockSelect });
 
-      const mockCreateClient = jest.mocked(createSupabaseClient);
       mockCreateClient.mockReturnValue({
         from: mockFrom,
-      } as ReturnType<typeof createSupabaseClient>);
+      } as unknown as SupabaseClient);
 
       const roles = await getUserRoles('user-999');
       expect(roles).toEqual([]);
@@ -245,10 +243,9 @@ describe('Permission Functions', () => {
         .mockReturnValueOnce({ select: mockSelect })
         .mockReturnValueOnce({ upsert: mockUpsert });
 
-      const mockCreateClient = jest.mocked(createSupabaseClient);
       mockCreateClient.mockReturnValue({
         from: mockFrom,
-      } as ReturnType<typeof createSupabaseClient>);
+      } as unknown as SupabaseClient);
 
       const success = await assignRole('user-123', 'clinic-456', 'admin');
       expect(success).toBe(true);
@@ -264,10 +261,9 @@ describe('Permission Functions', () => {
       const mockSelect = jest.fn().mockReturnValue({ eq: mockEq });
       const mockFrom = jest.fn().mockReturnValue({ select: mockSelect });
 
-      const mockCreateClient = jest.mocked(createSupabaseClient);
       mockCreateClient.mockReturnValue({
         from: mockFrom,
-      } as ReturnType<typeof createSupabaseClient>);
+      } as unknown as SupabaseClient);
 
       const success = await assignRole('user-123', 'clinic-456', 'invalid');
       expect(success).toBe(false);
@@ -292,10 +288,9 @@ describe('Permission Functions', () => {
         .mockReturnValueOnce({ select: mockSelect })
         .mockReturnValueOnce({ delete: mockDelete });
 
-      const mockCreateClient = jest.mocked(createSupabaseClient);
       mockCreateClient.mockReturnValue({
         from: mockFrom,
-      } as ReturnType<typeof createSupabaseClient>);
+      } as unknown as SupabaseClient);
 
       const success = await removeRole('user-123', 'clinic-456', 'admin');
       expect(success).toBe(true);
@@ -311,10 +306,9 @@ describe('Permission Functions', () => {
       const mockSelect = jest.fn().mockReturnValue({ eq: mockEq });
       const mockFrom = jest.fn().mockReturnValue({ select: mockSelect });
 
-      const mockCreateClient = jest.mocked(createSupabaseClient);
       mockCreateClient.mockReturnValue({
         from: mockFrom,
-      } as ReturnType<typeof createSupabaseClient>);
+      } as unknown as SupabaseClient);
 
       const success = await removeRole('user-123', 'clinic-456', 'invalid');
       expect(success).toBe(false);
