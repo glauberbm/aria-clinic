@@ -86,7 +86,7 @@ describe('/api/auth/register', () => {
           }),
         },
       },
-    } as any);
+    } as ReturnType<typeof createSupabaseClient>);
 
     const request = new NextRequest('http://localhost:3000/api/auth/register', {
       method: 'POST',
@@ -123,7 +123,7 @@ describe('/api/auth/register', () => {
           }),
         },
       },
-    } as any);
+    } as ReturnType<typeof createSupabaseClient>);
 
     const request = new NextRequest('http://localhost:3000/api/auth/register', {
       method: 'POST',

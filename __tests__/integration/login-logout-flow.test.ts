@@ -1,6 +1,7 @@
 import { POST as loginHandler } from '@/app/api/auth/login/route';
 import { POST as logoutHandler } from '@/app/api/auth/logout/route';
 import { NextRequest } from 'next/server';
+import { createClient } from '@supabase/supabase-js';
 
 // Mock Supabase for login endpoint
 jest.mock('@supabase/supabase-js', () => ({
@@ -135,7 +136,7 @@ describe('Login/Logout Flow', () => {
   describe('Error handling', () => {
     it('should handle invalid login credentials gracefully', async () => {
       // Mock for invalid credentials
-      const { createClient: mockCreateClient } = require('@supabase/supabase-js');
+      const mockCreateClient = jest.mocked(createClient);
       mockCreateClient.mockReturnValueOnce({
         auth: {
           signInWithPassword: jest.fn().mockResolvedValue({
@@ -162,7 +163,7 @@ describe('Login/Logout Flow', () => {
 
     it('should not expose sensitive information in error messages', async () => {
       // Mock for invalid credentials
-      const { createClient: mockCreateClient } = require('@supabase/supabase-js');
+      const mockCreateClient = jest.mocked(createClient);
       mockCreateClient.mockReturnValueOnce({
         auth: {
           signInWithPassword: jest.fn().mockResolvedValue({
