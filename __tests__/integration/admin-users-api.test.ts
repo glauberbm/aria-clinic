@@ -10,9 +10,14 @@
  */
 
 describe('Admin Users API Integration', () => {
+  // These tokens and IDs are used in actual tests that will be implemented
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const adminToken = 'test-admin-token';
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const nonAdminToken = 'test-non-admin-token';
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const userId = 'user-123';
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const clinicId = 'clinic-123';
 
   describe('GET /api/admin/users', () => {
