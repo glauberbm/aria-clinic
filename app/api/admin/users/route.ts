@@ -2,6 +2,28 @@ import { createClient } from '@supabase/supabase-js';
 import { NextRequest, NextResponse } from 'next/server';
 import { hasRole } from '@/lib/auth/permissions';
 
+interface UserRole {
+  roles?: {
+    id?: string;
+    name?: string;
+    permissions?: string[];
+  } | {
+    id?: string;
+    name?: string;
+    permissions?: string[];
+  }[];
+}
+
+interface UserData {
+  id: string;
+  email: string;
+  name: string;
+  clinic_id: string;
+  active: boolean;
+  created_at: string;
+  user_roles: UserRole[];
+}
+
 const getSupabaseClientWithAuth = (token: string) => {
   return createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -13,13 +35,6 @@ const getSupabaseClientWithAuth = (token: string) => {
         },
       },
     }
-  );
-};
-
-const getSupabaseClient = () => {
-  return createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
   );
 };
 
@@ -122,18 +137,21 @@ export async function GET(request: NextRequest) {
     }
 
     // Transform response
-    const users = data?.map((user: any) => ({
+    const users = data?.map((user: UserData) => ({
       id: user.id,
       email: user.email,
       name: user.name,
       clinic_id: user.clinic_id,
       active: user.active,
       created_at: user.created_at,
-      roles: Array.isArray(user.user_roles) ? user.user_roles.map((ur: any) => ({
-        id: ur.roles?.[0]?.id || ur.roles?.id,
-        name: ur.roles?.[0]?.name || ur.roles?.name,
-        permissions: ur.roles?.[0]?.permissions || ur.roles?.permissions,
-      })) : [],
+      roles: Array.isArray(user.user_roles) ? user.user_roles.map((ur: UserRole) => {
+        const roleData = Array.isArray(ur.roles) ? ur.roles[0] : ur.roles;
+        return {
+          id: roleData?.id,
+          name: roleData?.name,
+          permissions: roleData?.permissions,
+        };
+      }) : [],
     })) || [];
 
     return NextResponse.json(

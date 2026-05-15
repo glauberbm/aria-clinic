@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useSupabaseAuth } from '@/lib/supabase/auth-context';
@@ -44,50 +44,57 @@ export default function AuditLogPage() {
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
 
-  const fetchLogs = async (pageNum: number) => {
-    try {
-      setLoading(true);
-      const params = new URLSearchParams({
-        page: pageNum.toString(),
-        limit: limit.toString(),
-      });
+  const fetchLogs = useCallback(
+    async (pageNum: number) => {
+      try {
+        setLoading(true);
+        const params = new URLSearchParams({
+          page: pageNum.toString(),
+          limit: limit.toString(),
+        });
 
-      if (startDate) {
-        params.append('startDate', startDate);
-      }
-      if (endDate) {
-        params.append('endDate', endDate);
-      }
-
-      const response = await fetch(`/api/admin/audit-log?${params}`, {
-        headers: {
-          'Authorization': `Bearer ${user?.session?.access_token}`,
-        },
-      });
-
-      if (!response.ok) {
-        if (response.status === 403) {
-          setError('You do not have permission to access this page');
-          router.push('/app/dashboard');
-          return;
+        if (startDate) {
+          params.append('startDate', startDate);
         }
-        throw new Error('Failed to fetch audit log');
+        if (endDate) {
+          params.append('endDate', endDate);
+        }
+
+        const response = await fetch(`/api/admin/audit-log?${params}`, {
+          headers: {
+            'Authorization': `Bearer ${user?.session?.access_token}`,
+          },
+        });
+
+        if (!response.ok) {
+          if (response.status === 403) {
+            setError('You do not have permission to access this page');
+            router.push('/app/dashboard');
+            return;
+          }
+          throw new Error('Failed to fetch audit log');
+        }
+
+        const data: AuditLogResponse = await response.json();
+        setLogs(data.data);
+        setTotal(data.total);
+        setPage(data.page);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'An error occurred');
+      } finally {
+        setLoading(false);
       }
+    },
+    [user?.session?.access_token, limit, startDate, endDate, router]
+  );
 
-      const data: AuditLogResponse = await response.json();
-      setLogs(data.data);
-      setTotal(data.total);
-      setPage(data.page);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred');
-    } finally {
-      setLoading(false);
-    }
-  };
-
+  // eslint-disable-next-line react-hooks/exhaustive-deps, react-hooks/set-state-in-effect
   useEffect(() => {
-    if (!user) return;
-    fetchLogs(1);
+    if (!user) {
+      return;
+    }
+
+    void fetchLogs(1);
   }, [user]);
 
   const handleFilterChange = () => {

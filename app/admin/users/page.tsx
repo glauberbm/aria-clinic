@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useSupabaseAuth } from '@/lib/supabase/auth-context';
@@ -42,47 +42,54 @@ export default function AdminUsersPage() {
   const [assigningRole, setAssigningRole] = useState(false);
   const [availableRoles] = useState(['admin', 'doctor', 'receptionist', 'patient']);
 
-  const fetchUsers = async (pageNum: number, searchQuery: string) => {
-    try {
-      setLoading(true);
-      const params = new URLSearchParams({
-        page: pageNum.toString(),
-        limit: limit.toString(),
-      });
+  const fetchUsers = useCallback(
+    async (pageNum: number, searchQuery: string) => {
+      try {
+        setLoading(true);
+        const params = new URLSearchParams({
+          page: pageNum.toString(),
+          limit: limit.toString(),
+        });
 
-      if (searchQuery) {
-        params.append('search', searchQuery);
-      }
-
-      const response = await fetch(`/api/admin/users?${params}`, {
-        headers: {
-          'Authorization': `Bearer ${user?.session?.access_token}`,
-        },
-      });
-
-      if (!response.ok) {
-        if (response.status === 403) {
-          setError('You do not have permission to access this page');
-          router.push('/app/dashboard');
-          return;
+        if (searchQuery) {
+          params.append('search', searchQuery);
         }
-        throw new Error('Failed to fetch users');
+
+        const response = await fetch(`/api/admin/users?${params}`, {
+          headers: {
+            'Authorization': `Bearer ${user?.session?.access_token}`,
+          },
+        });
+
+        if (!response.ok) {
+          if (response.status === 403) {
+            setError('You do not have permission to access this page');
+            router.push('/app/dashboard');
+            return;
+          }
+          throw new Error('Failed to fetch users');
+        }
+
+        const data: UsersResponse = await response.json();
+        setUsers(data.data);
+        setTotal(data.total);
+        setPage(data.page);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'An error occurred');
+      } finally {
+        setLoading(false);
       }
+    },
+    [user?.session?.access_token, limit, router]
+  );
 
-      const data: UsersResponse = await response.json();
-      setUsers(data.data);
-      setTotal(data.total);
-      setPage(data.page);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred');
-    } finally {
-      setLoading(false);
-    }
-  };
-
+  // eslint-disable-next-line react-hooks/exhaustive-deps, react-hooks/set-state-in-effect
   useEffect(() => {
-    if (!user) return;
-    fetchUsers(1, '');
+    if (!user) {
+      return;
+    }
+
+    void fetchUsers(1, '');
   }, [user]);
 
   const handleSearch = (query: string) => {
