@@ -32,8 +32,8 @@
   --color-info: #0097A7;         /* Cyan suave — info */
 
   /* Tipografia */
+  --font-inter: "Inter", system-ui, -apple-system, sans-serif;
   --font-display: "Cormorant Garamond", serif;
-  --font-body: "Inter", sans-serif;
 
   /* Espaçamento Generous */
   --spacing-xs: 0.25rem;
@@ -86,9 +86,6 @@
   --radius: var(--radius-lg);
   --radius-sm: var(--radius-sm);
   --radius-md: var(--radius-md);
-
-  --font-sans: var(--font-body);
-  --font-serif: var(--font-display);
 }
 
 /* ═══════════════════════════════════════════════════════════
@@ -101,13 +98,14 @@
   }
 
   html {
-    @apply font-sans text-base text-foreground;
+    font-family: var(--font-inter);
+    font-size: 16px;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
 
   body {
-    @apply bg-background text-foreground;
+    font-family: var(--font-inter);
     background-color: var(--color-bg);
     color: var(--color-text);
     line-height: 1.6;
@@ -116,38 +114,50 @@
 
   /* Display — Cormorant Garamond */
   h1 {
-    @apply font-display text-4xl font-normal;
+    font-family: var(--font-display);
+    font-size: 2.25rem;
+    font-weight: 400;
     letter-spacing: 0.1em;
     color: var(--color-text);
   }
 
   h2 {
-    @apply font-display text-3xl font-normal;
+    font-family: var(--font-display);
+    font-size: 1.875rem;
+    font-weight: 400;
     letter-spacing: 0.08em;
     color: var(--color-text);
   }
 
   h3 {
-    @apply font-display text-2xl font-normal;
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    font-weight: 400;
     letter-spacing: 0.06em;
     color: var(--color-text);
   }
 
   h4 {
-    @apply font-display text-xl font-normal;
+    font-family: var(--font-display);
+    font-size: 1.25rem;
+    font-weight: 400;
     letter-spacing: 0.04em;
     color: var(--color-text);
   }
 
   h5,
   h6 {
-    @apply font-body text-lg font-normal;
+    font-family: var(--font-inter);
+    font-size: 1.125rem;
+    font-weight: 400;
     color: var(--color-text);
   }
 
   /* Body — Inter */
   p {
-    @apply font-body text-base font-normal;
+    font-family: var(--font-inter);
+    font-size: 1rem;
+    font-weight: 400;
     color: var(--color-text);
   }
 
@@ -158,10 +168,10 @@
 
   /* Links */
   a {
-    @apply transition-colors duration-200;
     color: var(--color-gold);
     text-decoration: none;
     border-bottom: 1px solid transparent;
+    transition: all var(--transition-fast);
 
     &:hover {
       color: var(--color-gold-dark);
@@ -176,40 +186,55 @@
   }
 
   li {
-    @apply font-body text-base;
+    font-family: var(--font-inter);
+    font-size: 1rem;
   }
 
   /* Code */
   code {
-    @apply font-mono text-sm px-2 py-1 rounded;
+    font-family: "Monaco", "Courier New", monospace;
+    font-size: 0.875rem;
+    padding: 0.5rem;
+    border-radius: 4px;
     background-color: var(--color-bg-card);
     color: var(--color-text);
   }
 
   pre {
-    @apply p-4 rounded-lg overflow-x-auto;
+    padding: 1rem;
+    border-radius: 8px;
+    overflow-x: auto;
     background-color: var(--color-sidebar);
     color: #ffffff;
   }
 
   /* Divider */
   hr {
-    @apply border-0 h-px;
+    height: 1px;
+    border: none;
     background-color: var(--color-divider);
   }
 
   /* Tables */
   table {
-    @apply w-full border-collapse;
+    width: 100%;
+    border-collapse: collapse;
   }
 
   th {
-    @apply font-body font-normal text-sm text-text-muted text-left p-3;
+    font-family: var(--font-inter);
+    font-weight: 400;
+    font-size: 0.875rem;
+    color: var(--color-text-muted);
+    text-align: left;
+    padding: 0.75rem;
     border-bottom: 1px solid var(--color-divider);
   }
 
   td {
-    @apply font-body text-sm p-3;
+    font-family: var(--font-inter);
+    font-size: 0.875rem;
+    padding: 0.75rem;
     border-bottom: 1px solid var(--color-divider);
   }
 
@@ -226,9 +251,9 @@
 @layer components {
   /* Card com Quiet Luxury */
   .aria-card {
-    @apply bg-card rounded-lg p-6 shadow-sm transition-all duration-300;
-    border: 1px solid transparent;
+    @apply rounded-lg p-6 shadow-sm transition-all duration-300;
     background-color: var(--color-bg-card);
+    border: 1px solid transparent;
 
     &:hover {
       box-shadow: var(--shadow-md);
@@ -238,7 +263,9 @@
 
   /* Badge com cores customizadas */
   .aria-badge {
-    @apply inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-normal;
+    @apply inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs;
+    font-family: var(--font-inter);
+    font-weight: 400;
     background-color: var(--color-gold-light);
     color: var(--color-text);
 
@@ -260,7 +287,12 @@
 
   /* Button Base — gold com quiet luxury */
   .aria-button {
-    @apply font-body text-sm font-normal px-4 py-2 rounded-lg transition-all duration-200;
+    font-family: var(--font-inter);
+    font-size: 0.875rem;
+    font-weight: 400;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    transition: all var(--transition-fast);
     background-color: var(--color-gold);
     color: #ffffff;
     border: none;
@@ -306,31 +338,53 @@
 
   /* Metric Card */
   .metric-card {
-    @apply aria-card flex flex-col gap-2;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    border-radius: var(--radius-lg);
+    padding: 1.5rem;
+    box-shadow: var(--shadow-sm);
+    transition: all 300ms ease-in-out;
+    background-color: var(--color-bg-card);
+    border: 1px solid transparent;
   }
 
   .metric-label {
-    @apply font-body text-sm text-text-muted;
+    font-family: var(--font-inter);
+    font-size: 0.875rem;
+    color: var(--color-text-muted);
   }
 
   .metric-value {
-    @apply font-display text-3xl font-normal text-gold;
+    font-family: var(--font-display);
+    font-size: 1.875rem;
+    font-weight: 400;
+    color: var(--color-gold);
   }
 
   .metric-subtext {
-    @apply font-body text-xs text-text-muted;
+    font-family: var(--font-inter);
+    font-size: 0.75rem;
+    color: var(--color-text-muted);
   }
 
   /* Section Title */
   .section-title {
-    @apply font-display text-2xl font-normal mb-6;
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    font-weight: 400;
+    margin-bottom: 1.5rem;
     color: var(--color-text);
     letter-spacing: 0.06em;
   }
 
   /* Input customizado */
   .aria-input {
-    @apply w-full px-4 py-2 rounded-lg font-body text-sm;
+    width: 100%;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    font-family: var(--font-inter);
+    font-size: 0.875rem;
     background-color: var(--color-bg-card);
     color: var(--color-text);
     border: 1px solid var(--color-divider);
@@ -349,7 +403,26 @@
 
   /* Select customizado */
   .aria-select {
-    @apply aria-input cursor-pointer;
+    width: 100%;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    font-family: var(--font-inter);
+    font-size: 0.875rem;
+    background-color: var(--color-bg-card);
+    color: var(--color-text);
+    border: 1px solid var(--color-divider);
+    transition: all var(--transition-fast);
+    cursor: pointer;
+
+    &:focus {
+      outline: none;
+      border-color: var(--color-gold);
+      box-shadow: 0 0 0 3px rgba(201, 169, 110, 0.1);
+    }
+
+    &::placeholder {
+      color: var(--color-text-muted);
+    }
 
     &:hover {
       border-color: var(--color-gold);
@@ -375,7 +448,9 @@
 
   /* Infinity symbol decorativo */
   .infinity-symbol {
-    @apply text-gold font-display text-2xl;
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    color: var(--color-gold);
     opacity: 0.3;
     margin: 0 0.5rem;
   }
