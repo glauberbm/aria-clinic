@@ -4,9 +4,48 @@
 -- Purpose: Complete patient management system with LGPD compliance and audit logging
 
 -- ============================================================================
+-- 0. Ensure patients table exists (safety check - should exist from 000003)
+-- ============================================================================
+CREATE TABLE IF NOT EXISTS public.patients (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  user_id UUID,
+  clinic_id UUID NOT NULL,
+
+  -- Basic Info
+  name TEXT NOT NULL,
+  email TEXT,
+  phone TEXT,
+  date_of_birth DATE,
+  gender TEXT CHECK (gender IN ('M', 'F', 'O', 'N')),
+
+  -- Address
+  address TEXT,
+  city TEXT,
+  state TEXT,
+  zip_code TEXT,
+
+  -- Contact Preferences
+  preferred_contact_method TEXT DEFAULT 'whatsapp',
+  whatsapp_enabled BOOLEAN DEFAULT true,
+  email_enabled BOOLEAN DEFAULT true,
+  sms_enabled BOOLEAN DEFAULT false,
+
+  -- Status & Metadata
+  status TEXT DEFAULT 'active' CHECK (status IN ('active', 'inactive', 'archived')),
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT now(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT now(),
+  archived_at TIMESTAMP WITH TIME ZONE,
+
+  -- LGPD Compliance
+  consent_terms BOOLEAN DEFAULT false,
+  consent_marketing BOOLEAN DEFAULT false,
+  consent_date TIMESTAMP WITH TIME ZONE
+);
+
+-- ============================================================================
 -- 1. Patient Medical History Table
 -- ============================================================================
-CREATE TABLE public.patient_medical_history (
+CREATE TABLE IF NOT EXISTS public.patient_medical_history (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   patient_id UUID NOT NULL REFERENCES public.patients(id) ON DELETE CASCADE,
   clinic_id UUID NOT NULL REFERENCES public.clinics(id) ON DELETE CASCADE,
@@ -38,7 +77,7 @@ CREATE INDEX idx_patient_medical_history_date ON public.patient_medical_history(
 -- ============================================================================
 -- 2. Patient Medications & Allergies Table
 -- ============================================================================
-CREATE TABLE public.patient_medications (
+CREATE TABLE IF NOT EXISTS public.patient_medications (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   patient_id UUID NOT NULL REFERENCES public.patients(id) ON DELETE CASCADE,
   clinic_id UUID NOT NULL REFERENCES public.clinics(id) ON DELETE CASCADE,
@@ -71,7 +110,7 @@ CREATE INDEX idx_patient_medications_active ON public.patient_medications(is_act
 -- ============================================================================
 -- 3. Patient Communications Table (Messages, Notifications, WhatsApp)
 -- ============================================================================
-CREATE TABLE public.patient_communications (
+CREATE TABLE IF NOT EXISTS public.patient_communications (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   patient_id UUID NOT NULL REFERENCES public.patients(id) ON DELETE CASCADE,
   clinic_id UUID NOT NULL REFERENCES public.clinics(id) ON DELETE CASCADE,
@@ -109,7 +148,7 @@ CREATE INDEX idx_patient_communications_status ON public.patient_communications(
 -- ============================================================================
 -- 4. Patient Contact Preferences Table
 -- ============================================================================
-CREATE TABLE public.patient_contact_preferences (
+CREATE TABLE IF NOT EXISTS public.patient_contact_preferences (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   patient_id UUID NOT NULL UNIQUE REFERENCES public.patients(id) ON DELETE CASCADE,
   clinic_id UUID NOT NULL REFERENCES public.clinics(id) ON DELETE CASCADE,
@@ -145,7 +184,7 @@ CREATE INDEX idx_patient_contact_preferences_clinic_id ON public.patient_contact
 -- ============================================================================
 -- 5. Patient Audit Log Table (LGPD Compliance)
 -- ============================================================================
-CREATE TABLE public.patient_audit_logs (
+CREATE TABLE IF NOT EXISTS public.patient_audit_logs (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   patient_id UUID NOT NULL REFERENCES public.patients(id) ON DELETE SET NULL,
   clinic_id UUID NOT NULL REFERENCES public.clinics(id) ON DELETE CASCADE,

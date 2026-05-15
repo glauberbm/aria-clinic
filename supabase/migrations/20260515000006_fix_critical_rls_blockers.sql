@@ -7,11 +7,20 @@
 -- ==============================================================================
 
 -- Add user_id FK to patients table to link patient records to auth.users
-ALTER TABLE public.patients
-ADD COLUMN user_id UUID REFERENCES auth.users(id) ON DELETE SET NULL;
+-- (Check if column already exists before adding)
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_name = 'patients' AND column_name = 'user_id'
+  ) THEN
+    ALTER TABLE public.patients
+    ADD COLUMN user_id UUID REFERENCES auth.users(id) ON DELETE SET NULL;
+  END IF;
+END $$;
 
 -- Create index for performance (RLS will use this for filtering)
-CREATE INDEX idx_patients_user_id ON public.patients(user_id);
+CREATE INDEX IF NOT EXISTS idx_patients_user_id ON public.patients(user_id);
 
 -- Drop the broken patient_see_own_data policy
 DROP POLICY IF EXISTS "patient_see_own_data" ON public.patients;

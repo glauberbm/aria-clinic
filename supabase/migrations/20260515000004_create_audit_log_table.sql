@@ -1,5 +1,5 @@
 -- Create audit_log table for tracking role changes
-CREATE TABLE public.audit_log (
+CREATE TABLE IF NOT EXISTS public.audit_log (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   actor_id UUID NOT NULL REFERENCES public.users(id) ON DELETE RESTRICT,
   action TEXT NOT NULL CHECK (action IN ('role_assigned', 'role_removed')),
@@ -14,13 +14,14 @@ CREATE TABLE public.audit_log (
 ALTER TABLE public.audit_log ENABLE ROW LEVEL SECURITY;
 
 -- Create indexes for performance
-CREATE INDEX idx_audit_log_clinic_id ON public.audit_log(clinic_id);
-CREATE INDEX idx_audit_log_actor_id ON public.audit_log(actor_id);
-CREATE INDEX idx_audit_log_target_user_id ON public.audit_log(target_user_id);
-CREATE INDEX idx_audit_log_created_at ON public.audit_log(created_at);
-CREATE INDEX idx_audit_log_clinic_created_at ON public.audit_log(clinic_id, created_at);
+CREATE INDEX IF NOT EXISTS idx_audit_log_clinic_id ON public.audit_log(clinic_id);
+CREATE INDEX IF NOT EXISTS idx_audit_log_actor_id ON public.audit_log(actor_id);
+CREATE INDEX IF NOT EXISTS idx_audit_log_target_user_id ON public.audit_log(target_user_id);
+CREATE INDEX IF NOT EXISTS idx_audit_log_created_at ON public.audit_log(created_at);
+CREATE INDEX IF NOT EXISTS idx_audit_log_clinic_created_at ON public.audit_log(clinic_id, created_at);
 
 -- RLS Policy: Only admins of the clinic can view their clinic's audit log
+DROP POLICY IF EXISTS "admins_view_clinic_audit_log" ON public.audit_log;
 CREATE POLICY "admins_view_clinic_audit_log" ON public.audit_log
   FOR SELECT
   USING (
@@ -34,6 +35,7 @@ CREATE POLICY "admins_view_clinic_audit_log" ON public.audit_log
   );
 
 -- RLS Policy: Only admins of the clinic can insert audit log entries
+DROP POLICY IF EXISTS "admins_insert_audit_log" ON public.audit_log;
 CREATE POLICY "admins_insert_audit_log" ON public.audit_log
   FOR INSERT
   WITH CHECK (
@@ -51,6 +53,7 @@ GRANT SELECT ON public.audit_log TO authenticated;
 GRANT INSERT ON public.audit_log TO authenticated;
 
 -- Create trigger to auto-update updated_at on any change
+DROP TRIGGER IF EXISTS update_audit_log_updated_at ON public.audit_log;
 CREATE TRIGGER update_audit_log_updated_at
 BEFORE UPDATE ON public.audit_log
 FOR EACH ROW
