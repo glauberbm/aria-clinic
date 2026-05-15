@@ -305,8 +305,7 @@ export default function AriaInsightsPage() {
               </p>
               <p
                 className="font-body text-xs"
-                style={{ color: "var(--color-gold)" }}
-                opacity={0.6}
+                style={{ color: "var(--color-gold)", opacity: 0.6 }}
               >
                 {metric.sublabel}
               </p>

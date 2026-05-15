@@ -3,10 +3,12 @@ import { NextRequest, NextResponse } from 'next/server';
 import { registerSchema } from '@/lib/validations/auth';
 import { z } from 'zod';
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
+const getSupabaseClient = () => {
+  return createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  );
+};
 
 export async function POST(request: NextRequest) {
   try {
@@ -14,6 +16,8 @@ export async function POST(request: NextRequest) {
 
     // Validate input
     const validatedData = registerSchema.parse(body);
+
+    const supabase = getSupabaseClient();
 
     // Check if user already exists
     const { data: existingUser } = await supabase
@@ -48,7 +52,7 @@ export async function POST(request: NextRequest) {
 
     // The trigger should create the public.users row automatically
     // But we can verify it was created
-    const { data: newUser, error: userError } = await supabase
+    const { error: userError } = await supabase
       .from('users')
       .select('id, email, name')
       .eq('id', authData.user.id)

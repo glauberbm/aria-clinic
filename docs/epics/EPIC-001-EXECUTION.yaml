@@ -1,0 +1,355 @@
+---
+# EPIC-001 Execution Plan
+# Epic: Authentication & User Management (Phase 1 - Foundation)
+# Created: 2026-05-14
+# Owner: @pm (Morgan)
+# Orchestrator: Synkra AIOX Story Development Cycle
+
+epic_id: EPIC-001
+epic_title: Authentication & User Management
+epic_phase: Foundation (MVP)
+epic_owner: "@pm"
+epic_status: PENDING_EXECUTION
+
+# ============================================================================
+# EXECUTION OVERVIEW
+# ============================================================================
+
+execution_overview:
+  description: |
+    EPIC-001 is the foundation epic that enables all subsequent epics.
+    All Phase 1 development depends on successful authentication.
+
+    Execution strategy: Sequential waves with parallel story development
+    within each wave to maximize velocity while respecting dependencies.
+
+  estimated_duration: "2 weeks"
+  wave_count: 2
+  total_stories: 5
+  expected_developers: 3 (@dev primary, @architect code review)
+  expected_testers: 1 (@qa)
+  expected_story_creators: 1 (@sm)
+
+# ============================================================================
+# WAVE 1: Core Authentication Infrastructure
+# ============================================================================
+
+wave_1:
+  name: "Core Authentication Infrastructure"
+  description: "Supabase Auth setup, user table schema, role-based access control foundation"
+  duration: "1 week"
+  parallel_enabled: true
+  dependencies: "None (foundation)"
+
+  stories:
+    - story_id: USER-001
+      story_title: "Supabase Auth Integration & User Registration"
+      story_brief: "Set up Supabase Auth, email/password signup, session management"
+      assigned_to_sm: true
+      assigned_to_dev: true
+      assigned_to_qa: true
+      acceptance_criteria_count: 6
+      epic_link: "EPIC-001-authentication.md"
+      dependencies: "None"
+      estimated_points: 8
+      priority: CRITICAL
+      test_type: integration
+      quality_gates:
+        - codecrabbit_review: true
+        - unit_tests: true
+        - integration_tests: true
+        - security_audit: true
+
+    - story_id: USER-002
+      story_title: "Login & Logout Flows with JWT Token Management"
+      story_brief: "Implement login, logout, token refresh, session persistence"
+      assigned_to_sm: true
+      assigned_to_dev: true
+      assigned_to_qa: true
+      acceptance_criteria_count: 5
+      epic_link: "EPIC-001-authentication.md"
+      dependencies: "USER-001"
+      estimated_points: 5
+      priority: CRITICAL
+      test_type: functional
+      quality_gates:
+        - codecrabbit_review: true
+        - unit_tests: true
+        - security_audit: true
+
+    - story_id: USER-003
+      story_title: "Role-Based Access Control (RBAC) Schema & Database Setup"
+      story_brief: "Create roles table, user_roles junction table, RLS policies"
+      assigned_to_sm: true
+      assigned_to_dev: true
+      assigned_to_qa: true
+      acceptance_criteria_count: 5
+      epic_link: "EPIC-001-authentication.md"
+      dependencies: "USER-001"
+      estimated_points: 8
+      priority: CRITICAL
+      test_type: integration
+      quality_gates:
+        - codecrabbit_review: true
+        - security_audit: true
+        - qa_gate: true
+
+# ============================================================================
+# WAVE 2: User Management & Permission System
+# ============================================================================
+
+wave_2:
+  name: "User Management & Permission System"
+  description: "User profile management, permission assignment, clinic admin functionality"
+  duration: "1 week"
+  parallel_enabled: true
+  dependencies: "WAVE 1 complete"
+
+  stories:
+    - story_id: USER-004
+      story_title: "User Profile Management (Create/Read/Update)"
+      story_brief: "User profile page, edit profile, avatar upload, clinic association"
+      assigned_to_sm: true
+      assigned_to_dev: true
+      assigned_to_qa: true
+      acceptance_criteria_count: 6
+      epic_link: "EPIC-001-authentication.md"
+      dependencies: "USER-001, USER-002"
+      estimated_points: 5
+      priority: HIGH
+      test_type: functional
+      quality_gates:
+        - codecrabbit_review: true
+        - unit_tests: true
+        - qa_gate: true
+
+    - story_id: USER-005
+      story_title: "Permission Assignment & Clinic Admin Dashboard"
+      story_brief: "Assign roles to users, manage clinic-level permissions, audit log"
+      assigned_to_sm: true
+      assigned_to_dev: true
+      assigned_to_qa: true
+      acceptance_criteria_count: 6
+      epic_link: "EPIC-001-authentication.md"
+      dependencies: "USER-003, USER-004"
+      estimated_points: 8
+      priority: HIGH
+      test_type: integration
+      quality_gates:
+        - codecrabbit_review: true
+        - security_audit: true
+        - qa_gate: true
+
+# ============================================================================
+# AGENT ASSIGNMENTS
+# ============================================================================
+
+agent_assignments:
+  story_master:
+    agent: "@sm (River)"
+    responsibility: "Create detailed user stories from USER-001 to USER-005"
+    workflow: "@sm *draft-story EPIC-001"
+    deliverable: "5 .story.md files in docs/stories/"
+    dependencies: "EPIC definition, epic context"
+
+  lead_developer:
+    agent: "@dev (Dex)"
+    responsibility: "Implement all stories in Story Development Cycle"
+    workflow: "Claim story → *develop → submit for QA"
+    code_quality_gates:
+      - type: "CodeRabbit"
+        runs_per_story: "automatic after PR"
+      - type: "TypeScript"
+        check: "tsc --noEmit"
+      - type: "Linting"
+        check: "npm run lint"
+      - type: "Unit Tests"
+        coverage_minimum: "80%"
+    parallel_development: true
+
+  qa_lead:
+    agent: "@qa (Quinn)"
+    responsibility: "QA Gate after development, 7-point checklist per story"
+    workflow: "@qa *qa-gate {story_id}"
+    quality_checks:
+      - Functionality test against AC
+      - Integration test with other modules
+      - Security vulnerability check
+      - Performance baseline
+      - Browser compatibility
+      - Accessibility audit (WCAG 2.1)
+      - Regression test
+    approval_required: true
+
+  architect:
+    agent: "@architect (Aria)"
+    responsibility: "Code review, security audit, architecture validation"
+    workflow: "Review during @dev implementation, pre-merge validation"
+    focus_areas:
+      - Authentication security (OWASP Top 10)
+      - RLS policy correctness
+      - Supabase integration patterns
+      - API design consistency
+
+  devops:
+    agent: "@devops (Gage)"
+    responsibility: "Git push, PR merge, branch management"
+    workflow: "After @qa approval, *push to feature branch, PR merge to main"
+    exclusive_operations:
+      - git_push: true
+      - gh_pr_create: true
+      - gh_pr_merge: true
+
+# ============================================================================
+# EXECUTION CHECKLIST (Pre-Wave 1)
+# ============================================================================
+
+pre_execution_checklist:
+  - item: "Verify Supabase project created and accessible"
+    owner: "@devops"
+    status: "PENDING"
+
+  - item: "Verify Next.js project running (npm run dev)"
+    owner: "@dev"
+    status: "PENDING"
+
+  - item: "Verify shadcn/ui components installed"
+    owner: "@dev"
+    status: "PENDING"
+
+  - item: "Create .env.local with SUPABASE_URL and SUPABASE_KEY"
+    owner: "@devops"
+    status: "PENDING"
+
+  - item: "@sm ready to draft stories (5 stories, USER-001 to USER-005)"
+    owner: "@sm"
+    status: "PENDING"
+
+  - item: "CodeRabbit configured for pre-commit checks"
+    owner: "@devops"
+    status: "PENDING"
+
+# ============================================================================
+# WORKFLOW & TIMELINE
+# ============================================================================
+
+execution_workflow:
+  phase_1_story_creation:
+    duration: "1 day"
+    owner: "@sm (River)"
+    input: "EPIC-001 definition, story template"
+    output: "5 user stories in docs/stories/"
+    command: "@sm *draft-story EPIC-001"
+
+  phase_2_wave_1_development:
+    duration: "4 days"
+    owner: "@dev (Dex)"
+    parallel_stories: 3
+    workflow: "SDC (Story Development Cycle) per story"
+    quality_gate: "@qa *qa-gate USER-001/002/003"
+
+  phase_3_wave_1_testing:
+    duration: "1 day"
+    owner: "@qa (Quinn)"
+    stories_under_test: 3
+    verdict_required: "PASS (all stories must pass to proceed to Wave 2)"
+
+  phase_4_wave_2_development:
+    duration: "4 days"
+    owner: "@dev (Dex)"
+    parallel_stories: 2
+    dependencies: "Wave 1 complete"
+    workflow: "SDC per story"
+    quality_gate: "@qa *qa-gate USER-004/005"
+
+  phase_5_wave_2_testing:
+    duration: "1 day"
+    owner: "@qa (Quinn)"
+    stories_under_test: 2
+    verdict_required: "PASS"
+
+  phase_6_release:
+    duration: "0.5 days"
+    owner: "@devops (Gage)"
+    tasks:
+      - "Merge all feature branches to main"
+      - "Tag release v1.0.0-alpha"
+      - "Deploy to staging"
+      - "Run smoke tests"
+    command: "@devops *push --all && gh pr merge --auto"
+
+# ============================================================================
+# SUCCESS CRITERIA (Epic-Level)
+# ============================================================================
+
+epic_acceptance_criteria:
+  - criterion: "All 5 stories marked DONE in docs/stories/"
+    metric: "5/5 complete"
+    owner: "@sm"
+
+  - criterion: "All QA Gates passed (7 checks per story)"
+    metric: "35/35 checks passed"
+    owner: "@qa"
+
+  - criterion: "100% of acceptance criteria met per story"
+    metric: "All AC checkboxes [x]"
+    owner: "@dev"
+
+  - criterion: "CodeRabbit automated review on all PRs (max 2 iterations)"
+    metric: "0 blocker issues in final merge"
+    owner: "@architect"
+
+  - criterion: "Supabase Auth fully operational with RLS policies"
+    metric: "Login/logout/session tests pass"
+    owner: "@qa"
+
+  - criterion: "Role-based access control enforced at database level"
+    metric: "RLS audit passes security review"
+    owner: "@architect"
+
+  - criterion: "All code merged to main, staging deployed"
+    metric: "0 pending PRs"
+    owner: "@devops"
+
+# ============================================================================
+# RISK MITIGATION
+# ============================================================================
+
+risk_mitigation:
+  - risk: "Supabase Auth setup delays"
+    mitigation: "Pre-stage Supabase CLI commands in .aiox-core/scripts/supabase-init.sh"
+    owner: "@devops"
+
+  - risk: "RLS policy complexity causes debugging delays"
+    mitigation: "Create RLS testing utilities and documentation"
+    owner: "@architect"
+
+  - risk: "Token refresh failures in SDC"
+    mitigation: "Write comprehensive token lifecycle tests in Wave 1"
+    owner: "@qa"
+
+  - risk: "Developer context switching between parallel stories"
+    mitigation: "Limit @dev to 2 parallel stories max, use story context files"
+    owner: "@pm"
+
+# ============================================================================
+# NEXT EPIC GATE
+# ============================================================================
+
+gate_to_epic_002:
+  condition: "All EPIC-001 stories DONE + QA PASS + merged to main"
+  when_met: "EPIC-002 (Dashboard) can begin"
+  when_blocked: "Escalate blockers to @pm via *correct-course"
+  note: "EPIC-002 depends on EPIC-001 auth working correctly"
+
+# ============================================================================
+# METADATA
+# ============================================================================
+
+metadata:
+  created_at: "2026-05-14T12:00:00Z"
+  created_by: "@pm (Morgan)"
+  version: "1.0"
+  status: "READY_FOR_EXECUTION"
+  last_updated: "2026-05-14T12:00:00Z"
+  next_action: "Await user confirmation to begin story creation with @sm"

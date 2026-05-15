@@ -1,515 +1,60 @@
-@import "@fontsource/inter/400.css";
-@import "@fontsource/inter/300.css";
-@import "@fontsource/cormorant-garamond/400.css";
-@import "@fontsource/cormorant-garamond/400-italic.css";
 @import "tailwindcss";
-@import "tw-animate-css";
-@import "shadcn/tailwind.css";
-
-@custom-variant dark (&:is(.dark *));
-
-/* ═══════════════════════════════════════════════════════════
-   ARIA CLINIC — Design System
-   Quiet Luxury · Feminine · Sophistication
-   ═══════════════════════════════════════════════════════════ */
-
-:root {
-  /* Paleta Principal — Essenza */
-  --color-bg: #F5F0EB;           /* Nude quente — background geral */
-  --color-bg-card: #FDFAF7;      /* Branco quente — cards */
-  --color-gold: #C9A96E;         /* Dourado principal — accent */
-  --color-gold-dark: #8B6914;    /* Dourado escuro — textos accent */
-  --color-gold-light: #E8D5B0;   /* Dourado claro — detalhes, hover */
-  --color-text: #4A3728;         /* Marrom escuro — texto principal */
-  --color-text-muted: #8B7355;   /* Marrom médio — texto secundário */
-  --color-divider: #D4B896;      /* Linha separadora */
-  --color-sidebar: #2C1F14;      /* Marrom muito escuro — sidebar */
-
-  /* Status Colors — sutis */
-  --color-success: #7CB342;      /* Verde suave — check */
-  --color-warning: #FFA726;      /* Laranja suave — alerta */
-  --color-error: #D32F2F;        /* Vermelho suave — erro */
-  --color-info: #0097A7;         /* Cyan suave — info */
-
-  /* Tipografia */
-  --font-inter: "Inter", system-ui, -apple-system, sans-serif;
-  --font-display: "Cormorant Garamond", serif;
-
-  /* Espaçamento Generous */
-  --spacing-xs: 0.25rem;
-  --spacing-sm: 0.5rem;
-  --spacing-md: 1rem;
-  --spacing-lg: 1.5rem;
-  --spacing-xl: 2rem;
-  --spacing-2xl: 3rem;
-
-  /* Raios de Borda */
-  --radius-sm: 4px;
-  --radius-md: 6px;
-  --radius-lg: 8px;
-
-  /* Sombras Quiet Luxury */
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.07);
-  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.08);
-
-  /* Transitions */
-  --transition-fast: 150ms ease-in-out;
-  --transition-normal: 250ms ease-in-out;
-}
-
-/* ═══════════════════════════════════════════════════════════
-   TAILWIND THEME OVERRIDE
-   ═══════════════════════════════════════════════════════════ */
-
-@theme inline {
-  --color-background: var(--color-bg);
-  --color-foreground: var(--color-text);
-  --color-primary: var(--color-gold);
-  --color-primary-foreground: #FFFFFF;
-  --color-secondary: var(--color-gold-light);
-  --color-secondary-foreground: var(--color-text);
-  --color-accent: var(--color-gold-dark);
-  --color-accent-foreground: #FFFFFF;
-  --color-muted: var(--color-text-muted);
-  --color-muted-foreground: #FFFFFF;
-  --color-card: var(--color-bg-card);
-  --color-card-foreground: var(--color-text);
-  --color-destructive: var(--color-error);
-  --color-destructive-foreground: #FFFFFF;
-  --color-border: var(--color-divider);
-  --color-input: var(--color-bg-card);
-  --color-ring: var(--color-gold);
-  --color-success: var(--color-success);
-  --color-warning: var(--color-warning);
-  --color-info: var(--color-info);
-  --radius: var(--radius-lg);
-  --radius-sm: var(--radius-sm);
-  --radius-md: var(--radius-md);
-}
-
-/* ═══════════════════════════════════════════════════════════
-   ESTILOS BASE — Quiet Luxury
-   ═══════════════════════════════════════════════════════════ */
 
 @layer base {
-  * {
-    @apply border-border;
-  }
-
-  html {
-    font-family: var(--font-inter);
-    font-size: 16px;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
+  :root {
+    --color-bg: #F5F0EB;
+    --color-bg-card: #FDFAF7;
+    --color-gold: #C9A96E;
+    --color-gold-dark: #8B6914;
+    --color-gold-light: #E8D5B0;
+    --color-text: #4A3728;
+    --color-text-muted: #8B7355;
+    --color-divider: #D4B896;
+    --color-sidebar: #2C1F14;
+    --color-success: #16a34a;
+    --color-danger: #dc2626;
+    --color-info: #2563eb;
+    --font-inter: 'Inter';
+    --font-display: 'Cormorant Garamond';
+    --font-body: 'Inter';
   }
 
   body {
-    font-family: var(--font-inter);
     background-color: var(--color-bg);
     color: var(--color-text);
-    line-height: 1.6;
-    letter-spacing: 0.4px;
-  }
-
-  /* Display — Cormorant Garamond */
-  h1 {
-    font-family: var(--font-display);
-    font-size: 2.25rem;
-    font-weight: 400;
-    letter-spacing: 0.1em;
-    color: var(--color-text);
-  }
-
-  h2 {
-    font-family: var(--font-display);
-    font-size: 1.875rem;
-    font-weight: 400;
-    letter-spacing: 0.08em;
-    color: var(--color-text);
-  }
-
-  h3 {
-    font-family: var(--font-display);
-    font-size: 1.5rem;
-    font-weight: 400;
-    letter-spacing: 0.06em;
-    color: var(--color-text);
-  }
-
-  h4 {
-    font-family: var(--font-display);
-    font-size: 1.25rem;
-    font-weight: 400;
-    letter-spacing: 0.04em;
-    color: var(--color-text);
-  }
-
-  h5,
-  h6 {
-    font-family: var(--font-inter);
-    font-size: 1.125rem;
-    font-weight: 400;
-    color: var(--color-text);
-  }
-
-  /* Body — Inter */
-  p {
-    font-family: var(--font-inter);
-    font-size: 1rem;
-    font-weight: 400;
-    color: var(--color-text);
-  }
-
-  /* Muted text */
-  .text-muted {
-    color: var(--color-text-muted);
-  }
-
-  /* Links */
-  a {
-    color: var(--color-gold);
-    text-decoration: none;
-    border-bottom: 1px solid transparent;
-    transition: all var(--transition-fast);
-
-    &:hover {
-      color: var(--color-gold-dark);
-      border-bottom-color: var(--color-gold);
-    }
-  }
-
-  /* Lists */
-  ul,
-  ol {
-    @apply space-y-2;
-  }
-
-  li {
-    font-family: var(--font-inter);
-    font-size: 1rem;
-  }
-
-  /* Code */
-  code {
-    font-family: "Monaco", "Courier New", monospace;
-    font-size: 0.875rem;
-    padding: 0.5rem;
-    border-radius: 4px;
-    background-color: var(--color-bg-card);
-    color: var(--color-text);
-  }
-
-  pre {
-    padding: 1rem;
-    border-radius: 8px;
-    overflow-x: auto;
-    background-color: var(--color-sidebar);
-    color: #ffffff;
-  }
-
-  /* Divider */
-  hr {
-    height: 1px;
-    border: none;
-    background-color: var(--color-divider);
-  }
-
-  /* Tables */
-  table {
-    width: 100%;
-    border-collapse: collapse;
-  }
-
-  th {
-    font-family: var(--font-inter);
-    font-weight: 400;
-    font-size: 0.875rem;
-    color: var(--color-text-muted);
-    text-align: left;
-    padding: 0.75rem;
-    border-bottom: 1px solid var(--color-divider);
-  }
-
-  td {
-    font-family: var(--font-inter);
-    font-size: 0.875rem;
-    padding: 0.75rem;
-    border-bottom: 1px solid var(--color-divider);
-  }
-
-  tbody tr:hover {
-    background-color: var(--color-gold);
-    opacity: 0.05;
+    font-family: var(--font-inter), system-ui, sans-serif;
   }
 }
-
-/* ═══════════════════════════════════════════════════════════
-   COMPONENTES CUSTOMIZADOS
-   ═══════════════════════════════════════════════════════════ */
 
 @layer components {
-  /* Card com Quiet Luxury */
+  .font-display {
+    font-family: var(--font-display), serif;
+    font-weight: 400;
+  }
+
+  .font-body {
+    font-family: var(--font-body), system-ui, sans-serif;
+    font-weight: 400;
+  }
+
   .aria-card {
-    @apply rounded-lg p-6 shadow-sm transition-all duration-300;
     background-color: var(--color-bg-card);
-    border: 1px solid transparent;
-
-    &:hover {
-      box-shadow: var(--shadow-md);
-      border-color: var(--color-gold-light);
-    }
-  }
-
-  /* Badge com cores customizadas */
-  .aria-badge {
-    @apply inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs;
-    font-family: var(--font-inter);
-    font-weight: 400;
-    background-color: var(--color-gold-light);
-    color: var(--color-text);
-
-    &.aria-badge-success {
-      background-color: #c8e6c9;
-      color: #2e7d32;
-    }
-
-    &.aria-badge-warning {
-      background-color: #ffe0b2;
-      color: #e65100;
-    }
-
-    &.aria-badge-error {
-      background-color: #ffcdd2;
-      color: #c62828;
-    }
-  }
-
-  /* Button Base — gold com quiet luxury */
-  .aria-button {
-    font-family: var(--font-inter);
-    font-size: 0.875rem;
-    font-weight: 400;
-    padding: 0.5rem 1rem;
-    border-radius: 8px;
-    transition: all var(--transition-fast);
-    background-color: var(--color-gold);
-    color: #ffffff;
-    border: none;
-    cursor: pointer;
-    box-shadow: var(--shadow-sm);
-
-    &:hover {
-      background-color: var(--color-gold-dark);
-      box-shadow: var(--shadow-md);
-    }
-
-    &:active {
-      transform: scale(0.98);
-    }
-
-    &:disabled {
-      background-color: var(--color-text-muted);
-      cursor: not-allowed;
-      opacity: 0.5;
-    }
-
-    &.aria-button-secondary {
-      background-color: transparent;
-      color: var(--color-gold);
-      border: 1px solid var(--color-divider);
-
-      &:hover {
-        background-color: var(--color-gold-light);
-        opacity: 0.1;
-      }
-    }
-
-    &.aria-button-text {
-      background-color: transparent;
-      color: var(--color-gold);
-      box-shadow: none;
-
-      &:hover {
-        color: var(--color-gold-dark);
-      }
-    }
-  }
-
-  /* Metric Card */
-  .metric-card {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-    border-radius: var(--radius-lg);
-    padding: 1.5rem;
-    box-shadow: var(--shadow-sm);
-    transition: all 300ms ease-in-out;
-    background-color: var(--color-bg-card);
-    border: 1px solid transparent;
-  }
-
-  .metric-label {
-    font-family: var(--font-inter);
-    font-size: 0.875rem;
-    color: var(--color-text-muted);
-  }
-
-  .metric-value {
-    font-family: var(--font-display);
-    font-size: 1.875rem;
-    font-weight: 400;
-    color: var(--color-gold);
-  }
-
-  .metric-subtext {
-    font-family: var(--font-inter);
-    font-size: 0.75rem;
-    color: var(--color-text-muted);
-  }
-
-  /* Section Title */
-  .section-title {
-    font-family: var(--font-display);
-    font-size: 1.5rem;
-    font-weight: 400;
-    margin-bottom: 1.5rem;
-    color: var(--color-text);
-    letter-spacing: 0.06em;
-  }
-
-  /* Input customizado */
-  .aria-input {
-    width: 100%;
-    padding: 0.5rem 1rem;
-    border-radius: 8px;
-    font-family: var(--font-inter);
-    font-size: 0.875rem;
-    background-color: var(--color-bg-card);
-    color: var(--color-text);
     border: 1px solid var(--color-divider);
-    transition: all var(--transition-fast);
-
-    &:focus {
-      outline: none;
-      border-color: var(--color-gold);
-      box-shadow: 0 0 0 3px rgba(201, 169, 110, 0.1);
-    }
-
-    &::placeholder {
-      color: var(--color-text-muted);
-    }
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
   }
 
-  /* Select customizado */
   .aria-select {
-    width: 100%;
-    padding: 0.5rem 1rem;
-    border-radius: 8px;
-    font-family: var(--font-inter);
-    font-size: 0.875rem;
-    background-color: var(--color-bg-card);
+    background-color: var(--color-bg);
     color: var(--color-text);
     border: 1px solid var(--color-divider);
-    transition: all var(--transition-fast);
-    cursor: pointer;
-
-    &:focus {
-      outline: none;
-      border-color: var(--color-gold);
-      box-shadow: 0 0 0 3px rgba(201, 169, 110, 0.1);
-    }
-
-    &::placeholder {
-      color: var(--color-text-muted);
-    }
-
-    &:hover {
-      border-color: var(--color-gold);
-    }
+    border-radius: 4px;
+    padding: 4px 8px;
+    font-size: 0.75rem;
   }
 
-  /* Separator com estilo ArIA */
-  .aria-separator {
-    height: 1px;
-    background-color: var(--color-divider);
+  .aria-select:focus {
+    outline: none;
+    border-color: var(--color-gold);
   }
-
-  /* Sidebar item ativo */
-  .sidebar-item-active {
-    background-color: rgba(201, 169, 110, 0.1);
-    border-left: 3px solid var(--color-gold);
-    color: var(--color-gold);
-
-    &:hover {
-      background-color: rgba(201, 169, 110, 0.15);
-    }
-  }
-
-  /* Infinity symbol decorativo */
-  .infinity-symbol {
-    font-family: var(--font-display);
-    font-size: 1.5rem;
-    color: var(--color-gold);
-    opacity: 0.3;
-    margin: 0 0.5rem;
-  }
-
-  /* Flex center */
-  .flex-center {
-    @apply flex items-center justify-center;
-  }
-
-  /* Grid responsive */
-  .grid-responsive {
-    @apply grid grid-cols-1 gap-6;
-
-    @screen sm {
-      @apply grid-cols-2;
-    }
-
-    @screen md {
-      @apply grid-cols-4;
-    }
-  }
-}
-
-/* ═══════════════════════════════════════════════════════════
-   SCROLLBAR CUSTOMIZADO
-   ═══════════════════════════════════════════════════════════ */
-
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-}
-
-::-webkit-scrollbar-track {
-  background-color: var(--color-bg);
-}
-
-::-webkit-scrollbar-thumb {
-  background-color: var(--color-divider);
-  border-radius: 4px;
-
-  &:hover {
-    background-color: var(--color-gold);
-  }
-}
-
-/* ═══════════════════════════════════════════════════════════
-   UTILITÁRIOS
-   ═══════════════════════════════════════════════════════════ */
-
-.glass {
-  background: rgba(255, 255, 255, 0.7);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-}
-
-.soft-shadow {
-  box-shadow: var(--shadow-sm);
-}
-
-.gradient-gold {
-  background: linear-gradient(135deg, var(--color-gold) 0%, var(--color-gold-light) 100%);
 }
