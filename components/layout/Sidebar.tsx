@@ -28,6 +28,7 @@ export function Sidebar() {
       section: "RECURSOS & ROTINAS",
       items: [
         { label: "Dashboard", href: "/", icon: LayoutDashboard },
+        { label: "Painel", href: "/painel", icon: LayoutDashboard },
         { label: "Agenda", href: "/agenda", icon: Calendar },
         { label: "Pacientes", href: "/pacientes", icon: Users },
         { label: "Protocolos HOF", href: "/protocolos", icon: Sparkles },
