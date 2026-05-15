@@ -9,7 +9,6 @@ import {
   RadialBarChart,
   RadialBar,
   PolarAngleAxis,
-  PolarRadiusAxis,
   ResponsiveContainer,
   XAxis,
   YAxis,

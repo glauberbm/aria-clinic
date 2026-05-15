@@ -4,13 +4,14 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { registerSchema, RegisterInput } from '@/lib/validations/auth';
-import { createSupabaseClient } from '@/lib/supabase/client';
 import { useRouter } from 'next/navigation';
 
 export function RegisterForm() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isSuccess, setIsSuccess] = useState(false);
+  const [registeredEmail, setRegisteredEmail] = useState<string | null>(null);
 
   const {
     register,
@@ -25,45 +26,66 @@ export function RegisterForm() {
     setError(null);
 
     try {
-      const supabase = createSupabaseClient();
-
-      // Sign up with Supabase Auth
-      const { error: signUpError, data: authData } = await supabase.auth.signUp({
-        email: data.email,
-        password: data.password,
-        options: {
-          data: {
-            name: data.name,
-            clinic_id: 'default', // TODO: Get from context or param
-          },
+      // Call our backend API endpoint
+      const response = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
         },
+        body: JSON.stringify(data),
       });
 
-      if (signUpError) {
-        if (signUpError.message.includes('already registered')) {
+      const result = await response.json();
+
+      if (!response.ok) {
+        if (response.status === 409) {
           setError('Este email já está registrado');
+        } else if (result.details) {
+          // Show validation error details
+          const firstError = result.details[0]?.message || result.error;
+          setError(firstError);
         } else {
-          setError(signUpError.message);
+          setError(result.error || 'Erro ao registrar');
         }
         return;
       }
 
-      if (!authData.user) {
-        setError('Erro ao criar usuário');
-        return;
-      }
-
-      // Redirect to login or verification page
-      router.push('/app/auth/login?registered=true');
+      // Success: show confirmation message
+      setRegisteredEmail(data.email);
+      setIsSuccess(true);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erro ao registrar');
+      setError(err instanceof Error ? err.message : 'Erro ao conectar com o servidor');
     } finally {
       setIsLoading(false);
     }
   };
 
+  if (isSuccess && registeredEmail) {
+    return (
+      <div className="space-y-4 text-center">
+        <div className="rounded-lg bg-green-50 p-6">
+          <h3 className="text-lg font-semibold text-green-900 mb-2">
+            Conta criada com sucesso!
+          </h3>
+          <p className="text-sm text-green-700 mb-4">
+            Um email de verificação foi enviado para <strong>{registeredEmail}</strong>
+          </p>
+          <p className="text-sm text-green-600">
+            Clique no link no email para ativar sua conta. O link expira em 24 horas.
+          </p>
+        </div>
+        <button
+          onClick={() => router.push('/auth/login')}
+          className="w-full rounded-md bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
+        >
+          Ir para Login
+        </button>
+      </div>
+    );
+  }
+
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 w-full max-w-sm">
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
       {error && (
         <div className="rounded-md bg-red-50 p-4">
           <p className="text-sm font-medium text-red-800">{error}</p>
@@ -71,20 +93,20 @@ export function RegisterForm() {
       )}
 
       <div>
-        <label htmlFor="name" className="block text-sm font-medium text-gray-700">
+        <label htmlFor="full_name" className="block text-sm font-medium text-gray-700">
           Nome completo
         </label>
         <input
-          {...register('name')}
-          id="name"
+          {...register('full_name')}
+          id="full_name"
           type="text"
           autoComplete="name"
-          className="aria-select mt-1"
-          placeholder="Seu nome"
+          className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 sm:text-sm"
+          placeholder="Seu nome completo"
           disabled={isLoading}
         />
-        {errors.name && (
-          <p className="mt-1 text-sm text-red-600">{errors.name.message}</p>
+        {errors.full_name && (
+          <p className="mt-1 text-sm text-red-600">{errors.full_name.message}</p>
         )}
       </div>
 
@@ -97,7 +119,7 @@ export function RegisterForm() {
           id="email"
           type="email"
           autoComplete="email"
-          className="aria-select mt-1"
+          className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 sm:text-sm"
           placeholder="seu@email.com"
           disabled={isLoading}
         />
@@ -115,8 +137,8 @@ export function RegisterForm() {
           id="password"
           type="password"
           autoComplete="new-password"
-          className="aria-select mt-1"
-          placeholder="Mínimo 8 caracteres"
+          className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 sm:text-sm"
+          placeholder="Mínimo 5 caracteres com 1 maiúscula, 1 número e 1 caractere especial"
           disabled={isLoading}
         />
         {errors.password && (
@@ -125,29 +147,46 @@ export function RegisterForm() {
       </div>
 
       <div>
-        <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">
-          Confirme a senha
+        <label htmlFor="phone_number" className="block text-sm font-medium text-gray-700">
+          Telefone <span className="text-gray-500">(opcional)</span>
         </label>
         <input
-          {...register('confirmPassword')}
-          id="confirmPassword"
-          type="password"
-          autoComplete="new-password"
-          className="aria-select mt-1"
-          placeholder="Confirme sua senha"
+          {...register('phone_number')}
+          id="phone_number"
+          type="tel"
+          autoComplete="tel"
+          className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 sm:text-sm"
+          placeholder="+55 11 99999-9999"
           disabled={isLoading}
         />
-        {errors.confirmPassword && (
-          <p className="mt-1 text-sm text-red-600">{errors.confirmPassword.message}</p>
+        {errors.phone_number && (
+          <p className="mt-1 text-sm text-red-600">{errors.phone_number.message}</p>
+        )}
+      </div>
+
+      <div>
+        <label htmlFor="birth_date" className="block text-sm font-medium text-gray-700">
+          Data de nascimento <span className="text-gray-500">(opcional)</span>
+        </label>
+        <input
+          {...register('birth_date')}
+          id="birth_date"
+          type="date"
+          autoComplete="bday"
+          className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 sm:text-sm"
+          disabled={isLoading}
+        />
+        {errors.birth_date && (
+          <p className="mt-1 text-sm text-red-600">{errors.birth_date.message}</p>
         )}
       </div>
 
       <button
         type="submit"
         disabled={isLoading}
-        className="w-full rounded-md bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 disabled:opacity-50"
+        className="w-full rounded-md bg-blue-600 px-4 py-2 text-white font-medium hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
       >
-        {isLoading ? 'Registrando...' : 'Registrar'}
+        {isLoading ? 'Registrando...' : 'Criar Conta'}
       </button>
     </form>
   );

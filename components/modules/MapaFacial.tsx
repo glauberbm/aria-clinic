@@ -1,6 +1,6 @@
 "use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -11,7 +11,7 @@ import {
   RotateCcw,
   X,
 } from "lucide-react";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef } from "react";
 
 interface FacialPoint {
   id: number;
@@ -354,7 +354,7 @@ export function MapaFacial({ onClose }: MapaFacialProps) {
                       </Button>
                     </div>
 
-                    {points.find((p) => p.id === selectedPoint)?.quantity! > 0 && (
+                    {(points.find((p) => p.id === selectedPoint)?.quantity ?? 0) > 0 && (
                       <button
                         onClick={() =>
                           handleDeletePoint(selectedPoint)

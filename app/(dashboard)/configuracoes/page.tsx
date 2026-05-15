@@ -5,9 +5,9 @@ import { Shell } from '@/components/layout/Shell';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Input } from '@/components/ui/input';
-import { Check, Plus, Plug } from 'lucide-react';
+import { Plus, Plug } from 'lucide-react';
 
 export default function ConfiguracoesPage() {
   const [activeTab, setActiveTab] = useState('clinica');

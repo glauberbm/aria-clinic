@@ -14,11 +14,8 @@ import {
 import {
   Calendar,
   User,
-  Clock,
   AlertCircle,
-  MessageSquare,
   DollarSign,
-  Phone,
   Zap,
   Trash2,
   Check,

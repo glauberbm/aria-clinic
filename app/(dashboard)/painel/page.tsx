@@ -3,7 +3,7 @@
 import { Shell } from "@/components/layout/Shell";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { MessageCircle, Eye } from "lucide-react";
+import { MessageCircle } from "lucide-react";
 
 // Mock data
 const protocolsData = {

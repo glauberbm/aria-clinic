@@ -85,17 +85,17 @@ export default function AuditLogPage() {
         setLoading(false);
       }
     },
-    [user?.session?.access_token, limit, startDate, endDate, router]
+    [user, limit, startDate, endDate, router]
   );
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps, react-hooks/set-state-in-effect
   useEffect(() => {
     if (!user) {
       return;
     }
 
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     void fetchLogs(1);
-  }, [user]);
+  }, [user, limit, startDate, endDate, router, fetchLogs]);
 
   const handleFilterChange = () => {
     setPage(1);
