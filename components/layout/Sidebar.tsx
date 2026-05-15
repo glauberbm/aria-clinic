@@ -14,6 +14,7 @@ import {
   ScrollText,
   UserCheck,
   Settings,
+  TrendingUp,
 } from "lucide-react";
 
 export function Sidebar() {
@@ -40,6 +41,7 @@ export function Sidebar() {
       section: "CLÍNICA",
       items: [
         { label: "Financeiro", href: "/financeiro", icon: DollarSign },
+        { label: "Precificação", href: "/precificacao", icon: TrendingUp },
         { label: "CRC", href: "/crc", icon: Bell },
         { label: "Contratos", href: "/contratos", icon: ScrollText },
         { label: "Profissionais", href: "/profissionais", icon: UserCheck },
