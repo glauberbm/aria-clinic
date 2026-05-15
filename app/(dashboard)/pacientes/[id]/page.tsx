@@ -1,12 +1,21 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { useSupabaseAuth } from '@/lib/supabase/auth-context';
 import { createClient } from '@supabase/supabase-js';
 import { Shell } from '@/components/layout/Shell';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from '@/components/ui/dialog';
 import { Edit2, Archive, Printer, Lock, AlertCircle, Calendar, Pill, MessageSquare, Loader } from 'lucide-react';
 
 export const dynamic = 'force-dynamic';
@@ -93,6 +102,7 @@ const calculateAge = (dob: string): number => {
 };
 
 export default function PatientDetailPage({ params }: { params: { id: string } }) {
+  const router = useRouter();
   const { user } = useSupabaseAuth();
   const [patient, setPatient] = useState<Patient | null>(null);
   const [medicalHistory, setMedicalHistory] = useState<MedicalRecord[]>([]);
@@ -103,6 +113,8 @@ export default function PatientDetailPage({ params }: { params: { id: string } }
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showAuditLog, setShowAuditLog] = useState(false);
+  const [showArchiveDialog, setShowArchiveDialog] = useState(false);
+  const [isArchiving, setIsArchiving] = useState(false);
 
   // Fetch patient and related data from Supabase
   useEffect(() => {
@@ -187,6 +199,40 @@ export default function PatientDetailPage({ params }: { params: { id: string } }
     fetchPatientData();
   }, [user?.id, user?.session?.access_token, params.id]);
 
+  // Auth guard: redirect to login if not authenticated
+  useEffect(() => {
+    if (!isLoading && !user?.id) {
+      router.push('/login');
+    }
+  }, [user?.id, isLoading, router]);
+
+  const handleEdit = () => {
+    router.push(`/pacientes/${params.id}/editar`);
+  };
+
+  const handleArchive = async () => {
+    if (!patient) return;
+
+    setIsArchiving(true);
+    try {
+      const { error: updateError } = await supabase
+        .from('patients')
+        .update({ status: 'archived', updated_at: new Date().toISOString() })
+        .eq('id', patient.id);
+
+      if (updateError) throw updateError;
+
+      setPatient({ ...patient, status: 'archived' });
+      setShowArchiveDialog(false);
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Erro ao arquivar paciente';
+      setError(errorMessage);
+      console.error('Archive patient error:', err);
+    } finally {
+      setIsArchiving(false);
+    }
+  };
+
   if (isLoading) {
     return (
       <Shell>
@@ -230,6 +276,7 @@ export default function PatientDetailPage({ params }: { params: { id: string } }
         </div>
         <div className="flex gap-2">
           <Button
+            onClick={handleEdit}
             className="font-body text-sm font-normal px-4 py-2 flex items-center gap-2"
             style={{ backgroundColor: 'var(--color-gold)', color: 'white' }}
           >
@@ -237,9 +284,11 @@ export default function PatientDetailPage({ params }: { params: { id: string } }
             Editar
           </Button>
           <Button
+            onClick={() => setShowArchiveDialog(true)}
             variant="outline"
             className="font-body text-sm font-normal px-4 py-2"
             style={{ borderColor: 'var(--color-divider)', color: 'var(--color-text)' }}
+            disabled={isArchiving}
           >
             <Archive size={16} className="mr-2" />
             Arquivar
@@ -336,8 +385,8 @@ export default function PatientDetailPage({ params }: { params: { id: string } }
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
-              {allergies.map((allergy: Allergy, index: number) => (
-                <div key={index} className="flex items-start justify-between pb-3 border-b" style={{ borderColor: 'var(--color-divider)' }}>
+              {allergies.map((allergy: Allergy) => (
+                <div key={allergy.id} className="flex items-start justify-between pb-3 border-b" style={{ borderColor: 'var(--color-divider)' }}>
                   <div>
                     <p className="font-body text-sm" style={{ color: 'var(--color-text)' }}>{allergy.medication_name}</p>
                     <p className="font-body text-xs" style={{ color: 'var(--color-text-muted)' }}>{allergy.notes || 'Sem observações'}</p>
@@ -363,8 +412,8 @@ export default function PatientDetailPage({ params }: { params: { id: string } }
         <CardContent>
           <div className="space-y-3">
             {medications.length > 0 ? (
-              medications.map((med: Medication, index: number) => (
-                <div key={index} className="flex items-start justify-between pb-3 border-b" style={{ borderColor: 'var(--color-divider)' }}>
+              medications.map((med: Medication) => (
+                <div key={med.id} className="flex items-start justify-between pb-3 border-b" style={{ borderColor: 'var(--color-divider)' }}>
                   <div>
                     <p className="font-body text-sm" style={{ color: 'var(--color-text)' }}>{med.medication_name}</p>
                     <p className="font-body text-xs" style={{ color: 'var(--color-text-muted)' }}>
@@ -394,8 +443,8 @@ export default function PatientDetailPage({ params }: { params: { id: string } }
         <CardContent>
           <div className="space-y-4">
             {medicalHistory.length > 0 ? (
-              medicalHistory.map((entry: MedicalRecord, index: number) => (
-                <div key={index} className="pb-4 border-b" style={{ borderColor: 'var(--color-divider)' }}>
+              medicalHistory.map((entry: MedicalRecord) => (
+                <div key={entry.id} className="pb-4 border-b" style={{ borderColor: 'var(--color-divider)' }}>
                   <div className="flex items-start justify-between mb-2">
                     <div>
                       <p className="font-body text-sm font-medium" style={{ color: 'var(--color-text)' }}>
@@ -432,8 +481,8 @@ export default function PatientDetailPage({ params }: { params: { id: string } }
         <CardContent>
           <div className="space-y-3">
             {communications.length > 0 ? (
-              communications.map((comm: Communication, index: number) => (
-                <div key={index} className="flex items-start justify-between pb-3 border-b" style={{ borderColor: 'var(--color-divider)' }}>
+              communications.map((comm: Communication) => (
+                <div key={comm.id} className="flex items-start justify-between pb-3 border-b" style={{ borderColor: 'var(--color-divider)' }}>
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-1">
                       <p className="font-body text-sm" style={{ color: 'var(--color-text)' }}>{comm.message}</p>
@@ -477,8 +526,8 @@ export default function PatientDetailPage({ params }: { params: { id: string } }
           <CardContent>
             <div className="space-y-3">
               {auditLog.length > 0 ? (
-                auditLog.map((log: AuditLog, index: number) => (
-                  <div key={index} className="flex items-start justify-between pb-3 border-b" style={{ borderColor: 'var(--color-divider)' }}>
+                auditLog.map((log: AuditLog) => (
+                  <div key={log.id} className="flex items-start justify-between pb-3 border-b" style={{ borderColor: 'var(--color-divider)' }}>
                     <div className="flex-1">
                       <p className="font-body text-sm" style={{ color: 'var(--color-text)' }}>{log.action}</p>
                       <p className="font-body text-xs" style={{ color: 'var(--color-text-muted)' }}>
@@ -497,6 +546,33 @@ export default function PatientDetailPage({ params }: { params: { id: string } }
           </CardContent>
         )}
       </Card>
+
+      {/* Archive Confirmation Dialog */}
+      <Dialog open={showArchiveDialog} onOpenChange={setShowArchiveDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Arquivar Paciente</DialogTitle>
+            <DialogDescription>
+              Tem certeza que deseja arquivar o paciente <strong>{patient?.name}</strong>? Esta ação não pode ser desfeita facilmente.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setShowArchiveDialog(false)}
+            >
+              Cancelar
+            </Button>
+            <Button
+              onClick={handleArchive}
+              disabled={isArchiving}
+              style={{ backgroundColor: '#D32F2F', color: 'white' }}
+            >
+              {isArchiving ? 'Arquivando...' : 'Arquivar'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </Shell>
   );
 }
