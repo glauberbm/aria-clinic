@@ -26,7 +26,7 @@ export async function getUserRole(userId: string, clinicId: string): Promise<str
       return null;
     }
 
-    const roleData = data as { roles: { name: string }[] | null };
+    const roleData = data as { roles: Array<{ name: string }> | null };
     const roles = Array.isArray(roleData.roles) ? roleData.roles : [];
     return roles[0]?.name ?? null;
   } catch (error) {
@@ -67,9 +67,9 @@ export async function hasPermission(
       return false;
     }
 
-    const roleData = data as { roles: { permissions: string[] }[] | null };
-    const roles = Array.isArray(roleData.roles) ? roleData.roles : [];
-    const permissions = roles[0]?.permissions ?? [];
+    const roleData = data as { roles: Array<{ permissions: string[] }> | null };
+    const rolesArray = Array.isArray(roleData.roles) ? roleData.roles : [];
+    const permissions = rolesArray[0]?.permissions ?? [];
 
     return Array.isArray(permissions) && permissions.includes(permission);
   } catch (error) {
@@ -97,11 +97,11 @@ export async function getUserRoles(userId: string): Promise<Array<{ clinicId: st
 
     return data
       .map((item) => {
-        const itemData = item as { clinic_id: string; roles: { name: string }[] | null };
-        const roles = Array.isArray(itemData.roles) ? itemData.roles : [];
+        const itemData = item as { clinic_id: string; roles: Array<{ name: string }> | null };
+        const rolesArray = Array.isArray(itemData.roles) ? itemData.roles : [];
         return {
           clinicId: itemData.clinic_id,
-          role: roles[0]?.name ?? 'unknown',
+          role: rolesArray[0]?.name ?? 'unknown',
         };
       })
       .filter((item) => item.role !== 'unknown');
