@@ -1,6 +1,37 @@
 import { createClient } from '@supabase/supabase-js';
 import * as jwt from 'jsonwebtoken';
 
+// Type definitions for test data
+interface PatientTestData {
+  name?: string;
+  email?: string;
+  phone?: string;
+  dateOfBirth?: string;
+  cpf?: string;
+  password?: string;
+  confirmPassword?: string;
+}
+
+interface InsuranceTestData {
+  provider?: string;
+  policyNumber?: string;
+  coverage?: string[];
+}
+
+interface MedicalHistoryTestData {
+  type?: 'condition' | 'allergy' | 'medication';
+  description?: string;
+  recordedAt?: string;
+}
+
+interface PrivacyEnforcementData {
+  cpf?: string;
+  medicalHistory?: Record<string, unknown>;
+  insuranceInfo?: Record<string, unknown>;
+  avatar_url?: string;
+  [key: string]: unknown;
+}
+
 /**
  * Create a mock Supabase client for testing
  */
@@ -55,7 +86,7 @@ export async function mockSupabaseAuth(userId: string, email: string) {
 /**
  * Create test data for patient registration
  */
-export function createPatientTestData(overrides?: Partial<any>) {
+export function createPatientTestData(overrides?: Partial<PatientTestData>) {
   return {
     name: 'Test Patient',
     email: `test-${Date.now()}@example.com`,
@@ -71,7 +102,7 @@ export function createPatientTestData(overrides?: Partial<any>) {
 /**
  * Validate patient registration request
  */
-export function validatePatientRegistration(data: any) {
+export function validatePatientRegistration(data: PatientTestData) {
   const errors: Record<string, string> = {};
 
   if (!data.name?.trim()) errors.name = 'Name is required';
@@ -108,7 +139,7 @@ export function mockRLSPolicy(userId: string, requestingUserId: string) {
 /**
  * Create mock insurance data
  */
-export function createInsuranceTestData(overrides?: Partial<any>) {
+export function createInsuranceTestData(overrides?: Partial<InsuranceTestData>) {
   return {
     provider: 'Unimed',
     policyNumber: `UNM-${Date.now()}`,
@@ -122,7 +153,7 @@ export function createInsuranceTestData(overrides?: Partial<any>) {
  */
 export function createMedicalHistoryTestData(
   type: 'condition' | 'allergy' | 'medication' = 'condition',
-  overrides?: Partial<any>
+  overrides?: Partial<MedicalHistoryTestData>
 ) {
   return {
     type,
@@ -175,7 +206,7 @@ export function createMockFile(
 /**
  * Assert privacy enforcement in test
  */
-export function assertPrivacyEnforced(userAData: any, userBData: any) {
+export function assertPrivacyEnforced(userAData: PrivacyEnforcementData, userBData: PrivacyEnforcementData) {
   // User B should not have access to User A's private fields
   const privateFields = [
     'cpf',

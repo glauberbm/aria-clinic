@@ -1,7 +1,7 @@
 "use client";
 
 import { Shell } from "@/components/layout/Shell";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Edit2, Trash2 } from "lucide-react";
 import { useState } from "react";

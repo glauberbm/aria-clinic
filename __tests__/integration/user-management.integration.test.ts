@@ -6,28 +6,19 @@
 
 import { createClient } from '@supabase/supabase-js';
 
-// Skip these tests in CI without a test database
-const skipIntegration = !process.env.SUPABASE_TEST_DB_URL;
-
 describe.skip('User Management Integration Tests', () => {
-  let supabase: ReturnType<typeof createClient>;
-
   beforeAll(() => {
     // Use test database URL if available
     const supabaseUrl = process.env.SUPABASE_TEST_DB_URL || '';
     const supabaseKey = process.env.SUPABASE_TEST_DB_KEY || '';
 
-    supabase = createClient(supabaseUrl, supabaseKey);
+    createClient(supabaseUrl, supabaseKey);
   });
 
   describe('RLS Policies (USER-003)', () => {
     it('should enforce RLS on user_roles table', async () => {
       // This test verifies that RLS policies are properly enforced
       // Setup: Create a clinic, user, and role assignment
-      const clinicData = {
-        name: 'Test Clinic',
-        email: 'test@clinic.com',
-      };
 
       // Note: Actual implementation would require proper Supabase setup
       // with RLS policies enabled

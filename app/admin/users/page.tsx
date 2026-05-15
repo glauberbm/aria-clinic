@@ -80,17 +80,17 @@ export default function AdminUsersPage() {
         setLoading(false);
       }
     },
-    [user?.session?.access_token, limit, router]
+    [user, limit, router]
   );
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps, react-hooks/set-state-in-effect
   useEffect(() => {
     if (!user) {
       return;
     }
 
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     void fetchUsers(1, '');
-  }, [user]);
+  }, [user, limit, router, fetchUsers]);
 
   const handleSearch = (query: string) => {
     setSearch(query);

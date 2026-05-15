@@ -4,7 +4,6 @@ import { AuthProvider } from '@/lib/supabase/auth-context';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { useSupabaseAuth } from '@/lib/supabase/auth-context';
-import { hasRole } from '@/lib/auth/permissions';
 
 function AdminLayoutContent({ children }: { children: React.ReactNode }) {
   const router = useRouter();
@@ -32,9 +31,27 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
       }
 
       const profile = await response.json();
-      const admin = await hasRole(user.id, profile.clinic_id, 'admin');
 
-      if (!admin) {
+      // Check admin role via API (server-side only)
+      const roleCheckResponse = await fetch('/api/auth/check-role', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          userId: user.id,
+          clinicId: profile.clinic_id,
+          roleName: 'admin',
+        }),
+      });
+
+      if (!roleCheckResponse.ok) {
+        router.push('/app/dashboard');
+        return;
+      }
+
+      const roleCheckData = await roleCheckResponse.json();
+      if (!roleCheckData.hasRole) {
         router.push('/app/dashboard');
         return;
       }

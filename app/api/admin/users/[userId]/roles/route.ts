@@ -81,7 +81,7 @@ export async function PUT(
     const clinicId = currentUserData.clinic_id;
 
     // Check if current user is admin
-    const isAdmin = await hasRole(currentUser.id, clinicId, 'admin');
+    const isAdmin = await hasRole(supabaseAdmin, currentUser.id, clinicId, 'admin');
 
     if (!isAdmin) {
       return NextResponse.json(
@@ -254,7 +254,7 @@ export async function DELETE(
     const clinicId = currentUserData.clinic_id;
 
     // Check if current user is admin
-    const isAdmin = await hasRole(currentUser.id, clinicId, 'admin');
+    const isAdmin = await hasRole(supabaseAdmin, currentUser.id, clinicId, 'admin');
 
     if (!isAdmin) {
       return NextResponse.json(
