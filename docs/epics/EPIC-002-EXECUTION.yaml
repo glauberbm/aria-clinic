@@ -1,0 +1,264 @@
+---
+epic_id: EPIC-002
+epic_title: Patient Management & Health Records
+execution_mode: waves
+execution_date: 2026-05-15
+execution_owner: "@pm (Morgan)"
+
+wave_structure:
+  total_waves: 4
+  total_story_points: 37
+  sequential_duration: "~3 weeks"
+  parallel_duration: "~2 weeks"
+  efficiency_gain: "33% faster"
+
+waves:
+  wave_1:
+    title: "Foundation - Patient Onboarding"
+    duration_days: 5
+    story_points: 8
+    parallelization: "SEQUENTIAL (root blocker)"
+    stories:
+      - id: USER-006
+        title: "Patient Registration & Profile Setup"
+        points: 8
+        priority: HIGH
+        status: Draft
+        dependencies: "USER-001 ✅, USER-004 ✅"
+        blocking_for: "Wave 2 (USER-007, USER-008)"
+    description: |
+      Wave 1 establishes the core patient registration flow.
+      Critical: RLS policies must be correct here, as all subsequent stories depend on them.
+    risks:
+      - Email verification configuration
+      - Supabase RLS policy syntax
+      - Admin notification queue setup
+    qate_gates:
+      - "RLS policies tested and verified"
+      - "Email integration confirmed"
+      - "Patient role assignment working"
+      - "Admin dashboard showing new registrations"
+
+  wave_2:
+    title: "Core Features - Records & Appointments (Parallel)"
+    duration_days: 6
+    story_points: 16
+    parallelization: "PARALLEL (both depend only on Wave 1)"
+    stories:
+      - id: USER-007
+        title: "Medical Records Management"
+        points: 8
+        priority: HIGH
+        status: Draft
+        dependencies: "USER-006 ✅ (from Wave 1)"
+        team: "@dev (parallel track A)"
+        blocking_for: "Wave 3 (USER-009)"
+
+      - id: USER-008
+        title: "Appointment Scheduling"
+        points: 8
+        priority: HIGH
+        status: Draft
+        dependencies: "USER-006 ✅ (from Wave 1)"
+        team: "@dev (parallel track B)"
+        blocking_for: "Wave 4 (USER-010)"
+
+    description: |
+      Wave 2 runs USER-007 and USER-008 in parallel.
+      Both depend only on USER-006 (Wave 1), enabling true parallelization.
+      Estimate: 6 days vs 12 if sequential = 50% time saving on this wave.
+
+    risks:
+      - Calendar library integration (appointments)
+      - File upload handling (medical records)
+      - Concurrent Supabase schema operations
+      - Storage quota for medical documents
+
+    qate_gates:
+      - "Medical records CRUD fully functional"
+      - "Appointment calendar UI responsive"
+      - "Email reminders queued correctly"
+      - "RLS prevents unauthorized access (both features)"
+
+  wave_3:
+    title: "Advanced Features - Prescriptions"
+    duration_days: 4
+    story_points: 8
+    parallelization: "SEQUENTIAL (depends on Wave 2: USER-006 + USER-007)"
+    stories:
+      - id: USER-009
+        title: "Prescription Management & E-Prescription"
+        points: 8
+        priority: HIGH
+        status: Draft
+        dependencies: "USER-006 ✅, USER-007 ✅ (from Waves 1-2)"
+        blocking_for: "Wave 4 (USER-010)"
+
+    description: |
+      Wave 3 implements e-prescription system.
+      Must wait for Wave 2 completion (USER-007) to access medical records context.
+      Includes medication interaction checking and PDF export.
+
+    risks:
+      - Medication database/API integration
+      - PDF generation library (signature overlay)
+      - Pharmacy system integration
+      - Digital signature verification
+
+    qate_gates:
+      - "E-prescription creation and download working"
+      - "Medication interactions checked"
+      - "Digital signatures validated"
+      - "RLS prevents patient access to other patients' prescriptions"
+
+  wave_4:
+    title: "Integration - Patient Dashboard"
+    duration_days: 3
+    story_points: 5
+    parallelization: "SEQUENTIAL (aggregation story, depends on all Wave 3)"
+    stories:
+      - id: USER-010
+        title: "Patient Dashboard & Health Overview"
+        points: 5
+        priority: MEDIUM
+        status: Draft
+        dependencies: "USER-006 ✅, USER-007 ✅, USER-008 ✅, USER-009 ✅"
+        blocking_for: "EPIC-002 COMPLETE"
+
+    description: |
+      Wave 4 aggregates all Wave 1-3 features into unified patient dashboard.
+      Final integration story - connects appointments, records, prescriptions, health metrics.
+      Includes real-time notifications and customizable widgets.
+
+    risks:
+      - Dashboard performance at scale (aggregate queries)
+      - Caching strategy for frequently accessed data
+      - Real-time notification reliability
+      - Widget customization UI complexity
+
+    qate_gates:
+      - "Dashboard loads in < 2s (performance)"
+      - "All widgets fetch correct aggregated data"
+      - "Real-time notifications working"
+      - "Mobile responsive design validated"
+
+timeline:
+  wave_1_start: "Week 1 (Mon 2026-05-20)"
+  wave_1_end: "Fri 2026-05-24"
+
+  wave_2_start: "Mon 2026-05-27 (parallel tracks)"
+  wave_2_end: "Sat 2026-06-02"
+
+  wave_3_start: "Mon 2026-06-03"
+  wave_3_end: "Thu 2026-06-06"
+
+  wave_4_start: "Mon 2026-06-09"
+  wave_4_end: "Wed 2026-06-11"
+
+  epic_complete: "2026-06-11 (EOD)"
+
+team_assignments:
+  wave_1:
+    create: "@sm (River) - *draft USER-006"
+    validate: "@po (Pax) - validate story"
+    implement: "@dev (Dex) - *develop USER-006"
+    qa: "@qa (Quinn) - QA gate"
+
+  wave_2:
+    create: "@sm (River) - *draft USER-007, USER-008"
+    validate: "@po (Pax) - validate both stories"
+    implement_track_a: "@dev (Dex) - *develop USER-007"
+    implement_track_b: "@dev (Dex) or another developer - *develop USER-008"
+    qa: "@qa (Quinn) - QA gate (parallel)"
+
+  wave_3:
+    create: "@sm (River) - *draft USER-009"
+    validate: "@po (Pax) - validate story"
+    implement: "@dev (Dex) - *develop USER-009"
+    qa: "@qa (Quinn) - QA gate"
+
+  wave_4:
+    create: "@sm (River) - *draft USER-010"
+    validate: "@po (Pax) - validate story"
+    implement: "@dev (Dex) - *develop USER-010"
+    qa: "@qa (Quinn) - QA gate"
+
+critical_path:
+  sequence: "USER-006 → USER-007 + USER-008 (parallel) → USER-009 → USER-010"
+  blocking_stories: ["USER-006", "USER-009"]
+  parallel_opportunities: ["USER-007 & USER-008"]
+
+infrastructure_dependencies:
+  supabase:
+    - RLS policies for all 5 stories
+    - Email trigger functions (USER-006, USER-008, USER-009)
+    - Storage buckets for medical records and prescriptions
+    - Migrations for 5 new tables
+
+  external_apis:
+    - Email service (SendGrid/Resend) - Wave 1
+    - Calendar service (optional, can use frontend library) - Wave 2
+    - Medication database (RxNorm or similar) - Wave 3
+    - PDF generation (jsPDF + signature library) - Wave 3
+
+  frontend_components:
+    - Patient registration form - Wave 1
+    - Medical records manager - Wave 2
+    - Appointment calendar - Wave 2
+    - Prescription creator/viewer - Wave 3
+    - Dashboard aggregation - Wave 4
+
+risks_and_mitigations:
+  high_priority:
+    - risk: "RLS policy errors cascade to all waves"
+      mitigation: "Extra review time in Wave 1, use Supabase RLS testing tools"
+      owner: "@architect (Aria)"
+
+    - risk: "Wave 2 parallelization requires careful state management"
+      mitigation: "Separate database migrations, coordinate Supabase schema changes"
+      owner: "@data-engineer (Dara)"
+
+    - risk: "E-prescription complexity (medication interactions, PDF signatures)"
+      mitigation: "Wave 3 includes research phase, consider external pharmacy API"
+      owner: "@pm (Morgan)"
+
+  medium_priority:
+    - risk: "Dashboard performance with 4 data sources"
+      mitigation: "Implement caching, query optimization in Wave 3 research"
+      owner: "@architect (Aria)"
+
+    - risk: "Email delivery during peak registration (Wave 1)"
+      mitigation: "Queue-based email with retries, load testing"
+      owner: "@dev (Dex)"
+
+quality_gates:
+  pre_wave_1: "USER-001 production validation ✅"
+  post_wave_1: "RLS security audit, email integration test"
+  post_wave_2: "Concurrent access testing, calendar responsiveness"
+  post_wave_3: "E-prescription security, medication API integration"
+  post_wave_4: "Dashboard performance benchmark, full regression test"
+
+success_criteria:
+  - All 5 stories marked "Done" with QA approval
+  - All acceptance criteria met for each story
+  - CodeRabbit review passing (0 CRITICAL issues)
+  - User acceptance testing sign-off from clinic stakeholders
+  - Performance benchmarks met (dashboard < 2s load, API < 200ms)
+  - Security audit passed (RLS, e-prescription signatures, data encryption)
+
+next_steps:
+  immediate:
+    - "@sm activates to create USER-006 story (Wave 1 foundation)"
+    - "User confirms timeline and resource availability"
+
+  post_wave_1:
+    - "@sm creates USER-007 and USER-008 (Wave 2 parallel stories)"
+    - "DevOps confirms staging environment ready for parallel deploys"
+
+  post_wave_2:
+    - "@sm creates USER-009 (Wave 3)"
+    - "Medication API integration verified"
+
+  post_wave_3:
+    - "@sm creates USER-010 (Wave 4)"
+    - "Final UI/UX review before dashboard launch"
