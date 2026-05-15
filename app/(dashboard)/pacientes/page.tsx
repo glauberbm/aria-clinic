@@ -1,380 +1,215 @@
-"use client";
+'use client';
 
-import { Shell } from "@/components/layout/Shell";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import {
-  Search,
-  MessageCircle,
-  Edit,
-  Eye,
-  ChevronLeft,
-  ChevronRight,
-} from "lucide-react";
-import { useState } from "react";
-import Link from "next/link";
+import { useState } from 'react';
+import { Shell } from '@/components/layout/Shell';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Search, Plus, ChevronRight } from 'lucide-react';
 
 // Mock data
-const mockPatients = [
+const mockPacientes = [
   {
     id: 1,
-    name: "Alessandra Costa",
-    age: 32,
-    whatsapp: "(11) 99901-2345",
-    status: "ATIVA",
-    lastProtocol: "Botox + Preenchimento",
-    nextAppointment: "2026-05-21 14:00",
-    initials: "AC",
+    nome: 'Maria Silva',
+    email: 'maria@example.com',
+    telefone: '(82) 99999-1111',
+    dataNascimento: '1985-03-15',
+    status: 'Ativo',
+    ultimaConsulta: '2026-05-10',
   },
   {
     id: 2,
-    name: "Bruna Rugue",
-    age: 28,
-    whatsapp: "(11) 99902-3456",
-    status: "ATIVA",
-    lastProtocol: "Preenchimento Labial",
-    nextAppointment: "2026-05-22 10:30",
-    initials: "BR",
+    nome: 'João Santos',
+    email: 'joao@example.com',
+    telefone: '(82) 99999-2222',
+    dataNascimento: '1990-07-22',
+    status: 'Ativo',
+    ultimaConsulta: '2026-05-08',
   },
   {
     id: 3,
-    name: "Carolina Silva",
-    age: 45,
-    whatsapp: "(11) 99903-4567",
-    status: "INATIVA",
-    lastProtocol: "Limpeza Profunda",
-    nextAppointment: "—",
-    initials: "CS",
+    nome: 'Ana Costa',
+    email: 'ana@example.com',
+    telefone: '(82) 99999-3333',
+    dataNascimento: '1988-11-30',
+    status: 'Inativo',
+    ultimaConsulta: '2026-03-15',
   },
   {
     id: 4,
-    name: "Diana Santos",
-    age: 29,
-    whatsapp: "(11) 99904-5678",
-    status: "ATIVA",
-    lastProtocol: "Botox",
-    nextAppointment: "2026-05-23 15:45",
-    initials: "DS",
+    nome: 'Carlos Oliveira',
+    email: 'carlos@example.com',
+    telefone: '(82) 99999-4444',
+    dataNascimento: '1992-01-10',
+    status: 'Ativo',
+    ultimaConsulta: '2026-05-12',
   },
   {
     id: 5,
-    name: "Erica Mendes",
-    age: 38,
-    whatsapp: "(11) 99905-6789",
-    status: "ATIVA",
-    lastProtocol: "Preenchimento",
-    nextAppointment: "2026-05-24 09:15",
-    initials: "EM",
+    nome: 'Beatriz Lima',
+    email: 'beatriz@example.com',
+    telefone: '(82) 99999-5555',
+    dataNascimento: '1987-06-05',
+    status: 'Ativo',
+    ultimaConsulta: '2026-05-14',
   },
   {
     id: 6,
-    name: "Fernanda Oliveira",
-    age: 52,
-    whatsapp: "(11) 99906-7890",
-    status: "ATIVA",
-    lastProtocol: "Bioestimulador",
-    nextAppointment: "2026-05-25 11:00",
-    initials: "FO",
-  },
-  {
-    id: 7,
-    name: "Gabriela Rocha",
-    age: 35,
-    whatsapp: "(11) 99907-8901",
-    status: "INATIVA",
-    lastProtocol: "Hidratação Facial",
-    nextAppointment: "—",
-    initials: "GR",
-  },
-  {
-    id: 8,
-    name: "Helena Marques",
-    age: 41,
-    whatsapp: "(11) 99908-9012",
-    status: "ATIVA",
-    lastProtocol: "Toxina + Preenchimento",
-    nextAppointment: "2026-05-26 13:30",
-    initials: "HM",
+    nome: 'Fernando Rocha',
+    email: 'fernando@example.com',
+    telefone: '(82) 99999-6666',
+    dataNascimento: '1995-09-18',
+    status: 'Ativo',
+    ultimaConsulta: '2026-05-11',
   },
 ];
 
 export default function PacientesPage() {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 8;
+  const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState('todos');
 
-  const filteredPatients = mockPatients.filter((patient) =>
-    patient.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
-  const totalPages = Math.ceil(filteredPatients.length / itemsPerPage);
-  const startIdx = (currentPage - 1) * itemsPerPage;
-  const paginatedPatients = filteredPatients.slice(
-    startIdx,
-    startIdx + itemsPerPage
-  );
-
-  const getStatusBadge = (status: string) => {
-    return status === "ATIVA"
-      ? {
-          bg: "#c8e6c9",
-          text: "#2e7d32",
-          label: "ATIVA",
-        }
-      : {
-          bg: "#f0f0f0",
-          text: "#666",
-          label: "INATIVA",
-        };
-  };
+  const filteredPacientes = mockPacientes.filter((p) => {
+    const matchesSearch =
+      p.nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      p.email.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesStatus = statusFilter === 'todos' || p.status.toLowerCase() === statusFilter;
+    return matchesSearch && matchesStatus;
+  });
 
   return (
     <Shell>
-      {/* Header */}
       <div className="mb-8 flex items-center justify-between">
         <div>
           <h1
             className="font-display text-4xl font-normal mb-2"
-            style={{ color: "var(--color-text)", letterSpacing: "0.1em" }}
+            style={{ color: 'var(--color-text)', letterSpacing: '0.1em' }}
           >
             Pacientes
           </h1>
+          <p className="font-body text-sm" style={{ color: 'var(--color-text-muted)' }}>
+            Gestão de pacientes e histórico médico
+          </p>
         </div>
+
         <Button
-          className="font-body text-sm font-normal px-6 py-2"
           style={{
-            backgroundColor: "var(--color-gold)",
-            color: "var(--color-text)",
+            backgroundColor: 'var(--color-gold)',
+            color: 'var(--color-bg)',
           }}
+          className="font-body text-sm font-normal"
         >
-          + Nova Paciente
+          <Plus size={16} className="mr-2" />
+          Novo Paciente
         </Button>
       </div>
 
-      {/* Search Bar */}
-      <Card className="aria-card mb-8">
+      {/* Filtros */}
+      <Card className="aria-card mb-6">
         <CardContent className="pt-6">
-          <div className="relative">
-            <Search
-              size={18}
-              className="absolute left-3 top-1/2 transform -translate-y-1/2"
-              style={{ color: "var(--color-text-muted)" }}
-              strokeWidth={1.5}
-            />
-            <Input
-              type="text"
-              placeholder="Buscar por nome..."
-              value={searchTerm}
-              onChange={(e) => {
-                setSearchTerm(e.target.value);
-                setCurrentPage(1);
-              }}
-              className="pl-10 border-0 bg-transparent font-body text-sm"
-              style={{ color: "var(--color-text)" }}
-            />
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Table */}
-      <Card className="aria-card">
-        <CardContent className="pt-6">
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr style={{ borderBottom: "1px solid var(--color-divider)" }}>
-                  <th
-                    className="text-left py-3 px-4 font-body text-xs font-normal"
-                    style={{ color: "var(--color-text-muted)" }}
-                  >
-                    Nome
-                  </th>
-                  <th
-                    className="text-left py-3 px-4 font-body text-xs font-normal"
-                    style={{ color: "var(--color-text-muted)" }}
-                  >
-                    Idade
-                  </th>
-                  <th
-                    className="text-left py-3 px-4 font-body text-xs font-normal"
-                    style={{ color: "var(--color-text-muted)" }}
-                  >
-                    WhatsApp
-                  </th>
-                  <th
-                    className="text-left py-3 px-4 font-body text-xs font-normal"
-                    style={{ color: "var(--color-text-muted)" }}
-                  >
-                    Status
-                  </th>
-                  <th
-                    className="text-left py-3 px-4 font-body text-xs font-normal"
-                    style={{ color: "var(--color-text-muted)" }}
-                  >
-                    Último Protocolo
-                  </th>
-                  <th
-                    className="text-left py-3 px-4 font-body text-xs font-normal"
-                    style={{ color: "var(--color-text-muted)" }}
-                  >
-                    Próximo Agendamento
-                  </th>
-                  <th
-                    className="text-left py-3 px-4 font-body text-xs font-normal"
-                    style={{ color: "var(--color-text-muted)" }}
-                  >
-                    Ações
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {paginatedPatients.map((patient) => {
-                  const statusStyle = getStatusBadge(patient.status);
-                  return (
-                    <tr
-                      key={patient.id}
-                      style={{ borderBottom: "1px solid var(--color-divider)" }}
-                    >
-                      <td className="py-4 px-4 font-body text-sm">
-                        <div className="flex items-center gap-3">
-                          <Avatar className="w-8 h-8">
-                            <AvatarFallback
-                              style={{
-                                backgroundColor: "var(--color-gold-light)",
-                                color: "var(--color-text)",
-                                fontSize: "12px",
-                              }}
-                            >
-                              {patient.initials}
-                            </AvatarFallback>
-                          </Avatar>
-                          <span style={{ color: "var(--color-text)" }}>
-                            {patient.name}
-                          </span>
-                        </div>
-                      </td>
-                      <td
-                        className="py-4 px-4 font-body text-sm"
-                        style={{ color: "var(--color-text)" }}
-                      >
-                        {patient.age}
-                      </td>
-                      <td className="py-4 px-4 font-body text-sm">
-                        <Badge
-                          className="font-body text-xs font-normal bg-green-100 text-green-700 hover:bg-green-100"
-                          style={{
-                            backgroundColor: "#d4edda",
-                            color: "#155724",
-                            cursor: "pointer",
-                          }}
-                        >
-                          {patient.whatsapp}
-                        </Badge>
-                      </td>
-                      <td className="py-4 px-4 font-body text-sm">
-                        <Badge
-                          className="font-body text-xs font-normal"
-                          style={{
-                            backgroundColor: statusStyle.bg,
-                            color: statusStyle.text,
-                          }}
-                        >
-                          {statusStyle.label}
-                        </Badge>
-                      </td>
-                      <td
-                        className="py-4 px-4 font-body text-sm"
-                        style={{ color: "var(--color-text)" }}
-                      >
-                        {patient.lastProtocol}
-                      </td>
-                      <td
-                        className="py-4 px-4 font-body text-sm"
-                        style={{ color: "var(--color-text-muted)" }}
-                      >
-                        {patient.nextAppointment}
-                      </td>
-                      <td className="py-4 px-4">
-                        <div className="flex items-center gap-2">
-                          <Link href={`/pacientes/${patient.id}`}>
-                            <button
-                              className="p-1 rounded hover:opacity-70"
-                              title="Ver ficha"
-                            >
-                              <Eye
-                                size={16}
-                                style={{ color: "var(--color-gold)" }}
-                                strokeWidth={1.5}
-                              />
-                            </button>
-                          </Link>
-                          <button
-                            className="p-1 rounded hover:opacity-70"
-                            title="Editar"
-                          >
-                            <Edit
-                              size={16}
-                              style={{ color: "var(--color-text-muted)" }}
-                              strokeWidth={1.5}
-                            />
-                          </button>
-                          <button
-                            className="p-1 rounded hover:opacity-70"
-                            title="WhatsApp"
-                          >
-                            <MessageCircle
-                              size={16}
-                              style={{ color: "#25D366" }}
-                              strokeWidth={1.5}
-                            />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-
-          {/* Pagination */}
-          <div className="flex items-center justify-between mt-6 pt-6 border-t border-gray-200">
-            <span
-              className="font-body text-xs"
-              style={{ color: "var(--color-text-muted)" }}
-            >
-              Página {currentPage} de {totalPages}
-            </span>
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-                disabled={currentPage === 1}
-                className="p-1 rounded disabled:opacity-50"
-              >
-                <ChevronLeft
+          <div className="flex gap-4">
+            <div className="flex-1">
+              <div className="relative">
+                <Search
                   size={18}
-                  style={{ color: "var(--color-text-muted)" }}
-                  strokeWidth={1.5}
+                  style={{ color: 'var(--color-text-muted)' }}
+                  className="absolute left-3 top-3"
                 />
-              </button>
-              <button
-                onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
-                disabled={currentPage === totalPages}
-                className="p-1 rounded disabled:opacity-50"
-              >
-                <ChevronRight
-                  size={18}
-                  style={{ color: "var(--color-text-muted)" }}
-                  strokeWidth={1.5}
+                <Input
+                  placeholder="Buscar por nome ou email..."
+                  className="pl-10 border"
+                  style={{ borderColor: 'var(--color-divider)' }}
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
                 />
-              </button>
+              </div>
             </div>
+
+            <select
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+              className="border-0 bg-transparent font-body text-sm px-3 rounded"
+              style={{
+                color: 'var(--color-text)',
+                borderBottom: '1px solid var(--color-divider)',
+              }}
+            >
+              <option value="todos">Todos</option>
+              <option value="ativo">Ativos</option>
+              <option value="inativo">Inativos</option>
+            </select>
           </div>
         </CardContent>
       </Card>
+
+      {/* Lista de Pacientes */}
+      <div className="space-y-4">
+        {filteredPacientes.map((paciente) => (
+          <Card key={paciente.id} className="aria-card hover:shadow-lg transition-shadow cursor-pointer">
+            <CardContent className="pt-6">
+              <div className="flex items-center justify-between">
+                <div className="flex-1">
+                  <p className="font-display text-lg" style={{ color: 'var(--color-text)' }}>
+                    {paciente.nome}
+                  </p>
+                  <div className="grid grid-cols-3 gap-4 mt-2">
+                    <div>
+                      <p className="font-body text-xs" style={{ color: 'var(--color-text-muted)' }}>
+                        Email
+                      </p>
+                      <p className="font-body text-sm" style={{ color: 'var(--color-text)' }}>
+                        {paciente.email}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="font-body text-xs" style={{ color: 'var(--color-text-muted)' }}>
+                        Telefone
+                      </p>
+                      <p className="font-body text-sm" style={{ color: 'var(--color-text)' }}>
+                        {paciente.telefone}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="font-body text-xs" style={{ color: 'var(--color-text-muted)' }}>
+                        Última Consulta
+                      </p>
+                      <p className="font-body text-sm" style={{ color: 'var(--color-text)' }}>
+                        {new Date(paciente.ultimaConsulta).toLocaleDateString('pt-BR')}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-4">
+                  <Badge
+                    style={{
+                      backgroundColor: paciente.status === 'Ativo' ? '#2C5534' : '#5C2C2C',
+                      color: paciente.status === 'Ativo' ? '#76C776' : '#FF6B6B',
+                    }}
+                  >
+                    {paciente.status}
+                  </Badge>
+                  <ChevronRight
+                    size={20}
+                    style={{ color: 'var(--color-text-muted)' }}
+                  />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+
+        {filteredPacientes.length === 0 && (
+          <Card className="aria-card">
+            <CardContent className="pt-6 text-center">
+              <p className="font-body text-sm" style={{ color: 'var(--color-text-muted)' }}>
+                Nenhum paciente encontrado
+              </p>
+            </CardContent>
+          </Card>
+        )}
+      </div>
     </Shell>
   );
 }
