@@ -32,6 +32,10 @@ export async function GET(request: NextRequest) {
     }
 
     const supabase = getSupabaseClientWithAuth(accessToken);
+    const supabaseAdmin = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!
+    );
 
     // Get current user
     const {
@@ -63,7 +67,7 @@ export async function GET(request: NextRequest) {
     const clinicId = currentUserData.clinic_id;
 
     // Check if user is admin
-    const isAdmin = await hasRole(user.id, clinicId, 'admin');
+    const isAdmin = await hasRole(supabaseAdmin, user.id, clinicId, 'admin');
 
     if (!isAdmin) {
       return NextResponse.json(
