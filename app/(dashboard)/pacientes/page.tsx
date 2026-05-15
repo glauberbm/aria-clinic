@@ -1,35 +1,21 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { useSupabaseAuth } from '@/lib/supabase/auth-context';
+import { createClient } from '@supabase/supabase-js';
 import { Shell } from '@/components/layout/Shell';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Search, Plus, Edit2, Trash2, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Search, Plus, Edit2, Trash2, ChevronLeft, ChevronRight, AlertCircle } from 'lucide-react';
 
-// Mock patient data
-const mockPatients = [
-  { id: 1, name: 'Alessandra Costa', email: 'alessandra@example.com', phone: '(85) 98888-1111', dob: '1985-03-15', status: 'active', registeredDate: '2026-01-10', lastAppointment: '2026-05-14' },
-  { id: 2, name: 'Bruna Rugue', email: 'bruna@example.com', phone: '(85) 98888-2222', dob: '1990-07-22', status: 'active', registeredDate: '2026-01-15', lastAppointment: '2026-05-12' },
-  { id: 3, name: 'Carolina Silva', email: 'carolina@example.com', phone: '(85) 98888-3333', dob: '1988-11-08', status: 'active', registeredDate: '2026-02-01', lastAppointment: '2026-05-10' },
-  { id: 4, name: 'Diana Santos', email: 'diana@example.com', phone: '(85) 98888-4444', dob: '1992-05-30', status: 'inactive', registeredDate: '2026-02-15', lastAppointment: '2026-03-15' },
-  { id: 5, name: 'Erica Mendes', email: 'erica@example.com', phone: '(85) 98888-5555', dob: '1987-09-12', status: 'active', registeredDate: '2026-03-01', lastAppointment: '2026-05-08' },
-  { id: 6, name: 'Gabriela Rocha', email: 'gabriela@example.com', phone: '(85) 98888-6666', dob: '1995-01-25', status: 'active', registeredDate: '2026-03-10', lastAppointment: '2026-05-11' },
-  { id: 7, name: 'Helena Marques', email: 'helena@example.com', phone: '(85) 98888-7777', dob: '1989-08-18', status: 'active', registeredDate: '2026-03-20', lastAppointment: '2026-05-09' },
-  { id: 8, name: 'Iris da Silva', email: 'iris@example.com', phone: '(85) 98888-8888', dob: '1991-12-03', status: 'inactive', registeredDate: '2026-04-01', lastAppointment: '2026-02-28' },
-  { id: 9, name: 'Julia Martins', email: 'julia@example.com', phone: '(85) 98888-9999', dob: '1986-04-14', status: 'active', registeredDate: '2026-04-10', lastAppointment: '2026-05-13' },
-  { id: 10, name: 'Kamila Santos', email: 'kamila@example.com', phone: '(85) 98888-0000', dob: '1993-06-27', status: 'active', registeredDate: '2026-04-20', lastAppointment: '2026-05-15' },
-  { id: 11, name: 'Monica Costa', email: 'monica@example.com', phone: '(85) 99999-1111', dob: '1988-02-09', status: 'archived', registeredDate: '2025-12-01', lastAppointment: '2025-11-20' },
-  { id: 12, name: 'Natalia Silva', email: 'natalia@example.com', phone: '(85) 99999-2222', dob: '1994-10-16', status: 'active', registeredDate: '2026-05-01', lastAppointment: '2026-05-07' },
-  { id: 13, name: 'Olivia Mendes', email: 'olivia@example.com', phone: '(85) 99999-3333', dob: '1989-03-21', status: 'inactive', registeredDate: '2026-05-05', lastAppointment: '2026-04-15' },
-  { id: 14, name: 'Patricia Rocha', email: 'patricia@example.com', phone: '(85) 99999-4444', dob: '1991-09-08', status: 'active', registeredDate: '2026-05-10', lastAppointment: '2026-05-14' },
-  { id: 15, name: 'Quinita Santos', email: 'quinita@example.com', phone: '(85) 99999-5555', dob: '1987-07-19', status: 'active', registeredDate: '2026-05-15', lastAppointment: '2026-05-15' },
-  { id: 16, name: 'Rosa Lima', email: 'rosa@example.com', phone: '(85) 99999-6666', dob: '1990-11-26', status: 'active', registeredDate: '2026-01-05', lastAppointment: '2026-05-06' },
-  { id: 17, name: 'Sandra Alves', email: 'sandra@example.com', phone: '(85) 99999-7777', dob: '1986-08-04', status: 'active', registeredDate: '2026-01-20', lastAppointment: '2026-05-05' },
-  { id: 18, name: 'Tania Costa', email: 'tania@example.com', phone: '(85) 99999-8888', dob: '1992-02-13', status: 'inactive', registeredDate: '2026-02-10', lastAppointment: '2026-01-30' },
-  { id: 19, name: 'Ursula Silva', email: 'ursula@example.com', phone: '(85) 99999-9999', dob: '1988-06-17', status: 'active', registeredDate: '2026-03-05', lastAppointment: '2026-05-04' },
-  { id: 20, name: 'Vanessa Santos', email: 'vanessa@example.com', phone: '(85) 91111-1111', dob: '1995-12-22', status: 'active', registeredDate: '2026-05-12', lastAppointment: '2026-05-12' },
-];
+export const dynamic = 'force-dynamic';
+
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+);
 
 const getStatusStyle = (status: string) => {
   switch (status) {
@@ -47,16 +33,74 @@ const getStatusStyle = (status: string) => {
 type SortKey = 'name' | 'registeredDate' | 'lastAppointment';
 type StatusFilter = 'all' | 'active' | 'inactive' | 'archived';
 
+interface Patient {
+  id: string;
+  name: string;
+  email: string;
+  phone: string;
+  dob: string;
+  status: 'active' | 'inactive' | 'archived';
+  registeredDate: string;
+  lastAppointment: string;
+}
+
 export default function PacientesPage() {
+  const router = useRouter();
+  const { user } = useSupabaseAuth();
+  const [patients, setPatients] = useState<Patient[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('all');
   const [sortBy, setSortBy] = useState<SortKey>('name');
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // Fetch patients from Supabase
+  useEffect(() => {
+    const fetchPatients = async () => {
+      if (!user?.id) return;
+
+      setIsLoading(true);
+      setError(null);
+
+      try {
+        // Get user's clinic
+        const profileResponse = await fetch('/api/profile', {
+          headers: {
+            'Authorization': `Bearer ${user.session?.access_token}`,
+          },
+        });
+
+        if (!profileResponse.ok) throw new Error('Falha ao carregar perfil do usuário');
+
+        const profile = await profileResponse.json();
+
+        const { data, error: supabaseError } = await supabase
+          .from('patients')
+          .select('*')
+          .eq('clinic_id', profile.clinic_id)
+          .order(sortBy === 'name' ? 'name' : sortBy, {
+            ascending: sortBy === 'name'
+          });
+
+        if (supabaseError) throw supabaseError;
+        setPatients(data || []);
+      } catch (err) {
+        const errorMessage = err instanceof Error ? err.message : 'Erro ao carregar pacientes';
+        setError(errorMessage);
+        console.error('Fetch patients error:', err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchPatients();
+  }, [user?.id, user?.session?.access_token, sortBy]);
 
   // Filter and sort logic
   const filteredAndSortedPatients = useMemo(() => {
-    let result = mockPatients;
+    let result = patients;
 
     // Apply status filter
     if (statusFilter !== 'all') {
@@ -85,7 +129,7 @@ export default function PacientesPage() {
     });
 
     return result;
-  }, [searchTerm, statusFilter, sortBy]);
+  }, [searchTerm, statusFilter, sortBy, patients]);
 
   // Pagination
   const totalPages = Math.ceil(filteredAndSortedPatients.length / itemsPerPage);
@@ -105,6 +149,7 @@ export default function PacientesPage() {
           </p>
         </div>
         <Button
+          onClick={() => router.push('/pacientes/novo')}
           className="font-body text-sm font-normal px-6 py-3 flex items-center gap-2"
           style={{ backgroundColor: 'var(--color-gold)', color: 'white' }}
         >
@@ -195,12 +240,33 @@ export default function PacientesPage() {
             </div>
 
             {/* Results count */}
-            <p className="font-body text-xs" style={{ color: 'var(--color-text-muted)' }}>
-              Mostrando {startIndex + 1}-{Math.min(startIndex + itemsPerPage, filteredAndSortedPatients.length)} de {filteredAndSortedPatients.length} pacientes
-            </p>
+            {!isLoading && (
+              <p className="font-body text-xs" style={{ color: 'var(--color-text-muted)' }}>
+                Mostrando {startIndex + 1}-{Math.min(startIndex + itemsPerPage, filteredAndSortedPatients.length)} de {filteredAndSortedPatients.length} pacientes
+              </p>
+            )}
           </div>
         </CardContent>
       </Card>
+
+      {/* Error State */}
+      {error && (
+        <Card className="aria-card mb-8" style={{ borderColor: '#D32F2F' }}>
+          <CardContent className="pt-6">
+            <div className="flex items-center gap-3">
+              <AlertCircle size={20} style={{ color: '#D32F2F' }} />
+              <div>
+                <p className="font-body text-sm font-medium" style={{ color: '#D32F2F' }}>
+                  Erro ao carregar pacientes
+                </p>
+                <p className="font-body text-xs mt-1" style={{ color: 'var(--color-text-muted)' }}>
+                  {error}
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Table */}
       <Card className="aria-card">
@@ -230,7 +296,31 @@ export default function PacientesPage() {
                 </tr>
               </thead>
               <tbody>
-                {displayedPatients.length > 0 ? (
+                {isLoading ? (
+                  // Skeleton loaders
+                  Array.from({ length: itemsPerPage }).map((_, index) => (
+                    <tr key={`skeleton-${index}`} style={{ borderBottom: '1px solid var(--color-divider)' }}>
+                      <td className="py-4 px-4">
+                        <div className="h-4 bg-gray-200 rounded w-3/4 animate-pulse" />
+                      </td>
+                      <td className="py-4 px-4">
+                        <div className="h-4 bg-gray-200 rounded w-1/2 animate-pulse" />
+                      </td>
+                      <td className="py-4 px-4">
+                        <div className="h-4 bg-gray-200 rounded w-2/3 animate-pulse" />
+                      </td>
+                      <td className="py-4 px-4">
+                        <div className="h-4 bg-gray-200 rounded w-1/3 animate-pulse" />
+                      </td>
+                      <td className="py-4 px-4">
+                        <div className="h-6 bg-gray-200 rounded w-1/4 animate-pulse" />
+                      </td>
+                      <td className="py-4 px-4">
+                        <div className="h-4 bg-gray-200 rounded w-1/3 animate-pulse mx-auto" />
+                      </td>
+                    </tr>
+                  ))
+                ) : displayedPatients.length > 0 ? (
                   displayedPatients.map((patient) => {
                     const statusStyle = getStatusStyle(patient.status);
                     const dobDate = new Date(patient.dob);
@@ -263,7 +353,11 @@ export default function PacientesPage() {
                         </td>
                         <td className="py-4 px-4">
                           <div className="flex items-center justify-center gap-2">
-                            <button className="p-1 rounded hover:opacity-70" title="Visualizar">
+                            <button
+                              onClick={() => router.push(`/pacientes/${patient.id}/editar`)}
+                              className="p-1 rounded hover:opacity-70"
+                              title="Editar"
+                            >
                               <Edit2 size={16} style={{ color: 'var(--color-gold)' }} strokeWidth={1.5} />
                             </button>
                             <button className="p-1 rounded hover:opacity-70" title="Deletar">
