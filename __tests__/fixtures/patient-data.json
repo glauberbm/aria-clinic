@@ -1,0 +1,94 @@
+{
+  "validPatient": {
+    "name": "João Silva Santos",
+    "email": "joao.silva@example.com",
+    "phone": "11987654321",
+    "dateOfBirth": "1990-05-15",
+    "cpf": "12345678901",
+    "password": "SecurePass123!",
+    "confirmPassword": "SecurePass123!"
+  },
+  "validPatient2": {
+    "name": "Maria Oliveira Costa",
+    "email": "maria.oliveira@example.com",
+    "phone": "11912345678",
+    "dateOfBirth": "1985-03-22",
+    "cpf": "98765432100",
+    "password": "AnotherPass456!",
+    "confirmPassword": "AnotherPass456!"
+  },
+  "validInsurance": {
+    "provider": "Unimed",
+    "policyNumber": "UNM-12345678",
+    "coverage": ["clinic", "hospitalization", "emergency"]
+  },
+  "validMedicalHistory": [
+    {
+      "type": "condition",
+      "description": "Hypertension",
+      "recordedAt": "2024-01-01"
+    },
+    {
+      "type": "allergy",
+      "description": "Penicillin allergy",
+      "recordedAt": "2024-01-05"
+    },
+    {
+      "type": "medication",
+      "description": "Metformin 500mg daily",
+      "recordedAt": "2024-01-10"
+    }
+  ],
+  "invalidData": {
+    "invalidCPF": {
+      "value": "00000000000",
+      "error": "Invalid CPF format"
+    },
+    "invalidCPFNonNumeric": {
+      "value": "abcdefghijk",
+      "error": "CPF must contain only digits"
+    },
+    "invalidEmail": {
+      "value": "notanemail",
+      "error": "Invalid email format"
+    },
+    "invalidPhone": {
+      "value": "123",
+      "error": "Phone must have 11 digits"
+    },
+    "invalidDOB": {
+      "value": "2010-01-01",
+      "error": "Patient must be at least 18 years old"
+    },
+    "invalidDOBFuture": {
+      "value": "2030-01-01",
+      "error": "Date of birth cannot be in the future"
+    },
+    "missingName": {
+      "data": { "email": "test@example.com" },
+      "error": "Name is required"
+    },
+    "shortPassword": {
+      "value": "Pass1!",
+      "error": "Password must be at least 8 characters"
+    },
+    "weakPassword": {
+      "value": "password123",
+      "error": "Password must contain uppercase, lowercase, number, and special character"
+    }
+  },
+  "authTokens": {
+    "validJWT": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c",
+    "expiredJWT": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJleHAiOjE1MTYyMzkvMjJ9.expired",
+    "invalidJWT": "invalid.token.here"
+  },
+  "edgeCases": {
+    "maxLengthName": "A".repeat(255),
+    "emojisInName": "João 👨‍👩‍👧‍👦 Silva",
+    "specialCharsEmail": "user+tag@example.com",
+    "leadingTrailingSpaces": "  João  Silva  ",
+    "mixedCaseEmail": "JoAo.SiLvA@ExAmPlE.cOm",
+    "spaceInPhone": "11 98765 4321",
+    "dashInCPF": "123.456.789-01"
+  }
+}
