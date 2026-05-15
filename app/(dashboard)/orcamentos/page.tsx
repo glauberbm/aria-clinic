@@ -3,7 +3,7 @@
 import { Shell } from "@/components/layout/Shell";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Eye, Download, Trash2 } from "lucide-react";
+import { Edit2, Trash2 } from "lucide-react";
 import { useState } from "react";
 
 // Mock data
@@ -11,7 +11,7 @@ const budgets = [
   {
     id: 1,
     patient: "Alessandra Costa",
-    protocol: "Botox + Preenchimento",
+    protocol: "PROT-001",
     amount: 2800.00,
     date: "2026-05-14",
     professional: "Dra. Sabryna",
@@ -20,7 +20,7 @@ const budgets = [
   {
     id: 2,
     patient: "Bruna Rugue",
-    protocol: "Preenchimento Labial",
+    protocol: "PROT-002",
     amount: 1800.00,
     date: "2026-05-12",
     professional: "Dra. Sabryna",
@@ -29,7 +29,7 @@ const budgets = [
   {
     id: 3,
     patient: "Carolina Silva",
-    protocol: "Bioestimulador + Peeling",
+    protocol: "PROT-003",
     amount: 2500.00,
     date: "2026-05-10",
     professional: "Dr. Felipe",
@@ -38,7 +38,7 @@ const budgets = [
   {
     id: 4,
     patient: "Diana Santos",
-    protocol: "Botox",
+    protocol: "PROT-004",
     amount: 1200.00,
     date: "2026-05-08",
     professional: "Dra. Sabryna",
@@ -47,7 +47,7 @@ const budgets = [
   {
     id: 5,
     patient: "Erica Mendes",
-    protocol: "Preenchimento",
+    protocol: "PROT-005",
     amount: 1500.00,
     date: "2026-05-06",
     professional: "Dr. Felipe",
@@ -55,119 +55,92 @@ const budgets = [
   },
   {
     id: 6,
-    patient: "Fernanda Oliveira",
-    protocol: "Limpeza Profunda",
-    amount: 950.00,
-    date: "2026-05-04",
-    professional: "Dra. Sabryna",
-    status: "em_aberto",
-  },
-  {
-    id: 7,
     patient: "Gabriela Rocha",
-    protocol: "Botox + Preenchimento",
+    protocol: "PROT-006",
     amount: 2800.00,
     date: "2026-05-12",
     professional: "Dr. Felipe",
     status: "aprovado",
   },
   {
-    id: 8,
+    id: 7,
     patient: "Helena Marques",
-    protocol: "Harmonização Facial",
+    protocol: "PROT-007",
     amount: 3200.00,
     date: "2026-05-10",
     professional: "Dra. Sabryna",
     status: "aprovado",
   },
   {
-    id: 9,
+    id: 8,
     patient: "Iris da Silva",
-    protocol: "Preenchimento Labial",
+    protocol: "PROT-008",
     amount: 1800.00,
     date: "2026-05-08",
     professional: "Dr. Felipe",
     status: "aprovado",
   },
   {
-    id: 10,
+    id: 9,
     patient: "Julia Martins",
-    protocol: "Bioestimulador",
+    protocol: "PROT-009",
     amount: 2200.00,
     date: "2026-05-06",
     professional: "Dra. Sabryna",
     status: "aprovado",
   },
   {
-    id: 11,
+    id: 10,
     patient: "Kamila Santos",
-    protocol: "Botox",
+    protocol: "PROT-010",
     amount: 1200.00,
     date: "2026-05-04",
     professional: "Dr. Felipe",
     status: "aprovado",
   },
   {
-    id: 12,
-    patient: "Larissa Oliveira",
-    protocol: "Limpeza + Peeling",
-    amount: 1450.00,
-    date: "2026-05-02",
-    professional: "Dra. Sabryna",
-    status: "aprovado",
-  },
-  {
-    id: 13,
+    id: 11,
     patient: "Monica Costa",
-    protocol: "Preenchimento",
+    protocol: "PROT-011",
     amount: 1500.00,
     date: "2026-05-10",
     professional: "Dr. Felipe",
     status: "reprovado",
   },
   {
-    id: 14,
+    id: 12,
     patient: "Natalia Silva",
-    protocol: "Harmonização Facial",
+    protocol: "PROT-012",
     amount: 3200.00,
     date: "2026-05-08",
     professional: "Dra. Sabryna",
     status: "reprovado",
   },
   {
-    id: 15,
+    id: 13,
     patient: "Olivia Mendes",
-    protocol: "Botox + Preenchimento",
+    protocol: "PROT-013",
     amount: 2800.00,
     date: "2026-05-06",
     professional: "Dr. Felipe",
     status: "reprovado",
   },
   {
-    id: 16,
+    id: 14,
     patient: "Patricia Rocha",
-    protocol: "Bioestimulador",
+    protocol: "PROT-014",
     amount: 2200.00,
     date: "2026-05-04",
     professional: "Dra. Sabryna",
     status: "reprovado",
   },
   {
-    id: 17,
+    id: 15,
     patient: "Quinita Santos",
-    protocol: "Limpeza Profunda",
+    protocol: "PROT-015",
     amount: 950.00,
     date: "2026-05-02",
     professional: "Dr. Felipe",
-    status: "reprovado",
-  },
-  {
-    id: 18,
-    patient: "Raquel Oliveira",
-    protocol: "Preenchimento Labial",
-    amount: 1800.00,
-    date: "2026-04-30",
-    professional: "Dra. Sabryna",
     status: "reprovado",
   },
 ];
@@ -193,9 +166,9 @@ export default function Orcamentos() {
   const filteredBudgets = budgets.filter((b) => b.status === activeTab);
 
   const tabs = [
-    { id: "em_aberto", label: "Em Aberto", count: 6 },
-    { id: "aprovado", label: "Aprovados", count: 6 },
-    { id: "reprovado", label: "Reprovados", count: 6 },
+    { id: "em_aberto", label: "Em Aberto", count: budgets.filter(b => b.status === "em_aberto").length },
+    { id: "aprovado", label: "Aprovados", count: budgets.filter(b => b.status === "aprovado").length },
+    { id: "reprovado", label: "Reprovados", count: budgets.filter(b => b.status === "reprovado").length },
   ];
 
   return (
@@ -349,25 +322,15 @@ export default function Orcamentos() {
                           {statusStyle.label}
                         </Badge>
                       </td>
-                      <td className="py-4 px-4 text-center">
-                        <div className="flex items-center justify-center gap-2">
+                      <td className="py-4 px-4">
+                        <div className="flex items-center gap-2">
                           <button
                             className="p-1 rounded hover:opacity-70"
-                            title="Ver detalhes"
+                            title="Editar"
                           >
-                            <Eye
+                            <Edit2
                               size={16}
                               style={{ color: "var(--color-gold)" }}
-                              strokeWidth={1.5}
-                            />
-                          </button>
-                          <button
-                            className="p-1 rounded hover:opacity-70"
-                            title="Baixar"
-                          >
-                            <Download
-                              size={16}
-                              style={{ color: "var(--color-text-muted)" }}
                               strokeWidth={1.5}
                             />
                           </button>
@@ -381,6 +344,18 @@ export default function Orcamentos() {
                               strokeWidth={1.5}
                             />
                           </button>
+                          {budget.status === "reprovado" && (
+                            <button
+                              className="px-3 py-1 rounded text-xs font-medium"
+                              style={{
+                                backgroundColor: "var(--color-gold)",
+                                color: "white",
+                              }}
+                              title="Recuperar orçamento"
+                            >
+                              Recuperar
+                            </button>
+                          )}
                         </div>
                       </td>
                     </tr>
