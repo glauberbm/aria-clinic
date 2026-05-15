@@ -3,13 +3,6 @@ import { NextRequest, NextResponse } from 'next/server';
 import { profileUpdateSchema } from '@/lib/validations/profile';
 import { z } from 'zod';
 
-const getSupabaseClient = () => {
-  return createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
-  );
-};
-
 const getSupabaseClientWithAuth = (token: string) => {
   return createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -117,7 +110,7 @@ export async function PATCH(request: NextRequest) {
     const validatedData = profileUpdateSchema.parse(body);
 
     // Prepare update data
-    const updateData: Record<string, any> = {};
+    const updateData: Record<string, string | null> = {};
     if (validatedData.name) updateData.name = validatedData.name;
     if (validatedData.avatar_url !== undefined) {
       updateData.avatar_url = validatedData.avatar_url || null;

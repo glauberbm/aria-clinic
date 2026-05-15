@@ -7,7 +7,7 @@ import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Mail, Phone, Building, User, Calendar, Edit } from 'lucide-react';
+import { Mail, Building, Calendar, Edit } from 'lucide-react';
 import Link from 'next/link';
 
 interface UserProfile {

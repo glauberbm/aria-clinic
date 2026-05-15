@@ -44,6 +44,7 @@ export default function EditProfilePage() {
     resolver: zodResolver(profileUpdateSchema),
   });
 
+  // eslint-disable-next-line react-hooks/incompatible-library
   const watchName = watch('name');
 
   useEffect(() => {

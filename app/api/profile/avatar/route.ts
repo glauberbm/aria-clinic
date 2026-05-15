@@ -1,13 +1,6 @@
 import { createClient } from '@supabase/supabase-js';
 import { NextRequest, NextResponse } from 'next/server';
 
-const getSupabaseClient = () => {
-  return createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
-  );
-};
-
 const getSupabaseClientWithAuth = (token: string) => {
   return createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
