@@ -276,26 +276,17 @@ describe('Permission Functions', () => {
 
   describe('removeRole', () => {
     it('should remove role from user', async () => {
-      const mockDelete = jest.fn().mockReturnValue({
-        eq: jest.fn()
-          .mockReturnValueOnce({
-            eq: jest.fn()
-              .mockReturnValueOnce({
-                eq: jest.fn().mockResolvedValue({
-                  error: null,
-                }),
-              }),
-          }),
-      });
+      const mockThirdEq = jest.fn().mockResolvedValue({ error: null });
+      const mockSecondEq = jest.fn().mockReturnValue({ eq: mockThirdEq });
+      const mockFirstEq = jest.fn().mockReturnValue({ eq: mockSecondEq });
+      const mockDelete = jest.fn().mockReturnValue({ eq: mockFirstEq });
 
-      const mockSelect = jest.fn().mockReturnValue({
-        eq: jest.fn().mockReturnValue({
-          single: jest.fn().mockResolvedValue({
-            data: { id: 'role-admin' },
-            error: null,
-          }),
-        }),
+      const mockSingle = jest.fn().mockResolvedValue({
+        data: { id: 'role-admin' },
+        error: null,
       });
+      const mockSelectEq = jest.fn().mockReturnValue({ single: mockSingle });
+      const mockSelect = jest.fn().mockReturnValue({ eq: mockSelectEq });
 
       const mockFrom = jest.fn()
         .mockReturnValueOnce({ select: mockSelect })
@@ -311,13 +302,13 @@ describe('Permission Functions', () => {
     });
 
     it('should return false if role does not exist', async () => {
-      const mockSelect = jest.fn().mockReturnValue({
-        eq: jest.fn().mockResolvedValue({
-          data: null,
-          error: { message: 'Role not found' },
-        }),
+      const mockSingle = jest.fn().mockResolvedValue({
+        data: null,
+        error: { message: 'Role not found' },
       });
 
+      const mockEq = jest.fn().mockReturnValue({ single: mockSingle });
+      const mockSelect = jest.fn().mockReturnValue({ eq: mockEq });
       const mockFrom = jest.fn().mockReturnValue({ select: mockSelect });
 
       const mockCreateClient = jest.mocked(createSupabaseClient);
