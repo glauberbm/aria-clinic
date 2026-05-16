@@ -1,0 +1,283 @@
+name: Deploy to Staging
+
+# Trigger conditions
+on:
+  push:
+    branches:
+      - main
+      - develop
+    paths:
+      - 'app/**'
+      - 'components/**'
+      - 'lib/**'
+      - 'public/**'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'tsconfig.json'
+      - '.next/**'
+  workflow_dispatch:  # Allow manual trigger from GitHub UI
+
+env:
+  NODE_VERSION: '18'
+  REGISTRY: ghcr.io
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  # ============================================================================
+  # Step 1: Install & Build
+  # ============================================================================
+  build:
+    runs-on: ubuntu-latest
+    name: Build Application
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Full history for version detection
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: '**/package-lock.json'
+
+      - name: Install dependencies
+        run: npm ci
+        env:
+          CI: true
+
+      - name: Run type check
+        run: npm run typecheck
+        continue-on-error: true
+
+      - name: Run linter
+        run: npm run lint
+        continue-on-error: true
+
+      - name: Build application
+        run: npm run build
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.SUPABASE_STAGING_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_STAGING_ANON_KEY }}
+          NODE_ENV: production
+          NEXT_TELEMETRY_DISABLED: 1
+
+      - name: Run tests
+        run: npm test -- --coverage --watchAll=false
+        continue-on-error: true
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: next-build
+          path: .next/
+          retention-days: 1
+
+  # ============================================================================
+  # Step 2: Database Migrations (Supabase)
+  # ============================================================================
+  migrate-database:
+    runs-on: ubuntu-latest
+    name: Apply Database Migrations
+    needs: build
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install Supabase CLI
+        run: |
+          curl -fsSL https://cli.supabase.io/install.sh | bash
+
+      - name: Apply migrations to staging
+        run: |
+          supabase db push \
+            --project-ref=${{ secrets.SUPABASE_STAGING_PROJECT_REF }} \
+            --password=${{ secrets.SUPABASE_STAGING_DB_PASSWORD }}
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+
+      - name: Verify migrations
+        run: |
+          supabase migration list \
+            --project-ref=${{ secrets.SUPABASE_STAGING_PROJECT_REF }}
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+
+  # ============================================================================
+  # Step 3: Deploy to Vercel (Staging)
+  # ============================================================================
+  deploy-vercel:
+    runs-on: ubuntu-latest
+    name: Deploy to Vercel Staging
+    needs: [build, migrate-database]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: next-build
+          path: .next/
+
+      - name: Deploy to Vercel (production)
+        uses: vercel/action@v6
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_STAGING_PROJECT_ID }}
+          production: true
+          scope: ${{ secrets.VERCEL_SCOPE }}
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.SUPABASE_STAGING_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_STAGING_ANON_KEY }}
+
+  # ============================================================================
+  # Step 4: Post-Deployment Tests
+  # ============================================================================
+  smoke-tests:
+    runs-on: ubuntu-latest
+    name: Run Smoke Tests
+    needs: deploy-vercel
+    if: success()
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Wait for deployment to be ready
+        run: sleep 30
+
+      - name: Test API connectivity
+        run: |
+          curl -f https://${{ secrets.VERCEL_STAGING_URL }}/api/health || exit 1
+        continue-on-error: true
+
+      - name: Test Supabase connection
+        run: |
+          npm run test -- --testNamePattern="supabase" --watchAll=false
+        continue-on-error: true
+
+  # ============================================================================
+  # Step 5: Notifications
+  # ============================================================================
+  notify:
+    runs-on: ubuntu-latest
+    name: Send Deployment Notification
+    needs: [deploy-vercel, smoke-tests]
+    if: always()
+
+    steps:
+      - name: Determine status
+        id: status
+        run: |
+          if [[ "${{ needs.deploy-vercel.result }}" == "success" && "${{ needs.smoke-tests.result }}" == "success" ]]; then
+            echo "status=success" >> $GITHUB_OUTPUT
+            echo "color=36a64b" >> $GITHUB_OUTPUT
+          else
+            echo "status=failure" >> $GITHUB_OUTPUT
+            echo "color=ff0000" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Send Slack notification
+        if: secrets.SLACK_WEBHOOK_URL != ''
+        uses: slackapi/slack-github-action@v1
+        with:
+          webhook-url: ${{ secrets.SLACK_WEBHOOK_URL }}
+          payload: |
+            {
+              "text": "Aria Clinic Staging Deployment",
+              "attachments": [
+                {
+                  "color": "${{ steps.status.outputs.color }}",
+                  "title": "Deployment ${{ steps.status.outputs.status | upper }}",
+                  "title_link": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}",
+                  "text": "Branch: `${{ github.ref_name }}`\nCommit: `${{ github.sha }}`",
+                  "fields": [
+                    {
+                      "title": "Build",
+                      "value": "${{ needs.build.result }}",
+                      "short": true
+                    },
+                    {
+                      "title": "Database",
+                      "value": "${{ needs.migrate-database.result }}",
+                      "short": true
+                    },
+                    {
+                      "title": "Deployment",
+                      "value": "${{ needs.deploy-vercel.result }}",
+                      "short": true
+                    },
+                    {
+                      "title": "Tests",
+                      "value": "${{ needs.smoke-tests.result }}",
+                      "short": true
+                    }
+                  ],
+                  "footer": "Aria Clinic CI/CD",
+                  "ts": ${{ github.event.pull_request.created_at || github.event.head_commit.timestamp || 'now' }}
+                }
+              ]
+            }
+
+      - name: Comment on PR (if PR)
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `## 🚀 Staging Deployment ${{ steps.status.outputs.status | upper }}
+
+              **Build:** ${{ needs.build.result }}
+              **Database:** ${{ needs.migrate-database.result }}
+              **Deploy:** ${{ needs.deploy-vercel.result }}
+              **Tests:** ${{ needs.smoke-tests.result }}
+
+              [View Workflow →](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})`
+            })
+
+  # ============================================================================
+  # Step 6: Summary Report
+  # ============================================================================
+  summary:
+    runs-on: ubuntu-latest
+    name: Deployment Summary
+    needs: [build, migrate-database, deploy-vercel, smoke-tests, notify]
+    if: always()
+
+    steps:
+      - name: Print deployment summary
+        run: |
+          echo "=== ARIA CLINIC STAGING DEPLOYMENT ==="
+          echo "Workflow Run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          echo ""
+          echo "Build:       ${{ needs.build.result }}"
+          echo "Database:    ${{ needs.migrate-database.result }}"
+          echo "Deploy:      ${{ needs.deploy-vercel.result }}"
+          echo "Smoke Tests: ${{ needs.smoke-tests.result }}"
+          echo ""
+          echo "Environment: Staging"
+          echo "Branch:      ${{ github.ref_name }}"
+          echo "Commit:      ${{ github.sha }}"
+          echo "Author:      ${{ github.actor }}"
+          echo "Timestamp:   $(date -u +'%Y-%m-%d %H:%M:%S UTC')"
