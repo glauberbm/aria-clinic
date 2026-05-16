@@ -36,6 +36,28 @@ export interface Doctor {
   };
 }
 
+// Waitlist types
+export type WaitlistEntryStatus = "pending" | "offered" | "accepted" | "declined";
+
+export interface OfferedSlot {
+  date: Date;
+  time: string;
+  doctorId: string;
+}
+
+export interface WaitlistEntry {
+  id: string;
+  patientId: string;
+  patientName: string;
+  doctorId?: string;
+  requestedDate?: Date;
+  requestedTime?: string;
+  status: WaitlistEntryStatus;
+  addedAt: number;
+  offeredSlot?: OfferedSlot;
+  acceptedAppointmentId?: string;
+}
+
 // Mock doctors
 const MOCK_DOCTORS: Doctor[] = [
   {
@@ -109,7 +131,7 @@ const MOCK_PATIENT_PHONES = [
   "+5585987654335",
 ];
 
-// Mock appointments - 25 appointments across 30 days starting from today
+// Mock appointments - 100+ appointments across past 90 days + 30 future days
 const generateMockAppointments = (): Appointment[] => {
   const today = new Date();
   const appointments: Appointment[] = [];
@@ -129,6 +151,11 @@ const generateMockAppointments = (): Appointment[] => {
     "Gabriela Dias",
     "Helena Lima",
     "Iris Nascimento",
+    "Joana Silva",
+    "Keila Costa",
+    "Laura Santos",
+    "Monica Oliveira",
+    "Nina Pereira",
   ];
 
   const appointmentTypes: AppointmentType[] = [
@@ -136,15 +163,29 @@ const generateMockAppointments = (): Appointment[] => {
     "followup",
     "procedure",
   ];
-  const statuses: AppointmentStatus[] = [
+
+  // Mix of statuses including completed and noshow for history
+  const pastStatuses: AppointmentStatus[] = [
+    "completed",
+    "completed",
+    "completed",
+    "confirmed",
+    "cancelled",
+    "noshow",
+  ];
+
+  const futureStatuses: AppointmentStatus[] = [
     "scheduled",
     "confirmed",
-    "completed",
+    "scheduled",
   ];
+
   const durations: (15 | 30 | 60)[] = [15, 30, 60];
 
   let appointmentCount = 0;
-  for (let day = 0; day < 30 && appointmentCount < 25; day++) {
+
+  // Generate PAST appointments (90 days back)
+  for (let day = -90; day < 0 && appointmentCount < 110; day++) {
     const currentDate = new Date(today);
     currentDate.setDate(today.getDate() + day);
 
@@ -153,9 +194,9 @@ const generateMockAppointments = (): Appointment[] => {
       continue;
     }
 
-    // 0-2 appointments per day
-    const aptsPerDay = Math.floor(Math.random() * 3);
-    for (let i = 0; i < aptsPerDay && appointmentCount < 25; i++) {
+    // 1-3 appointments per day for history
+    const aptsPerDay = 1 + Math.floor(Math.random() * 3);
+    for (let i = 0; i < aptsPerDay && appointmentCount < 110; i++) {
       const doctor = MOCK_DOCTORS[Math.floor(Math.random() * MOCK_DOCTORS.length)];
       const hour = 9 + Math.floor(Math.random() * 8); // 9:00 - 17:00
       const minute = Math.random() > 0.5 ? 30 : 0;
@@ -176,7 +217,50 @@ const generateMockAppointments = (): Appointment[] => {
         type: appointmentTypes[
           Math.floor(Math.random() * appointmentTypes.length)
         ],
-        status: statuses[Math.floor(Math.random() * statuses.length)],
+        status: pastStatuses[Math.floor(Math.random() * pastStatuses.length)],
+        notes:
+          Math.random() > 0.7
+            ? "Paciente com histórico de sensibilidade"
+            : "",
+      });
+      appointmentCount++;
+    }
+  }
+
+  // Generate FUTURE appointments (30 days forward)
+  for (let day = 0; day < 30; day++) {
+    const currentDate = new Date(today);
+    currentDate.setDate(today.getDate() + day);
+
+    // Skip weekends for simplicity
+    if (currentDate.getDay() === 0 || currentDate.getDay() === 6) {
+      continue;
+    }
+
+    // 0-2 appointments per day
+    const aptsPerDay = Math.floor(Math.random() * 3);
+    for (let i = 0; i < aptsPerDay && appointmentCount < 140; i++) {
+      const doctor = MOCK_DOCTORS[Math.floor(Math.random() * MOCK_DOCTORS.length)];
+      const hour = 9 + Math.floor(Math.random() * 8); // 9:00 - 17:00
+      const minute = Math.random() > 0.5 ? 30 : 0;
+      const timeStart = `${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")}`;
+
+      appointments.push({
+        id: uuid(),
+        patientId: uuid(),
+        patientName:
+          patientNames[Math.floor(Math.random() * patientNames.length)],
+        patientPhone:
+          MOCK_PATIENT_PHONES[Math.floor(Math.random() * MOCK_PATIENT_PHONES.length)],
+        doctorId: doctor.id,
+        doctorName: doctor.name,
+        date: new Date(currentDate),
+        timeStart,
+        duration: durations[Math.floor(Math.random() * durations.length)],
+        type: appointmentTypes[
+          Math.floor(Math.random() * appointmentTypes.length)
+        ],
+        status: futureStatuses[Math.floor(Math.random() * futureStatuses.length)],
         notes:
           Math.random() > 0.7
             ? "Paciente com histórico de sensibilidade"
@@ -215,6 +299,7 @@ interface SchedulerStore {
   doctors: Doctor[];
   reminderSettings: ReminderSettings;
   reminderHistory: ReminderHistory[];
+  waitlist: WaitlistEntry[];
 
   // UI
   selectedMonth: Date;
@@ -224,6 +309,9 @@ interface SchedulerStore {
   addAppointment: (apt: Omit<Appointment, "id">) => Appointment;
   updateAppointment: (id: string, updates: Partial<Appointment>) => void;
   cancelAppointment: (id: string) => void;
+  addToWaitlist: (entry: Omit<WaitlistEntry, "id" | "addedAt">) => WaitlistEntry;
+  updateWaitlistEntry: (id: string, updates: Partial<WaitlistEntry>) => void;
+  removeFromWaitlist: (id: string) => void;
   setReminderSettings: (settings: Partial<ReminderSettings>) => void;
   sendReminder: (appointmentId: string) => Promise<{ success: boolean; messageId?: string; error?: string }>;
 
@@ -233,6 +321,8 @@ interface SchedulerStore {
   getDoctorById: (id: string) => Doctor | undefined;
   getAvailableSlots: (doctorId: string, date: Date, duration?: number) => Array<{ start: string; end: string; available: boolean }>;
   getAppointmentsForDoctor: (doctorId: string, date?: Date) => Appointment[];
+  getNextWaitlistPatient: () => WaitlistEntry | null;
+  getWaitlistByStatus: (status: WaitlistEntryStatus) => WaitlistEntry[];
 }
 
 export const useScheduler = create<SchedulerStore>((set, get) => ({
@@ -246,6 +336,7 @@ export const useScheduler = create<SchedulerStore>((set, get) => ({
     },
   },
   reminderHistory: [],
+  waitlist: [],
   selectedMonth: new Date(),
   selectedDate: null,
 
@@ -312,6 +403,47 @@ export const useScheduler = create<SchedulerStore>((set, get) => ({
   getAppointmentsForDoctor: (doctorId, date) => {
     const state = get();
     return getAppointmentsForDoctor(doctorId, date, state.appointments);
+  },
+
+  addToWaitlist: (entry) => {
+    const newEntry: WaitlistEntry = {
+      ...entry,
+      id: uuid(),
+      addedAt: Date.now(),
+    };
+    set((state) => ({
+      waitlist: [...state.waitlist, newEntry],
+    }));
+    return newEntry;
+  },
+
+  updateWaitlistEntry: (id, updates) => {
+    set((state) => ({
+      waitlist: state.waitlist.map((entry) =>
+        entry.id === id ? { ...entry, ...updates } : entry
+      ),
+    }));
+  },
+
+  removeFromWaitlist: (id) => {
+    set((state) => ({
+      waitlist: state.waitlist.filter((entry) => entry.id !== id),
+    }));
+  },
+
+  getNextWaitlistPatient: () => {
+    const state = get();
+    const next = state.waitlist
+      .filter((w) => w.status === "pending")
+      .sort((a, b) => a.addedAt - b.addedAt)[0];
+    return next || null;
+  },
+
+  getWaitlistByStatus: (status) => {
+    const state = get();
+    return state.waitlist
+      .filter((w) => w.status === status)
+      .sort((a, b) => a.addedAt - b.addedAt);
   },
 
   setReminderSettings: (settings) => {
