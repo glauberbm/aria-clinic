@@ -6,15 +6,14 @@ const createJestConfig = nextJest({
 });
 
 const customJestConfig = {
-  setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/$1',
   },
-  testEnvironment: 'jsdom',
-  testPathIgnorePatterns: [
-    '__tests__/api/',
-    '__tests__/integration/',
-    '__tests__/lib/cors.test.ts',
+  testEnvironment: 'node',
+  testMatch: [
+    '**/__tests__/api/**/*.test.ts?(x)',
+    '**/__tests__/integration/**/*.test.ts?(x)',
+    '**/__tests__/lib/cors.test.ts?(x)',
   ],
   transformIgnorePatterns: [
     'node_modules/(?!(zustand|react-day-picker|uuid)/)',
