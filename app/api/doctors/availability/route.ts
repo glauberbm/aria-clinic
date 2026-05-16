@@ -46,7 +46,7 @@ export async function GET(request: NextRequest) {
     const supabase = getSupabaseClient();
 
     // Get all doctors/providers or specific one
-    let providersQuery = supabase.from('users').select('id, name, email, role');
+    let providersQuery = supabase.from('users').select('id, name, email');
 
     if (providerId) {
       providersQuery = providersQuery.eq('id', providerId);
