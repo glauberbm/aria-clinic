@@ -330,9 +330,9 @@ SELECT COUNT(*) as appointment_count FROM public.appointments;
 2. Click **"Settings"** (top menu)
 3. Click **"Secrets and variables"** → **"Actions"** (left sidebar)
 
-### 6.2 Create Repository Secrets
+### 6.2 Create Repository Secrets (7 Total)
 
-Create 3 new secrets by clicking **"New repository secret"**:
+Create 7 new secrets by clicking **"New repository secret"**:
 
 #### Secret 1: SUPABASE_STAGING_URL
 
@@ -355,10 +355,6 @@ Create 3 new secrets by clicking **"New repository secret"**:
 - Example: `abcdefghijklmno`
 - Click **"Add secret"**
 
-### 6.3 Additional Secrets (if using full CI/CD)
-
-If you want to use the GitHub Actions workflow for automated deployments:
-
 #### Secret 4: SUPABASE_ACCESS_TOKEN
 
 1. In Supabase, go to **"Account"** (top-right menu)
@@ -377,11 +373,94 @@ If you want to use the GitHub Actions workflow for automated deployments:
 - Value: [Database password from Step 1.2]
 - Click **"Add secret"**
 
-### 6.4 Verify Secrets Created
+#### Secret 6: VERCEL_TOKEN
 
-1. In GitHub "Secrets and variables" page
-2. You should see all 3-5 secrets listed
-3. All should show **"Last updated: just now"**
+**Purpose:** Allow GitHub Actions to deploy to Vercel automatically
+
+1. Go to https://vercel.com/account/tokens
+2. Click **"Create"**
+3. Name: `GitHub CI/CD`
+4. Scope: **"Full Account"** (required for deployment)
+5. Copy the token (long alphanumeric string)
+6. Add to GitHub Secrets:
+   - Name: `VERCEL_TOKEN`
+   - Value: [Copied token from Vercel]
+   - Click **"Add secret"**
+
+#### Secret 7: VERCEL_ORG_ID
+
+**Purpose:** Specify which Vercel organization/team to deploy to
+
+1. Go to https://vercel.com/account/settings
+2. Locate **"Team/Organization ID"** (if in team) or copy your username (if personal)
+3. Format examples:
+   - Personal account: `team_xxxxxxxxxxxxxxxxxx` (shown in Team Settings)
+   - Or your username slug from URL
+4. Add to GitHub Secrets:
+   - Name: `VERCEL_ORG_ID`
+   - Value: [Your Vercel Org/Team ID]
+   - Click **"Add secret"**
+
+#### Secret 8 (OPTIONAL): VERCEL_STAGING_PROJECT_ID
+
+**Purpose:** Specify exact Vercel project for staging (recommended for multi-project teams)
+
+1. Go to https://vercel.com → select your staging project
+2. Click **"Settings"**
+3. Locate **"Project ID"** (under "General" tab)
+4. Copy the project ID
+5. Add to GitHub Secrets:
+   - Name: `VERCEL_STAGING_PROJECT_ID`
+   - Value: [Copied Project ID]
+   - Click **"Add secret"**
+
+#### Secret 9 (OPTIONAL): VERCEL_SCOPE
+
+**Purpose:** Team slug for Vercel CLI (if using team deployments)
+
+1. In Vercel dashboard, check URL: `https://vercel.com/[SCOPE]/[PROJECT]`
+2. `[SCOPE]` is your team slug or username
+3. Add to GitHub Secrets:
+   - Name: `VERCEL_SCOPE`
+   - Value: [Your team slug or username]
+   - Click **"Add secret"**
+
+### 6.3 Minimum Required Secrets
+
+For basic staging deployment, you MUST create these 7 secrets:
+
+| Secret | Source | Required | Purpose |
+|--------|--------|----------|---------|
+| `SUPABASE_STAGING_URL` | Supabase Settings | YES | Database connection |
+| `SUPABASE_STAGING_ANON_KEY` | Supabase Settings | YES | Public API key |
+| `SUPABASE_STAGING_PROJECT_REF` | Supabase Settings | YES | Project reference |
+| `SUPABASE_ACCESS_TOKEN` | Supabase Account | YES | CI/CD migrations |
+| `SUPABASE_STAGING_DB_PASSWORD` | Step 1.2 | YES | Database access |
+| `VERCEL_TOKEN` | Vercel Account | YES | Deployment auth |
+| `VERCEL_ORG_ID` | Vercel Settings | YES | Team/org identification |
+
+**Optional but Recommended:**
+- `VERCEL_STAGING_PROJECT_ID` — Specify exact project
+- `VERCEL_SCOPE` — Team slug (auto-detected if not set)
+
+### 6.4 Verify All 7 Secrets Created
+
+1. In GitHub, go to **"Settings"** → **"Secrets and variables"** → **"Actions"**
+2. You should see all 7 secrets listed:
+   - ✅ SUPABASE_STAGING_URL
+   - ✅ SUPABASE_STAGING_ANON_KEY
+   - ✅ SUPABASE_STAGING_PROJECT_REF
+   - ✅ SUPABASE_ACCESS_TOKEN
+   - ✅ SUPABASE_STAGING_DB_PASSWORD
+   - ✅ VERCEL_TOKEN
+   - ✅ VERCEL_ORG_ID
+3. Optional: VERCEL_STAGING_PROJECT_ID, VERCEL_SCOPE
+4. All should show **"Last updated: just now"** or **"Last updated: today"**
+
+**Verification Step:**
+- [ ] All 7 minimum secrets visible in GitHub UI
+- [ ] Each secret shows value has been set (masked with dots)
+- [ ] No typos in secret names
 
 ---
 
