@@ -8,6 +8,14 @@ import { Shell } from '@/components/layout/Shell';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from '@/components/ui/dialog';
 import { Search, Plus, Edit2, Trash2, ChevronLeft, ChevronRight, AlertCircle } from 'lucide-react';
 
 export const dynamic = 'force-dynamic';
@@ -55,6 +63,8 @@ export default function PacientesPage() {
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [deleteDialog, setDeleteDialog] = useState<{ open: boolean; patientId: string | null; patientName: string | null }>({ open: false, patientId: null, patientName: null });
+  const [isDeleting, setIsDeleting] = useState(false);
 
   // Fetch patients from Supabase
   useEffect(() => {
@@ -97,6 +107,49 @@ export default function PacientesPage() {
 
     fetchPatients();
   }, [user?.id, user?.session?.access_token, sortBy]);
+
+  // Handle patient deletion
+  const handleDeleteClick = (patientId: string, patientName: string) => {
+    setDeleteDialog({ open: true, patientId, patientName });
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!deleteDialog.patientId || !user?.id) return;
+
+    setIsDeleting(true);
+    try {
+      const { error: deleteError } = await supabase
+        .from('patients')
+        .delete()
+        .eq('id', deleteDialog.patientId);
+
+      if (deleteError) throw deleteError;
+
+      // Log audit trail for patient deletion
+      try {
+        await supabase.from('audit_logs').insert({
+          patient_id: deleteDialog.patientId,
+          action: 'DELETE',
+          user_id: user.id,
+          description: `Paciente ${deleteDialog.patientName} deletado`,
+          created_at: new Date().toISOString(),
+        });
+      } catch (auditError) {
+        console.warn('Failed to log audit trail:', auditError);
+        // Don't throw - audit logging failure shouldn't block patient deletion
+      }
+
+      // Remove patient from local state
+      setPatients(prev => prev.filter(p => p.id !== deleteDialog.patientId));
+      setDeleteDialog({ open: false, patientId: null, patientName: null });
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Erro ao deletar paciente';
+      setError(errorMessage);
+      console.error('Delete patient error:', err);
+    } finally {
+      setIsDeleting(false);
+    }
+  };
 
   // Filter and sort logic
   const filteredAndSortedPatients = useMemo(() => {
@@ -360,7 +413,11 @@ export default function PacientesPage() {
                             >
                               <Edit2 size={16} style={{ color: 'var(--color-gold)' }} strokeWidth={1.5} />
                             </button>
-                            <button className="p-1 rounded hover:opacity-70" title="Deletar">
+                            <button
+                              onClick={() => handleDeleteClick(patient.id, patient.name)}
+                              className="p-1 rounded hover:opacity-70"
+                              title="Deletar"
+                            >
                               <Trash2 size={16} style={{ color: '#D32F2F' }} strokeWidth={1.5} />
                             </button>
                           </div>
@@ -409,6 +466,33 @@ export default function PacientesPage() {
           )}
         </CardContent>
       </Card>
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog open={deleteDialog.open} onOpenChange={(open) => !open && setDeleteDialog({ open: false, patientId: null, patientName: null })}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Deletar Paciente</DialogTitle>
+            <DialogDescription>
+              Tem certeza que deseja deletar o paciente <strong>{deleteDialog.patientName}</strong>? Esta ação não pode ser desfeita.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setDeleteDialog({ open: false, patientId: null, patientName: null })}
+            >
+              Cancelar
+            </Button>
+            <Button
+              onClick={handleConfirmDelete}
+              disabled={isDeleting}
+              style={{ backgroundColor: '#D32F2F', color: 'white' }}
+            >
+              {isDeleting ? 'Deletando...' : 'Deletar'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </Shell>
   );
 }
