@@ -21,8 +21,8 @@ jest.mock('@supabase/supabase-js', () => ({
 }));
 
 // Mock rate limit to always allow in tests
-jest.mock('@/lib/middleware/rate-limit', () => ({
-  rateLimit: jest.fn().mockResolvedValue({ allowed: true }),
+jest.mock('@/lib/rate-limit', () => ({
+  checkRateLimit: jest.fn().mockResolvedValue({ allowed: true }),
 }));
 
 describe('User Registration Flow - Integration', () => {

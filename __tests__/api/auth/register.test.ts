@@ -3,8 +3,8 @@ import { NextRequest } from 'next/server';
 import { createClient as createSupabaseClient } from '@supabase/supabase-js';
 
 // Mock rate limit
-jest.mock('@/lib/middleware/rate-limit', () => ({
-  rateLimit: jest.fn().mockResolvedValue({ allowed: true }),
+jest.mock('@/lib/rate-limit', () => ({
+  checkRateLimit: jest.fn().mockResolvedValue({ allowed: true }),
 }));
 
 // Mock auth utilities
