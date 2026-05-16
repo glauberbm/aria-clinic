@@ -1,5 +1,6 @@
 "use client";
 
+import { useCallback } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
@@ -44,14 +45,17 @@ export function WaitlistForm({
     },
   });
 
-  const handleSubmit = async (data: WaitlistFormData) => {
-    try {
-      await onSubmit(data);
-      form.reset();
-    } catch (error) {
-      console.error("Failed to add to waitlist:", error);
-    }
-  };
+  const handleSubmit = useCallback(
+    async (data: WaitlistFormData) => {
+      try {
+        await onSubmit(data);
+        form.reset();
+      } catch (error) {
+        console.error("Failed to add to waitlist:", error);
+      }
+    },
+    [onSubmit, form]
+  );
 
   return (
     <Form {...form}>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { DayPicker } from "react-day-picker";
 import { ptBR } from "react-day-picker/locale";
 import "react-day-picker/dist/style.css";
@@ -21,27 +21,29 @@ export function CalendarView({
   const [displayMonth, setDisplayMonth] = useState(new Date());
   const { appointments } = useScheduler();
 
-  // Get all dates with appointments
-  const datesWithAppointments = new Set(
-    appointments.map((apt) => {
-      const date = new Date(apt.date);
-      return `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`;
-    })
-  );
+  // Get all dates with appointments (memoized)
+  const datesWithAppointments = useMemo(() => {
+    return new Set(
+      appointments.map((apt) => {
+        const date = new Date(apt.date);
+        return `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`;
+      })
+    );
+  }, [appointments]);
 
-  // Custom CSS classes for days with appointments
-  const modifiers = {
+  // Custom CSS classes for days with appointments (memoized)
+  const modifiers = useMemo(() => ({
     hasAppointment: (date: Date) => {
       const key = `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`;
       return datesWithAppointments.has(key);
     },
-  };
+  }), [datesWithAppointments]);
 
-  const modifiersClassNames = {
+  const modifiersClassNames = useMemo(() => ({
     hasAppointment: "bg-[#8B6F47]/10 font-semibold text-[#8B6F47]",
-  };
+  }), []);
 
-  const modifiersStyles = {
+  const modifiersStyles = useMemo(() => ({
     selected: {
       backgroundColor: "#8B6F47",
       color: "white",
@@ -50,24 +52,24 @@ export function CalendarView({
       fontWeight: "bold" as const,
       color: "#8B6F47",
     },
-  };
+  }), []);
 
-  const handlePreviousMonth = () => {
-    setDisplayMonth(
-      new Date(displayMonth.getFullYear(), displayMonth.getMonth() - 1, 1)
+  const handlePreviousMonth = useCallback(() => {
+    setDisplayMonth((month) =>
+      new Date(month.getFullYear(), month.getMonth() - 1, 1)
     );
-  };
+  }, []);
 
-  const handleNextMonth = () => {
-    setDisplayMonth(
-      new Date(displayMonth.getFullYear(), displayMonth.getMonth() + 1, 1)
+  const handleNextMonth = useCallback(() => {
+    setDisplayMonth((month) =>
+      new Date(month.getFullYear(), month.getMonth() + 1, 1)
     );
-  };
+  }, []);
 
-  const handleToday = () => {
+  const handleToday = useCallback(() => {
     setDisplayMonth(new Date());
     onSelectDate(new Date());
-  };
+  }, [onSelectDate]);
 
   return (
     <Card className="p-4 border-0 bg-white shadow-sm">

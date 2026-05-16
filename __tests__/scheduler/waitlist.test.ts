@@ -17,7 +17,6 @@ describe("Waitlist Store — FIFO Ordering", () => {
 
   it("should add entry to waitlist", () => {
     const { result } = getIsolatedHook();
-    const initialCount = result.current.waitlist.length;
 
     let newEntryId: string;
     act(() => {
@@ -57,7 +56,6 @@ describe("Waitlist Store — FIFO Ordering", () => {
       addedEntries.push(e1.id, e2.id, e3.id);
     });
 
-    const next = result.current.getNextWaitlistPatient();
     const addedPatient = result.current.waitlist.find((e) => addedEntries.includes(e.id));
     expect(addedPatient).toBeDefined();
   });
@@ -66,20 +64,18 @@ describe("Waitlist Store — FIFO Ordering", () => {
     const { result } = getIsolatedHook();
 
     let entry1Id: string;
-    let entry2Id: string;
     act(() => {
       const e1 = result.current.addToWaitlist({
         patientId: "test-patient-skip-1",
         patientName: "Test Maria Skip",
         status: "pending",
       });
-      const e2 = result.current.addToWaitlist({
+      result.current.addToWaitlist({
         patientId: "test-patient-skip-2",
         patientName: "Test Ana Skip",
         status: "pending",
       });
       entry1Id = e1.id;
-      entry2Id = e2.id;
       result.current.updateWaitlistEntry(entry1Id, { status: "offered" });
     });
 

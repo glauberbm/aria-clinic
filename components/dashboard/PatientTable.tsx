@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import { ChevronUp, ChevronDown } from 'lucide-react';
 import { PatientRecord, patientData } from '@/lib/mock/patient-data';
 
@@ -15,56 +15,59 @@ const PatientTable = ({ data = patientData }: PatientTableProps) => {
   const [sortField, setSortField] = useState<SortField>('lastAppointment');
   const [sortOrder, setSortOrder] = useState<SortOrder>('desc');
 
-  const handleSort = (field: SortField) => {
-    if (sortField === field) {
-      // Toggle sort order if clicking the same field
-      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
-    } else {
-      // Set new sort field with ascending order
-      setSortField(field);
-      setSortOrder('asc');
-    }
-  };
+  const handleSort = useCallback((field: SortField) => {
+    setSortField((currentField) => {
+      if (currentField === field) {
+        setSortOrder((order) => (order === 'asc' ? 'desc' : 'asc'));
+      } else {
+        setSortField(field);
+        setSortOrder('asc');
+      }
+      return currentField === field ? currentField : field;
+    });
+  }, []);
 
-  const sortedData = [...data].sort((a, b) => {
-    if (!sortField) return 0;
+  const sortedData = useMemo(() => {
+    return [...data].sort((a, b) => {
+      if (!sortField) return 0;
 
-    let aValue: string | number = '';
-    let bValue: string | number = '';
+      let aValue: string | number = '';
+      let bValue: string | number = '';
 
-    if (sortField === 'name') {
-      aValue = a.name.toLowerCase();
-      bValue = b.name.toLowerCase();
-    } else if (sortField === 'protocol') {
-      aValue = a.protocol.toLowerCase();
-      bValue = b.protocol.toLowerCase();
-    } else if (sortField === 'lastAppointment') {
-      aValue = new Date(a.lastAppointment).getTime();
-      bValue = new Date(b.lastAppointment).getTime();
-    }
+      if (sortField === 'name') {
+        aValue = a.name.toLowerCase();
+        bValue = b.name.toLowerCase();
+      } else if (sortField === 'protocol') {
+        aValue = a.protocol.toLowerCase();
+        bValue = b.protocol.toLowerCase();
+      } else if (sortField === 'lastAppointment') {
+        aValue = new Date(a.lastAppointment).getTime();
+        bValue = new Date(b.lastAppointment).getTime();
+      }
 
-    if (aValue < bValue) return sortOrder === 'asc' ? -1 : 1;
-    if (aValue > bValue) return sortOrder === 'asc' ? 1 : -1;
-    return 0;
-  });
+      if (aValue < bValue) return sortOrder === 'asc' ? -1 : 1;
+      if (aValue > bValue) return sortOrder === 'asc' ? 1 : -1;
+      return 0;
+    });
+  }, [data, sortField, sortOrder]);
 
-  const getSortIcon = (field: SortField) => {
+  const getSortIcon = useCallback((field: SortField) => {
     if (sortField !== field) return null;
     return sortOrder === 'asc' ? (
       <ChevronUp className="w-4 h-4 inline-block ml-1" />
     ) : (
       <ChevronDown className="w-4 h-4 inline-block ml-1" />
     );
-  };
+  }, [sortField, sortOrder]);
 
-  const formatDate = (dateStr: string) => {
+  const formatDate = useCallback((dateStr: string) => {
     const date = new Date(dateStr);
     return date.toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'short',
       day: 'numeric',
     });
-  };
+  }, []);
 
   return (
     <div className="overflow-x-auto">

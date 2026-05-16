@@ -75,7 +75,7 @@ describe('/api/auth/login', () => {
           error: { message: 'Invalid login credentials' },
         }),
       },
-    } as ReturnType<typeof createSupabaseClient>);
+    } as unknown as ReturnType<typeof createSupabaseClient>);
 
     const request = new NextRequest('http://localhost:3000/api/auth/login', {
       method: 'POST',
@@ -144,7 +144,7 @@ describe('/api/auth/login', () => {
           error: { message: 'User not found' },
         }),
       },
-    } as ReturnType<typeof createSupabaseClient>);
+    } as unknown as ReturnType<typeof createSupabaseClient>);
 
     const request = new NextRequest('http://localhost:3000/api/auth/login', {
       method: 'POST',
