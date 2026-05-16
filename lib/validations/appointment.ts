@@ -6,6 +6,14 @@ export const appointmentFormSchema = z.object({
     .min(1, "Patient name required")
     .max(100, "Patient name too long"),
 
+  patientPhone: z
+    .string()
+    .optional()
+    .refine(
+      (phone) => !phone || /^\+55\d{10,11}$/.test(phone),
+      "Invalid Brazilian phone number (format: +55XXXXXXXXXXX)"
+    ),
+
   doctorId: z.string().uuid("Invalid doctor"),
 
   date: z.date({ message: "Date required" }).refine(

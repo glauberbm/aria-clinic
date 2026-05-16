@@ -20,13 +20,36 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 );
 
+export async function OPTIONS(request: NextRequest) {
+  const origin = request.headers.get('origin');
+  return handleCORSPreflight(origin || undefined);
+}
+
 export async function POST(request: NextRequest) {
   try {
+    // Rate limiting: max 1 reminder per patient per minute
+    const origin = request.headers.get('origin');
     const body = await request.json();
     const { appointmentId, reminderType = '24h', patientId } = body;
 
     if (!appointmentId && !patientId) {
-      return NextResponse.json({ error: 'Missing appointmentId or patientId' }, { status: 400 });
+      const response = NextResponse.json({ error: 'Missing appointmentId or patientId' }, { status: 400 });
+      return setCORSHeaders(response, origin || undefined);
+    }
+
+    // Rate limit check: max 1 message per patient per minute
+    const patientIdentifier = appointmentId || patientId;
+    const rateLimitResult = await checkRateLimit(patientIdentifier, 'whatsapp-reminder', 1, 60);
+
+    if (!rateLimitResult.allowed) {
+      const response = NextResponse.json(
+        {
+          error: 'Too many reminder requests. Please try again later.',
+          resetTime: rateLimitResult.resetTime
+        },
+        { status: 429 }
+      );
+      return setCORSHeaders(response, origin || undefined);
     }
 
     // Fetch appointment details
@@ -44,7 +67,8 @@ export async function POST(request: NextRequest) {
         .single();
 
       if (error || !data) {
-        return NextResponse.json({ error: 'Appointment not found' }, { status: 404 });
+        const response = NextResponse.json({ error: 'Appointment not found' }, { status: 404 });
+        return setCORSHeaders(response, origin || undefined);
       }
       appointment = data;
     } else {
@@ -60,7 +84,8 @@ export async function POST(request: NextRequest) {
         .single();
 
       if (error || !data) {
-        return NextResponse.json({ error: 'No upcoming appointment found' }, { status: 404 });
+        const response = NextResponse.json({ error: 'No upcoming appointment found' }, { status: 404 });
+        return setCORSHeaders(response, origin || undefined);
       }
       appointment = data;
     }
@@ -73,15 +98,17 @@ export async function POST(request: NextRequest) {
       .single();
 
     if (patientError || !patient) {
-      return NextResponse.json({ error: 'Patient not found' }, { status: 404 });
+      const response = NextResponse.json({ error: 'Patient not found' }, { status: 404 });
+      return setCORSHeaders(response, origin || undefined);
     }
 
     // Check if patient has WhatsApp enabled
     if (!patient.whatsapp_enabled) {
-      return NextResponse.json(
+      const response = NextResponse.json(
         { message: 'Patient has WhatsApp disabled', skipped: true },
         { status: 200 }
       );
+      return setCORSHeaders(response, origin || undefined);
     }
 
     // Format appointment time for display
@@ -114,13 +141,14 @@ export async function POST(request: NextRequest) {
     });
 
     if (!result.success) {
-      return NextResponse.json(
+      const response = NextResponse.json(
         {
           error: 'Failed to send reminder',
           details: result.error,
         },
         { status: 500 }
       );
+      return setCORSHeaders(response, origin || undefined);
     }
 
     // Update reminder tracking in appointment
@@ -133,21 +161,24 @@ export async function POST(request: NextRequest) {
       })
       .eq('id', appointment.id);
 
-    return NextResponse.json({
+    const successResponse = NextResponse.json({
       success: true,
       messageId: result.messageId,
       patientName: patient.name,
       appointmentTime,
       reminderType,
     });
+    return setCORSHeaders(successResponse, origin || undefined);
   } catch (error) {
     console.error('Error sending appointment reminder:', error);
-    return NextResponse.json(
+    const origin = request.headers.get('origin');
+    const errorResponse = NextResponse.json(
       {
         error: 'Internal server error',
         message: error instanceof Error ? error.message : 'Unknown error',
       },
       { status: 500 }
     );
+    return setCORSHeaders(errorResponse, origin || undefined);
   }
 }

@@ -15,11 +15,19 @@ interface RateLimitResult {
   resetTime: number;
 }
 
+interface RedisClient {
+  incr: (key: string) => Promise<number>;
+  expire: (key: string, seconds: number) => Promise<number>;
+  ttl: (key: string) => Promise<number>;
+  del: (key: string) => Promise<number>;
+  get: (key: string) => Promise<number | null>;
+}
+
 // In-memory store for rate limiting (development/fallback)
 const rateLimitStore = new Map<string, Array<number>>();
 
 let redisAvailable = false;
-let redisClient: any = null;
+let redisClient: RedisClient | null = null;
 
 // Initialize Redis client if available
 if (process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN) {

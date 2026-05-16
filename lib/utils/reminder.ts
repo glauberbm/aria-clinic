@@ -39,7 +39,16 @@ export function formatDatePT(date: Date): string {
 }
 
 /**
+ * Escape template injection characters to prevent SMS/WhatsApp injection attacks
+ * Removes curly braces and other potentially dangerous characters from user input
+ */
+function escapeTemplate(text: string): string {
+  return text.replace(/[{}]/g, '');
+}
+
+/**
  * Fill template with appointment and doctor data
+ * User input (patientName, doctor.name) is escaped to prevent template injection
  */
 export function fillTemplate(
   template: string,
@@ -48,10 +57,14 @@ export function fillTemplate(
 ): string {
   let result = template;
 
-  result = result.replace(/\{\{PATIENT\}\}/g, appointment.patientName);
+  // Escape user input to prevent template injection
+  const escapedPatientName = escapeTemplate(appointment.patientName);
+  const escapedDoctorName = escapeTemplate(doctor.name);
+
+  result = result.replace(/\{\{PATIENT\}\}/g, escapedPatientName);
   result = result.replace(/\{\{DATE\}\}/g, formatDatePT(appointment.date));
   result = result.replace(/\{\{TIME\}\}/g, appointment.timeStart);
-  result = result.replace(/\{\{DOCTOR\}\}/g, doctor.name);
+  result = result.replace(/\{\{DOCTOR\}\}/g, escapedDoctorName);
   result = result.replace(
     /\{\{PROCEDURE\}\}/g,
     appointment.type === "procedure" ? "procedimento" : "consulta"
