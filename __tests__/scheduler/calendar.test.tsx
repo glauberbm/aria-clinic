@@ -12,11 +12,11 @@ describe("CalendarView Component", () => {
       />
     );
 
-    // Find navigation buttons by their aria-labels
+    // Find navigation buttons by their aria-labels and text content
     const buttons = screen.getAllByRole("button");
     const prevButton = buttons.find((btn) => btn.getAttribute("aria-label")?.includes("anterior"));
     const nextButton = buttons.find((btn) => btn.getAttribute("aria-label")?.includes("Próximo"));
-    const todayButton = screen.getByRole("button", { name: /hoje/i });
+    const todayButton = buttons.find((btn) => btn.textContent?.trim() === "Hoje");
 
     expect(prevButton).toBeInTheDocument();
     expect(nextButton).toBeInTheDocument();

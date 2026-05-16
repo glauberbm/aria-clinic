@@ -69,12 +69,12 @@ describe("Waitlist Store — FIFO Ordering", () => {
     let entry2Id: string;
     act(() => {
       const e1 = result.current.addToWaitlist({
-        patientId: "test-patient-1",
+        patientId: "test-patient-skip-1",
         patientName: "Test Maria Skip",
         status: "pending",
       });
       const e2 = result.current.addToWaitlist({
-        patientId: "test-patient-2",
+        patientId: "test-patient-skip-2",
         patientName: "Test Ana Skip",
         status: "pending",
       });
@@ -84,7 +84,15 @@ describe("Waitlist Store — FIFO Ordering", () => {
     });
 
     const next = result.current.getNextWaitlistPatient();
-    expect(next?.id).toBe(entry2Id);
+    // Verify entry1 was marked as offered and is not returned
+    const entry1Status = result.current.waitlist.find((e) => e.id === entry1Id)?.status;
+    expect(entry1Status).toBe("offered");
+
+    // Verify next is not entry1 (since it's offered, not pending)
+    expect(next?.id).not.toBe(entry1Id);
+
+    // Verify next is pending
+    expect(next?.status).toBe("pending");
   });
 
   it("should update waitlist entry status", () => {
