@@ -77,9 +77,37 @@
 
 ---
 
-### ⏳ DASH-003: Protocol Chart (4h est.)
+### ✅ DASH-003: Protocol Chart (3h 30m)
 
-**Status:** TODO
+**Status:** COMPLETE ✅
+
+**What was built:**
+- `/components/dashboard/ProtocolChart.tsx` — Donut chart component using Recharts with responsive sizing
+- `/lib/mock/protocol-data.ts` — ProtocolData interface and 4 mock protocols (Preventive Care, Acute Treatment, Chronic Management, Wellness)
+- `/app/dashboard/page.tsx` — Updated to import and render ProtocolChart with mock data
+- `/__tests__/dashboard/ProtocolChart.test.tsx` — 14 unit tests for rendering, tooltips, legend, accessibility
+
+**AC Met:**
+- [x] Donut chart with 4 color-coded segments (blue, red, green, yellow)
+- [x] Total patient count displayed in donut center with label
+- [x] Legend below chart showing protocol name, count, and percentage
+- [x] Hover tooltip displays protocol name, patient count, and percentage
+- [x] Responsive container scales to parent width
+- [x] Accessible color palette (no red/green only distinction)
+- [x] Accessibility: aria-label with full chart description, hidden from screen reader role=img
+- [x] Mock data: 4 protocols totaling 342 patients
+- [x] Tests: ≥70% coverage (14/14 tests passing)
+- [x] No lint errors in new code
+
+**Test Results:**
+- Protocol Chart Tests: 14/14 ✅
+- Full Suite: 159/159 ✅ (9 skipped)
+- Lint: 0 errors in DASH-003 code
+
+**Commits:**
+- `0f244ca` feat: protocol distribution chart [EPIC-002-DASH-003]
+
+**Time Spent:** 3h 30m ✅
 
 ---
 
@@ -107,11 +135,11 @@
 |-------|------|--------|-------|---------|
 | DASH-001 | 4h | ✅ DONE | 13/13 ✅ | 91f90e0 |
 | DASH-002 | 2h 15m | ✅ DONE | 15/15 ✅ | 2bcec5e |
-| DASH-003 | 4h | ⏳ TODO | — | — |
-| DASH-004 | 4h | TODO | — | — |
+| DASH-003 | 3h 30m | ✅ DONE | 14/14 ✅ | 0f244ca |
+| DASH-004 | 4h | ⏳ TODO | — | — |
 | DASH-005 | 3h | TODO | — | — |
 | DASH-006 | 2h | TODO | — | — |
-| **TOTAL** | **18h 15m** | **4/6 TODO** | — | — |
+| **TOTAL** | **14h 45m** | **3/6 TODO** | — | — |
 
 ---
 
@@ -126,4 +154,4 @@
 
 ---
 
-**Ready for:** DASH-003 Protocol Chart
+**Ready for:** DASH-004 Financial Chart
