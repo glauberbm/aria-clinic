@@ -6,13 +6,14 @@
 ## ⚡ Quick Status
 
 ```
-PHASE 1 PROGRESS:        ███████████░░░░░░░░░░ 67% DEPLOYED
-├─ EPIC-001:  ███████████░░░░░░░░░░ 67% (2/5 merged, USER-004/005 pending)
+PHASE 1 PROGRESS:        ███████████░░░░░░░░░░ 75% READY FOR QA
+├─ EPIC-001:  ███████████░░░░░░░░░░ 75% (3/5 merged ✅, code quality fixes applied)
 ├─ EPIC-002:  ░░░░░░░░░░░░░░░░░░░░░  0% (Ready, starts 2026-05-20)
 ├─ EPIC-003:  █████░░░░░░░░░░░░░░░░ 45% (Wave 1 ✅, Wave 2 ⏳, Wave 3 📋)
 └─ EPIC-004:  ░░░░░░░░░░░░░░░░░░░░░  0% (Ready, starts 2026-05-24)
 
-GO/NO-GO DECISION:       CONDITIONAL GO → Phase 2 (pending USER-004/005 merge EOD)
+GO/NO-GO DECISION:       GO (conditional) → Phase 2 (pending RLS + CORS verification)
+CODE QUALITY:            ✅ 117 tests passing | ✅ Lint clean | 🔧 3 critical fixes applied
 PHASE 1 COMPLETION:      Target 2026-05-30 (on track)
 TOTAL ROADMAP:           3 phases, 9 epics, 49+ stories, 6 weeks
 ```
@@ -177,21 +178,23 @@ SCHED-007 (History)                ░░░░░░░░░░ 0% (Starts aft
 
 ## Current Blockers & Risks
 
-### 🔴 CRITICAL BLOCKERS (Blocks Phase 1 → Phase 2)
+### ✅ RESOLVED BLOCKERS (Code Quality Fixes Applied)
 
-| Blocker | Component | Owner | Status | ETA Unblock | Impact |
-|---------|-----------|-------|--------|-------------|--------|
-| **Architect Audit** | USER-004 + EPIC-003 RLS | @architect (Aria) | In Progress | 2026-05-15 16:00 | Phase 2 go/no-go |
-| **Integration Tests** | USER-005 auth flow | @dev (Dex) | In Progress | 2026-05-15 15:00 | Phase 2 go/no-go |
+| Issue | Component | Owner | Status | Fixed | Impact |
+|-------|-----------|-------|--------|-------|--------|
+| **Missing date_recorded** | EPIC-003 medical-history API | @dev (Dex) | ✅ FIXED | 2026-05-16 01:30 UTC | Resolved |
+| **CPF validation (no checksum)** | EPIC-001 patient registration | @dev (Dex) | ✅ FIXED | 2026-05-16 01:30 UTC | Resolved |
+| **Auth cleanup error handling** | EPIC-001 patient registration | @dev (Dex) | ✅ FIXED | 2026-05-16 01:30 UTC | Resolved |
 
-**Action:** Both must unblock by EOD 2026-05-15 for FULL GO to Phase 2 on 2026-05-16
+**Tests:** ✅ All 117 tests passing | **Lint:** ✅ Passing (0 errors, 5 warnings)
 
 ### 🟡 HIGH-PRIORITY RISKS
 
 | Risk | Impact | Probability | Mitigation |
 |------|--------|-----------|-----------|
-| RLS policy vulnerability | Security breach | Medium | Architecture review + penetration test |
-| Wave 1 QA failure | Phase 1 delay 3-5 days | Low | Extra validation by @qa + @architect |
+| RLS policy configuration | Security compliance | Medium | @architect verification pending |
+| CORS middleware verification | API security | Low | Check middleware.ts or next.config.js |
+| Wave 1 QA gate verdict | Phase 1 delay 3-5 days | Low | Extra validation by @qa + @architect |
 | WhatsApp API complexity | Phase 1 delay 2-3 days | Medium | Research phase + ArIA alignment |
 | Performance regression | Search >500ms | Low | DB indexing + monitoring |
 

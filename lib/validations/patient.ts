@@ -1,5 +1,34 @@
 import { z } from 'zod';
 
+// CPF validation: mod-11 checksum algorithm (Brazilian)
+const validateCPFChecksum = (cpf: string): boolean => {
+  const cleaned = cpf.replace(/\D/g, '');
+  if (cleaned.length !== 11) return false;
+
+  // Check if all digits are the same (invalid CPF)
+  if (/^(\d)\1{10}$/.test(cleaned)) return false;
+
+  // Validate first check digit
+  let sum = 0;
+  for (let i = 0; i < 9; i++) {
+    sum += parseInt(cleaned[i]) * (10 - i);
+  }
+  const remainder1 = sum % 11;
+  const digit1 = remainder1 < 2 ? 0 : 11 - remainder1;
+  if (digit1 !== parseInt(cleaned[9])) return false;
+
+  // Validate second check digit
+  sum = 0;
+  for (let i = 0; i < 10; i++) {
+    sum += parseInt(cleaned[i]) * (11 - i);
+  }
+  const remainder2 = sum % 11;
+  const digit2 = remainder2 < 2 ? 0 : 11 - remainder2;
+  if (digit2 !== parseInt(cleaned[10])) return false;
+
+  return true;
+};
+
 export const patientRegistrationSchema = z.object({
   email: z
     .string()
@@ -34,11 +63,9 @@ export const patientRegistrationSchema = z.object({
     .refine(
       (cpf) => {
         if (!cpf) return true;
-        // Remove non-digits
-        const cleaned = cpf.replace(/\D/g, '');
-        return cleaned.length === 11;
+        return validateCPFChecksum(cpf);
       },
-      'CPF deve conter 11 dígitos'
+      'CPF inválido'
     ),
   sex: z
     .enum(['Masculino', 'Feminino', 'Outro'])

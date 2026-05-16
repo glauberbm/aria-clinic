@@ -152,6 +152,7 @@ export async function POST(request: NextRequest) {
         description: validatedData.description,
         severity: validatedData.severity || null,
         is_active: true,
+        date_recorded: new Date().toISOString(),
       })
       .select('*')
       .single();
