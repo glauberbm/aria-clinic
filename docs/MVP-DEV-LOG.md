@@ -147,9 +147,38 @@
 
 ---
 
-### ⏳ DASH-005: Patient List (3h est.)
+### ✅ DASH-005: Patient List (2h 45m)
 
-**Status:** TODO
+**Status:** COMPLETE ✅
+
+**What was built:**
+- `/lib/mock/patient-data.ts` — PatientRecord interface and 10 mock patients (PT-001 through PT-010)
+- `/components/dashboard/PatientTable.tsx` — Sortable table component with 5 columns (Name, ID, Phone, Protocol, Last Appointment)
+- `/app/dashboard/page.tsx` — Updated to render PatientTable instead of placeholder
+- `/__tests__/dashboard/PatientTable.test.tsx` — 18 unit tests for table rendering, sorting, accessibility
+
+**AC Met:**
+- [x] Table displays: Patient Name, Patient ID, Phone, Protocol, Last Appointment
+- [x] Columns are sortable (Name, Protocol, Last Appointment)
+- [x] Click header to toggle ascending/descending sort
+- [x] Default sort: Last Appointment descending (most recent first)
+- [x] Row hover effect with subtle gray background
+- [x] Accessible: aria-sort attributes on sortable headers
+- [x] Date formatting: "Month Day, Year" (e.g., "May 14, 2026")
+- [x] 10 patient rows displayed (no pagination Phase 1)
+- [x] Table responsive with overflow-x-auto for mobile
+- [x] Tests: ≥70% coverage (18/18 tests passing)
+- [x] No lint errors in new code
+
+**Test Results:**
+- Patient Table Tests: 18/18 ✅
+- Dashboard Suite: 76/76 ✅
+- Lint: 0 errors in DASH-005 code
+
+**Commits:**
+- `fb8b97f` feat: patient list table with sorting [EPIC-002-DASH-005]
+
+**Time Spent:** 2h 45m ✅
 
 ---
 
@@ -167,9 +196,9 @@
 | DASH-002 | 2h 15m | ✅ DONE | 15/15 ✅ | 2bcec5e |
 | DASH-003 | 3h 30m | ✅ DONE | 14/14 ✅ | 0f244ca |
 | DASH-004 | 3h 15m | ✅ DONE | 16/16 ✅ | 55be1ae |
-| DASH-005 | 3h | ⏳ TODO | — | — |
-| DASH-006 | 2h | TODO | — | — |
-| **TOTAL** | **11h 30m** | **2/6 TODO** | — | — |
+| DASH-005 | 2h 45m | ✅ DONE | 18/18 ✅ | fb8b97f |
+| DASH-006 | 2h | ⏳ TODO | — | — |
+| **TOTAL** | **16h 45m** | **1/6 TODO** | — | — |
 
 ---
 
@@ -177,11 +206,14 @@
 
 - **jest-environment-jsdom** installed to support React Testing Library
 - Sidebar state managed client-side (React useState)
+- PatientTable sorting state managed with useState (sortField, sortOrder)
+- Date sorting handles timezone differences with getTime() comparison
 - User profile data is placeholder; will be replaced with real data in later stories
 - Navigation links point to stubs; actual page routing will be completed in upcoming stories
 - TailwindCSS responsive classes used throughout for mobile-first design
 - lucide-react icons used for Header (Bell, ChevronDown, User) and Sidebar (Menu, X, Home, Users, DollarSign, Settings, LogOut)
+- ChevronUp/ChevronDown icons used in PatientTable sortable headers for visual feedback
 
 ---
 
-**Ready for:** DASH-005 Patient List
+**Ready for:** DASH-006 Responsive Adjustments

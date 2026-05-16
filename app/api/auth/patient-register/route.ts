@@ -141,9 +141,9 @@ export async function POST(request: NextRequest) {
     }
 
     // Send verification email
-    const { error: emailError } = await supabase.auth.resendOtp({
-      email: validatedData.email,
+    const { error: emailError } = await supabase.auth.resend({
       type: 'email_change',
+      email: validatedData.email,
     });
 
     if (emailError) {

@@ -111,7 +111,7 @@ export function validatePatientRegistration(data: PatientTestData) {
   if (!data.cpf?.match(/^\d{11}$/)) errors.cpf = 'CPF must have 11 digits';
   if (!data.dateOfBirth) errors.dateOfBirth = 'Date of birth is required';
 
-  const dob = new Date(data.dateOfBirth);
+  const dob = new Date(data.dateOfBirth || '');
   const age = (new Date().getTime() - dob.getTime()) / (365.25 * 24 * 60 * 60 * 1000);
   if (age < 18) errors.dateOfBirth = 'Patient must be at least 18 years old';
 
