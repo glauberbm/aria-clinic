@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { v4 as uuid } from "uuid";
+import { getAvailableSlots, getAppointmentsForDoctor } from "@/lib/utils/scheduler";
 
 export type AppointmentStatus =
   | "scheduled"
@@ -13,6 +14,7 @@ export interface Appointment {
   id: string;
   patientId: string;
   patientName: string;
+  patientPhone: string; // WhatsApp phone number (format: +55XXXXXXXXXXX)
   doctorId: string;
   doctorName: string;
   date: Date;
@@ -88,6 +90,25 @@ const MOCK_DOCTORS: Doctor[] = [
   },
 ];
 
+// Mock phone numbers for testing WhatsApp integration
+const MOCK_PATIENT_PHONES = [
+  "+5585987654321",
+  "+5585987654322",
+  "+5585987654323",
+  "+5585987654324",
+  "+5585987654325",
+  "+5585987654326",
+  "+5585987654327",
+  "+5585987654328",
+  "+5585987654329",
+  "+5585987654330",
+  "+5585987654331",
+  "+5585987654332",
+  "+5585987654333",
+  "+5585987654334",
+  "+5585987654335",
+];
+
 // Mock appointments - 25 appointments across 30 days starting from today
 const generateMockAppointments = (): Appointment[] => {
   const today = new Date();
@@ -145,6 +166,8 @@ const generateMockAppointments = (): Appointment[] => {
         patientId: uuid(),
         patientName:
           patientNames[Math.floor(Math.random() * patientNames.length)],
+        patientPhone:
+          MOCK_PATIENT_PHONES[Math.floor(Math.random() * MOCK_PATIENT_PHONES.length)],
         doctorId: doctor.id,
         doctorName: doctor.name,
         date: new Date(currentDate),
@@ -168,10 +191,30 @@ const generateMockAppointments = (): Appointment[] => {
 
 const MOCK_APPOINTMENTS = generateMockAppointments();
 
+export interface ReminderSettings {
+  enabled: boolean;
+  timings: {
+    dayBefore: boolean;  // 24h before
+    hourBefore: boolean; // 1h before
+  };
+}
+
+export interface ReminderHistory {
+  id: string;
+  appointmentId: string;
+  patientName: string;
+  timestamp: Date;
+  status: "sent" | "failed";
+  messageId?: string;
+  error?: string;
+}
+
 interface SchedulerStore {
   // Data
   appointments: Appointment[];
   doctors: Doctor[];
+  reminderSettings: ReminderSettings;
+  reminderHistory: ReminderHistory[];
 
   // UI
   selectedMonth: Date;
@@ -181,16 +224,28 @@ interface SchedulerStore {
   addAppointment: (apt: Omit<Appointment, "id">) => Appointment;
   updateAppointment: (id: string, updates: Partial<Appointment>) => void;
   cancelAppointment: (id: string) => void;
+  setReminderSettings: (settings: Partial<ReminderSettings>) => void;
+  sendReminder: (appointmentId: string) => Promise<{ success: boolean; messageId?: string; error?: string }>;
 
   // Selectors
   getAppointmentsForDate: (date: Date) => Appointment[];
   getAppointmentsForMonth: (date: Date) => Appointment[];
   getDoctorById: (id: string) => Doctor | undefined;
+  getAvailableSlots: (doctorId: string, date: Date, duration?: number) => Array<{ start: string; end: string; available: boolean }>;
+  getAppointmentsForDoctor: (doctorId: string, date?: Date) => Appointment[];
 }
 
 export const useScheduler = create<SchedulerStore>((set, get) => ({
   appointments: MOCK_APPOINTMENTS,
   doctors: MOCK_DOCTORS,
+  reminderSettings: {
+    enabled: true,
+    timings: {
+      dayBefore: true,
+      hourBefore: true,
+    },
+  },
+  reminderHistory: [],
   selectedMonth: new Date(),
   selectedDate: null,
 
@@ -247,5 +302,82 @@ export const useScheduler = create<SchedulerStore>((set, get) => ({
   getDoctorById: (id) => {
     const state = get();
     return state.doctors.find((doctor) => doctor.id === id);
+  },
+
+  getAvailableSlots: (doctorId, date, duration = 30) => {
+    const state = get();
+    return getAvailableSlots(doctorId, date, duration, state.appointments, state.doctors);
+  },
+
+  getAppointmentsForDoctor: (doctorId, date) => {
+    const state = get();
+    return getAppointmentsForDoctor(doctorId, date, state.appointments);
+  },
+
+  setReminderSettings: (settings) => {
+    set((state) => ({
+      reminderSettings: {
+        ...state.reminderSettings,
+        ...settings,
+        timings: settings.timings
+          ? { ...state.reminderSettings.timings, ...settings.timings }
+          : state.reminderSettings.timings,
+      },
+    }));
+  },
+
+  sendReminder: async (appointmentId) => {
+    const state = get();
+    const appointment = state.appointments.find((a) => a.id === appointmentId);
+
+    if (!appointment) {
+      return { success: false, error: "Appointment not found" };
+    }
+
+    const doctor = state.doctors.find((d) => d.id === appointment.doctorId);
+    if (!doctor) {
+      return { success: false, error: "Doctor not found" };
+    }
+
+    // Mock WhatsApp send with 500ms delay
+    try {
+      const result = await new Promise<{ status: "sent"; messageId: string }>((resolve) => {
+        setTimeout(() => {
+          resolve({ status: "sent", messageId: `mock-${Date.now()}` });
+        }, 500);
+      });
+
+      // Add to history
+      const historyEntry: ReminderHistory = {
+        id: uuid(),
+        appointmentId,
+        patientName: appointment.patientName,
+        timestamp: new Date(),
+        status: "sent",
+        messageId: result.messageId,
+      };
+
+      set((state) => ({
+        reminderHistory: [historyEntry, ...state.reminderHistory],
+      }));
+
+      return { success: true, messageId: result.messageId };
+    } catch (error) {
+      const errorMsg = error instanceof Error ? error.message : "Unknown error";
+      const historyEntry: ReminderHistory = {
+        id: uuid(),
+        appointmentId,
+        patientName: appointment.patientName,
+        timestamp: new Date(),
+        status: "failed",
+        error: errorMsg,
+      };
+
+      set((state) => ({
+        reminderHistory: [historyEntry, ...state.reminderHistory],
+      }));
+
+      return { success: false, error: errorMsg };
+    }
   },
 }));
