@@ -17,17 +17,6 @@ describe("Appointment Form Utilities", () => {
     },
   };
 
-  const mockDoctorWeekends: Doctor = {
-    id: "doc-2",
-    name: "Dr. Santos",
-    specialty: "Procedimentos",
-    workingHours: {
-      start: "10:00",
-      end: "16:00",
-      daysOfWeek: [2, 3, 4, 5, 6], // Mon-Fri and Sat
-    },
-  };
-
   const mockAppointments: Appointment[] = [
     {
       id: "apt-1",

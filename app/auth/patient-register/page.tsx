@@ -44,8 +44,6 @@ export default function PatientRegisterPage() {
         throw new Error(data.message || 'Erro ao registrar paciente');
       }
 
-      const data = await response.json();
-
       // Redirect to email verification
       router.push(`/auth/verify-email?email=${encodeURIComponent(values.email)}`);
     } catch (err) {

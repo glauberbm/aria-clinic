@@ -5,7 +5,7 @@
  * Currently supports mock implementation. Ready for Twilio integration.
  */
 
-import { createClient } from '@supabase/supabase-js';
+import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import { MessageTemplateType, substituteTemplate, validateTemplateVariables } from './templates';
 
 export interface WhatsAppMessagePayload {
@@ -26,18 +26,37 @@ export interface WhatsAppMessageResult {
   retryCount: number;
 }
 
+interface ContactPreferences {
+  whatsapp_enabled: boolean;
+  appointment_reminder_consent: boolean;
+}
+
+interface PatientCommunication {
+  id: string;
+  patient_id: string;
+  clinic_id: string;
+  channel: string;
+  message_type: string;
+  body: string;
+  status: string;
+  sent_at: string;
+  delivered_at?: string;
+  read_at?: string;
+  error_message?: string;
+  metadata?: Record<string, unknown>;
+  created_by?: string;
+}
+
 /**
  * WhatsApp Service - Main service class
  */
 export class WhatsAppService {
-  private supabase: ReturnType<typeof createClient>;
+  private supabase: SupabaseClient;
   private maxRetries = 3;
   private retryDelayMs = 5000;
-  private supabaseAny: any;
 
   constructor(supabaseUrl: string, supabaseKey: string) {
     this.supabase = createClient(supabaseUrl, supabaseKey);
-    this.supabaseAny = this.supabase as any;
   }
 
   /**
@@ -49,7 +68,7 @@ export class WhatsAppService {
         .from('patient_contact_preferences')
         .select('whatsapp_enabled')
         .eq('patient_id', patientId)
-        .single() as { data: { whatsapp_enabled: boolean } | null; error: any };
+        .single() as { data: Pick<ContactPreferences, 'whatsapp_enabled'> | null; error: unknown };
 
       if (error || !data) {
         console.warn(`Could not fetch contact preferences for patient ${patientId}`);
@@ -72,7 +91,7 @@ export class WhatsAppService {
         .from('patient_contact_preferences')
         .select('appointment_reminder_consent')
         .eq('patient_id', patientId)
-        .single() as { data: { appointment_reminder_consent: boolean } | null; error: any };
+        .single() as { data: Pick<ContactPreferences, 'appointment_reminder_consent'> | null; error: unknown };
 
       if (error || !data) {
         return true; // Default to true if no preference set
@@ -236,7 +255,7 @@ export class WhatsAppService {
     metadata?: Record<string, unknown>
   ): Promise<void> {
     try {
-      const record: Record<string, any> = {
+      const record: Omit<PatientCommunication, 'id'> = {
         patient_id: patientId,
         clinic_id: clinicId,
         channel: 'whatsapp',
@@ -250,7 +269,7 @@ export class WhatsAppService {
         },
         created_by: userId,
       };
-      await this.supabaseAny.from('patient_communications').insert([record]);
+      await this.supabase.from('patient_communications').insert([record]);
     } catch (error) {
       console.error('Error logging message:', error);
       // Don't throw - logging failure shouldn't block message sending
@@ -278,7 +297,7 @@ export class WhatsAppService {
         updateData.error_message = errorMessage;
       }
 
-      await this.supabaseAny
+      await this.supabase
         .from('patient_communications')
         .update(updateData)
         .eq('metadata->message_id', messageId);
@@ -290,7 +309,7 @@ export class WhatsAppService {
   /**
    * Get conversation history for a patient
    */
-  async getConversationHistory(patientId: string, limit: number = 50): Promise<any[]> {
+  async getConversationHistory(patientId: string, limit: number = 50): Promise<PatientCommunication[]> {
     try {
       const { data, error } = await this.supabase
         .from('patient_communications')
@@ -305,7 +324,7 @@ export class WhatsAppService {
         return [];
       }
 
-      return data || [];
+      return (data as PatientCommunication[]) || [];
     } catch (error) {
       console.error('Error fetching conversation history:', error);
       return [];
@@ -321,7 +340,7 @@ export class WhatsAppService {
     appointmentReminderConsent: boolean
   ): Promise<boolean> {
     try {
-      const { error } = await this.supabaseAny
+      const { error } = await this.supabase
         .from('patient_contact_preferences')
         .update({
           whatsapp_enabled: whatsappEnabled,

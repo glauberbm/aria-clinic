@@ -12,7 +12,7 @@ const customJestConfig = {
   },
   testEnvironment: 'jsdom',
   transformIgnorePatterns: [
-    'node_modules/(?!(zustand|react-day-picker)/)',
+    'node_modules/(?!(zustand|react-day-picker|uuid)/)',
   ],
 };
 

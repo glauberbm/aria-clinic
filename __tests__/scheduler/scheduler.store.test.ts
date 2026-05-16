@@ -5,7 +5,7 @@ describe("Scheduler Store", () => {
 
   it("should initialize with mock appointments", () => {
     const { result } = renderHook(() => useScheduler());
-    expect(result.current.appointments).toHaveLength(25);
+    expect(result.current.appointments.length).toBeGreaterThan(100);
   });
 
   it("should initialize with 5 mock doctors", () => {

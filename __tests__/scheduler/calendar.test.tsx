@@ -12,9 +12,15 @@ describe("CalendarView Component", () => {
       />
     );
 
-    expect(screen.getByRole("button", { name: /mês anterior/i })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /próximo mês/i })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /hoje/i })).toBeInTheDocument();
+    // Find navigation buttons by their aria-labels
+    const buttons = screen.getAllByRole("button");
+    const prevButton = buttons.find((btn) => btn.getAttribute("aria-label")?.includes("anterior"));
+    const nextButton = buttons.find((btn) => btn.getAttribute("aria-label")?.includes("Próximo"));
+    const todayButton = screen.getByRole("button", { name: /hoje/i });
+
+    expect(prevButton).toBeInTheDocument();
+    expect(nextButton).toBeInTheDocument();
+    expect(todayButton).toBeInTheDocument();
   });
 
   it("should handle date selection", async () => {
@@ -52,11 +58,14 @@ describe("CalendarView Component", () => {
       />
     );
 
-    const nextButton = screen.getByRole("button", { name: /próximo mês/i });
-    await user.click(nextButton);
+    const buttons = screen.getAllByRole("button");
+    const nextButton = buttons.find((btn) => btn.getAttribute("aria-label")?.includes("Próximo"));
 
-    // Calendar should update (component re-renders with next month)
     expect(nextButton).toBeInTheDocument();
+    if (nextButton) {
+      await user.click(nextButton);
+      expect(nextButton).toBeInTheDocument();
+    }
   });
 
   it("should navigate to previous month", async () => {
@@ -70,10 +79,14 @@ describe("CalendarView Component", () => {
       />
     );
 
-    const prevButton = screen.getByRole("button", { name: /mês anterior/i });
-    await user.click(prevButton);
+    const buttons = screen.getAllByRole("button");
+    const prevButton = buttons.find((btn) => btn.getAttribute("aria-label")?.includes("anterior"));
 
     expect(prevButton).toBeInTheDocument();
+    if (prevButton) {
+      await user.click(prevButton);
+      expect(prevButton).toBeInTheDocument();
+    }
   });
 
   it("should display legend with appointment indicator", () => {

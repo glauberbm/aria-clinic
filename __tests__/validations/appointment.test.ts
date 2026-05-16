@@ -1,4 +1,4 @@
-import { appointmentFormSchema, AppointmentFormData } from "@/lib/validations/appointment";
+import { appointmentFormSchema } from "@/lib/validations/appointment";
 
 describe("appointmentFormSchema", () => {
   describe("patientName validation", () => {

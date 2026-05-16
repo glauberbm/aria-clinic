@@ -11,6 +11,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { createWhatsAppService } from '@/lib/whatsapp/service';
+import { checkRateLimit } from '@/lib/rate-limit';
+import { setCORSHeaders, handleCORSPreflight } from '@/lib/cors';
 
 // Use service role key for backend operations
 const supabase = createClient(
@@ -106,7 +108,7 @@ export async function POST(request: NextRequest) {
       patientId: patient.id,
       clinicId: appointment.clinic_id,
       phoneNumber: patient.phone,
-      templateType: templateType as any,
+      templateType,
       variables,
       messageType: 'appointment_reminder',
     });

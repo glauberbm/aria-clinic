@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import type { ComponentType, SVGProps } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { MessageSquare, AlertCircle, CheckCircle2, Clock } from 'lucide-react';
@@ -30,7 +31,7 @@ interface WhatsAppConversationHistoryProps {
   limit?: number;
 }
 
-const statusColors: Record<string, { bg: string; text: string; icon: any }> = {
+const statusColors: Record<string, { bg: string; text: string; icon: ComponentType<SVGProps<SVGSVGElement>> }> = {
   pending: { bg: '#FEF3C7', text: '#D97706', icon: Clock },
   sent: { bg: '#DBEAFE', text: '#0284C7', icon: MessageSquare },
   delivered: { bg: '#DBEAFE', text: '#0284C7', icon: CheckCircle2 },
@@ -52,34 +53,34 @@ export function WhatsAppConversationHistory({ patientId, limit = 20 }: WhatsAppC
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    fetchMessages();
-  }, [patientId]);
+    async function fetchMessages() {
+      try {
+        setIsLoading(true);
+        setError(null);
 
-  const fetchMessages = async () => {
-    try {
-      setIsLoading(true);
-      setError(null);
+        const { data, error: fetchError } = await supabase
+          .from('patient_communications')
+          .select('*')
+          .eq('patient_id', patientId)
+          .eq('channel', 'whatsapp')
+          .order('created_at', { ascending: false })
+          .limit(limit);
 
-      const { data, error: fetchError } = await supabase
-        .from('patient_communications')
-        .select('*')
-        .eq('patient_id', patientId)
-        .eq('channel', 'whatsapp')
-        .order('created_at', { ascending: false })
-        .limit(limit);
+        if (fetchError) {
+          throw fetchError;
+        }
 
-      if (fetchError) {
-        throw fetchError;
+        setMessages(data || []);
+      } catch (error) {
+        console.error('Error fetching conversation history:', error);
+        setError('Erro ao carregar histórico de mensagens');
+      } finally {
+        setIsLoading(false);
       }
-
-      setMessages(data || []);
-    } catch (error) {
-      console.error('Error fetching conversation history:', error);
-      setError('Erro ao carregar histórico de mensagens');
-    } finally {
-      setIsLoading(false);
     }
-  };
+
+    fetchMessages();
+  }, [patientId, limit]);
 
   if (isLoading) {
     return (
@@ -151,7 +152,7 @@ export function WhatsAppConversationHistory({ patientId, limit = 20 }: WhatsAppC
                       {messageType}
                     </Badge>
                     <div className="flex items-center gap-1" style={{ color: statusInfo.text }}>
-                      <StatusIcon size={14} />
+                      <StatusIcon width={14} height={14} />
                       <span className="text-xs font-medium capitalize">{message.status}</span>
                     </div>
                   </div>

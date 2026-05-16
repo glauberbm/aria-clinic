@@ -34,37 +34,37 @@ export function WhatsAppPreferences({ patientId, onSaved }: WhatsAppPreferencesP
 
   // Fetch current preferences
   useEffect(() => {
+    async function fetchPreferences() {
+      try {
+        setIsLoading(true);
+        setError(null);
+
+        const { data, error: fetchError } = await supabase
+          .from('patient_contact_preferences')
+          .select('*')
+          .eq('patient_id', patientId)
+          .single();
+
+        if (fetchError) {
+          // If no preferences exist, they'll be created on save
+          setIsLoading(false);
+          return;
+        }
+
+        if (data) {
+          setPreferences(data);
+        }
+
+        setIsLoading(false);
+      } catch (error) {
+        console.error('Error fetching preferences:', error);
+        setError('Erro ao carregar preferências');
+        setIsLoading(false);
+      }
+    }
+
     fetchPreferences();
   }, [patientId]);
-
-  const fetchPreferences = async () => {
-    try {
-      setIsLoading(true);
-      setError(null);
-
-      const { data, error: fetchError } = await supabase
-        .from('patient_contact_preferences')
-        .select('*')
-        .eq('patient_id', patientId)
-        .single();
-
-      if (fetchError) {
-        // If no preferences exist, they'll be created on save
-        setIsLoading(false);
-        return;
-      }
-
-      if (data) {
-        setPreferences(data);
-      }
-
-      setIsLoading(false);
-    } catch (error) {
-      console.error('Error fetching preferences:', error);
-      setError('Erro ao carregar preferências');
-      setIsLoading(false);
-    }
-  };
 
   const handlePreferenceChange = (key: string, value: boolean) => {
     setPreferences((prev) => ({

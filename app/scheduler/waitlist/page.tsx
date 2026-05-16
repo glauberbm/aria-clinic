@@ -48,7 +48,7 @@ export default function WaitlistPage() {
       </div>
 
       {/* Tabs */}
-      <Tabs value={selectedTab} onValueChange={(value: any) => setSelectedTab(value)}>
+      <Tabs value={selectedTab} onValueChange={(value: string) => setSelectedTab(value as "all" | "pending" | "offered")}>
         <TabsList>
           <TabsTrigger value="all">
             All ({waitlist.length})

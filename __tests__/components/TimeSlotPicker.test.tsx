@@ -98,7 +98,7 @@ describe("TimeSlotPicker", () => {
   });
 
   it("should disable all slots when disabled prop is true", () => {
-    const { container } = render(
+    render(
       <TimeSlotPicker
         date={new Date("2025-05-20")}
         doctorId="doc-1"
