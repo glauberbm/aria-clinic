@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">93.1% </span>
+                <span class="strong">94.28% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>27/29</span>
+                <span class='fraction'>33/35</span>
             </div>
         
             
@@ -37,16 +37,16 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">87.5% </span>
+                <span class="strong">92.85% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>7/8</span>
+                <span class='fraction'>13/14</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">93.1% </span>
+                <span class="strong">93.75% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>27/29</span>
+                <span class='fraction'>30/32</span>
             </div>
         
             
@@ -250,7 +250,9 @@
 <a name='L185'></a><a href='#L185'>185</a>
 <a name='L186'></a><a href='#L186'>186</a>
 <a name='L187'></a><a href='#L187'>187</a>
-<a name='L188'></a><a href='#L188'>188</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L188'></a><a href='#L188'>188</a>
+<a name='L189'></a><a href='#L189'>189</a>
+<a name='L190'></a><a href='#L190'>190</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
@@ -275,9 +277,11 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">7x</span>
+<span class="cline-any cline-yes">5x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">938x</span>
-<span class="cline-any cline-yes">938x</span>
+<span class="cline-any cline-yes">630x</span>
+<span class="cline-any cline-yes">630x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -306,13 +310,13 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">7x</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">7x</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -439,7 +443,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">"use client";
 &nbsp;
-import { useState } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { DayPicker } from "react-day-picker";
 import { ptBR } from "react-day-picker/locale";
 import "react-day-picker/dist/style.css";
@@ -460,27 +464,29 @@ export function CalendarView({
   const [displayMonth, setDisplayMonth] = useState(new Date());
   const { appointments } = useScheduler();
 &nbsp;
-  // Get all dates with appointments
-  const datesWithAppointments = new Set(
-    appointments.map((apt) =&gt; {
-      const date = new Date(apt.date);
-      return `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`;
-    })
-  );
+  // Get all dates with appointments (memoized)
+  const datesWithAppointments = useMemo(() =&gt; {
+    return new Set(
+      appointments.map((apt) =&gt; {
+        const date = new Date(apt.date);
+        return `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`;
+      })
+    );
+  }, [appointments]);
 &nbsp;
-  // Custom CSS classes for days with appointments
-  const modifiers = {
+  // Custom CSS classes for days with appointments (memoized)
+  const modifiers = useMemo(() =&gt; ({
     hasAppointment: (date: Date) =&gt; {
       const key = `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`;
       return datesWithAppointments.has(key);
     },
-  };
+  }), [datesWithAppointments]);
 &nbsp;
-  const modifiersClassNames = {
+  const modifiersClassNames = useMemo(() =&gt; ({
     hasAppointment: "bg-[#8B6F47]/10 font-semibold text-[#8B6F47]",
-  };
+  }), []);
 &nbsp;
-  const modifiersStyles = {
+  const modifiersStyles = useMemo(() =&gt; ({
     selected: {
       backgroundColor: "#8B6F47",
       color: "white",
@@ -489,24 +495,24 @@ export function CalendarView({
       fontWeight: "bold" as const,
       color: "#8B6F47",
     },
-  };
+  }), []);
 &nbsp;
-  const handlePreviousMonth = () =&gt; {
-    setDisplayMonth(
-      new Date(displayMonth.getFullYear(), displayMonth.getMonth() - 1, 1)
+  const handlePreviousMonth = useCallback(() =&gt; {
+    setDisplayMonth((month) =&gt;
+      new Date(month.getFullYear(), month.getMonth() - 1, 1)
     );
-  };
+  }, []);
 &nbsp;
-  const handleNextMonth = () =&gt; {
-    setDisplayMonth(
-      new Date(displayMonth.getFullYear(), displayMonth.getMonth() + 1, 1)
+  const handleNextMonth = useCallback(() =&gt; {
+    setDisplayMonth((month) =&gt;
+      new Date(month.getFullYear(), month.getMonth() + 1, 1)
     );
-  };
+  }, []);
 &nbsp;
-  const handleToday = <span class="fstat-no" title="function not covered" >() =&gt; {</span>
+  const handleToday = useCallback(<span class="fstat-no" title="function not covered" >() =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    setDisplayMonth(new Date());</span>
 <span class="cstat-no" title="statement not covered" >    onSelectDate(new Date());</span>
-  };
+  }, [onSelectDate]);
 &nbsp;
   return (
     &lt;Card className="p-4 border-0 bg-white shadow-sm"&gt;
@@ -631,7 +637,7 @@ export function CalendarView({
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-05-16T12:46:45.580Z
+                at 2026-05-16T22:53:15.144Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

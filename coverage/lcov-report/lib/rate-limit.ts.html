@@ -3,15 +3,15 @@
 <html lang="en">
 
 <head>
-    <title>Code coverage report for lib/utils/scheduler.ts</title>
+    <title>Code coverage report for lib/rate-limit.ts</title>
     <meta charset="utf-8" />
-    <link rel="stylesheet" href="../../prettify.css" />
-    <link rel="stylesheet" href="../../base.css" />
-    <link rel="shortcut icon" type="image/x-icon" href="../../favicon.png" />
+    <link rel="stylesheet" href="../prettify.css" />
+    <link rel="stylesheet" href="../base.css" />
+    <link rel="shortcut icon" type="image/x-icon" href="../favicon.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <style type='text/css'>
         .coverage-summary .sorter {
-            background-image: url(../../sort-arrow-sprite.png);
+            background-image: url(../sort-arrow-sprite.png);
         }
     </style>
 </head>
@@ -19,34 +19,34 @@
 <body>
 <div class='wrapper'>
     <div class='pad1'>
-        <h1><a href="../../index.html">All files</a> / <a href="index.html">lib/utils</a> scheduler.ts</h1>
+        <h1><a href="../index.html">All files</a> / <a href="index.html">lib</a> rate-limit.ts</h1>
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">87.93% </span>
+                <span class="strong">60.29% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>51/58</span>
+                <span class='fraction'>41/68</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">83.33% </span>
+                <span class="strong">47.5% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>15/18</span>
+                <span class='fraction'>19/40</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">78.57% </span>
+                <span class="strong">72.72% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>11/14</span>
+                <span class='fraction'>8/11</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">91.66% </span>
+                <span class="strong">59.37% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>44/48</span>
+                <span class='fraction'>38/64</span>
             </div>
         
             
@@ -61,7 +61,7 @@
             </div>
         </template>
     </div>
-    <div class='status-line high'></div>
+    <div class='status-line medium'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -234,7 +234,45 @@
 <a name='L169'></a><a href='#L169'>169</a>
 <a name='L170'></a><a href='#L170'>170</a>
 <a name='L171'></a><a href='#L171'>171</a>
-<a name='L172'></a><a href='#L172'>172</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L172'></a><a href='#L172'>172</a>
+<a name='L173'></a><a href='#L173'>173</a>
+<a name='L174'></a><a href='#L174'>174</a>
+<a name='L175'></a><a href='#L175'>175</a>
+<a name='L176'></a><a href='#L176'>176</a>
+<a name='L177'></a><a href='#L177'>177</a>
+<a name='L178'></a><a href='#L178'>178</a>
+<a name='L179'></a><a href='#L179'>179</a>
+<a name='L180'></a><a href='#L180'>180</a>
+<a name='L181'></a><a href='#L181'>181</a>
+<a name='L182'></a><a href='#L182'>182</a>
+<a name='L183'></a><a href='#L183'>183</a>
+<a name='L184'></a><a href='#L184'>184</a>
+<a name='L185'></a><a href='#L185'>185</a>
+<a name='L186'></a><a href='#L186'>186</a>
+<a name='L187'></a><a href='#L187'>187</a>
+<a name='L188'></a><a href='#L188'>188</a>
+<a name='L189'></a><a href='#L189'>189</a>
+<a name='L190'></a><a href='#L190'>190</a>
+<a name='L191'></a><a href='#L191'>191</a>
+<a name='L192'></a><a href='#L192'>192</a>
+<a name='L193'></a><a href='#L193'>193</a>
+<a name='L194'></a><a href='#L194'>194</a>
+<a name='L195'></a><a href='#L195'>195</a>
+<a name='L196'></a><a href='#L196'>196</a>
+<a name='L197'></a><a href='#L197'>197</a>
+<a name='L198'></a><a href='#L198'>198</a>
+<a name='L199'></a><a href='#L199'>199</a>
+<a name='L200'></a><a href='#L200'>200</a>
+<a name='L201'></a><a href='#L201'>201</a>
+<a name='L202'></a><a href='#L202'>202</a>
+<a name='L203'></a><a href='#L203'>203</a>
+<a name='L204'></a><a href='#L204'>204</a>
+<a name='L205'></a><a href='#L205'>205</a>
+<a name='L206'></a><a href='#L206'>206</a>
+<a name='L207'></a><a href='#L207'>207</a>
+<a name='L208'></a><a href='#L208'>208</a>
+<a name='L209'></a><a href='#L209'>209</a>
+<a name='L210'></a><a href='#L210'>210</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -246,133 +284,71 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-yes">280x</span>
-<span class="cline-any cline-yes">280x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-yes">278x</span>
-<span class="cline-any cline-yes">278x</span>
-<span class="cline-any cline-yes">278x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">266x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">10x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">23x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">63x</span>
-<span class="cline-any cline-yes">63x</span>
-<span class="cline-any cline-yes">63x</span>
-<span class="cline-any cline-yes">63x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">63x</span>
+<span class="cline-any cline-yes">23x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">23x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">11x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">147x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">394x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">267x</span>
-<span class="cline-any cline-yes">264x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">53x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">147x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">13x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">15x</span>
-<span class="cline-any cline-yes">15x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">13x</span>
-<span class="cline-any cline-yes">13x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">11x</span>
-<span class="cline-any cline-yes">11x</span>
-<span class="cline-any cline-yes">11x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">11x</span>
-<span class="cline-any cline-yes">136x</span>
-<span class="cline-any cline-yes">136x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">136x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">136x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">11x</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -383,197 +359,335 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">23x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">23x</span>
+<span class="cline-any cline-yes">23x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">23x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">26x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">23x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">20x</span>
+<span class="cline-any cline-yes">20x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">20x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">20x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">7x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">19x</span>
+<span class="cline-any cline-yes">19x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">19x</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">19x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">8x</span>
-<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">/**
- * Scheduler utility functions for appointment management
- * - Conflict detection
- * - Available time slot calculation
- * - Doctor assignment validation
+ * Rate Limiting - Production ready with Redis fallback
+ *
+ * In production with Redis (Upstash):
+ * - Set UPSTASH_REDIS_REST_URL and UPSTASH_REDIS_REST_TOKEN env vars
+ * - Distributed rate limiting across multiple instances
+ *
+ * In development/fallback:
+ * - Uses in-memory store (note: resets on server restart)
  */
 &nbsp;
-import type { Appointment, Doctor } from "@/lib/store/scheduler";
+interface RateLimitResult {
+  allowed: boolean;
+  remaining: number;
+  resetTime: number;
+}
 &nbsp;
-/**
- * Parse time string in HH:MM format to minutes since midnight
- */
-export function parseTime(timeStr: string): number {
-  const [hours, minutes] = timeStr.split(":").map(Number);
-  return hours * 60 + minutes;
+interface RedisClient {
+  incr: (key: string) =&gt; Promise&lt;number&gt;;
+  expire: (key: string, seconds: number) =&gt; Promise&lt;number&gt;;
+  ttl: (key: string) =&gt; Promise&lt;number&gt;;
+  del: (key: string) =&gt; Promise&lt;number&gt;;
+  get: (key: string) =&gt; Promise&lt;number | null&gt;;
+}
+&nbsp;
+// In-memory store for rate limiting (development/fallback)
+const rateLimitStore = new Map&lt;string, Array&lt;number&gt;&gt;();
+&nbsp;
+let redisAvailable = false;
+let redisClient: RedisClient | null = null;
+&nbsp;
+// Initialize Redis client if available
+<span class="missing-if-branch" title="if path not taken" >I</span>if (process.env.UPSTASH_REDIS_REST_URL &amp;&amp; <span class="branch-1 cbranch-no" title="branch not covered" >process.env.UPSTASH_REDIS_REST_TOKEN)</span> {
+<span class="cstat-no" title="statement not covered" >  try {</span>
+    // Dynamic import to avoid requiring redis package if not using
+<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >    import('</span>@upstash/redis').t</span>hen(<span class="fstat-no" title="function not covered" >({</span> Redis }) =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >      redisClient = new Redis({</span>
+        url: process.env.UPSTASH_REDIS_REST_URL!,
+        token: process.env.UPSTASH_REDIS_REST_TOKEN!,
+      });
+<span class="cstat-no" title="statement not covered" >      redisAvailable = true;</span>
+<span class="cstat-no" title="statement not covered" >      console.log('[Rate Limit] Redis initialized for distributed rate limiting');</span>
+    }).catch(<span class="fstat-no" title="function not covered" >() =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >      console.warn('[Rate Limit] Failed to initialize Redis, falling back to in-memory store');</span>
+<span class="cstat-no" title="statement not covered" >      redisAvailable = false;</span>
+    });
+  } catch {
+<span class="cstat-no" title="statement not covered" >    console.warn('[Rate Limit] Redis package not available, using in-memory store');</span>
+  }
 }
 &nbsp;
 /**
- * Format minutes since midnight to HH:MM format
+ * Check rate limit for identifier:action combination
+ * Uses Redis if available, falls back to in-memory store
  */
-export function formatTime(minutes: number): string {
-  const hours = Math.floor(minutes / 60);
-  const mins = minutes % 60;
-  return `${String(hours).padStart(2, "0")}:${String(mins).padStart(2, "0")}`;
-}
+export async function checkRateLimit(
+  identifier: string,
+  action: string,
+  limit: number,
+  windowSeconds: number
+): Promise&lt;RateLimitResult&gt; {
+  const key = `${identifier}:${action}`;
 &nbsp;
-/**
- * Add minutes to a time string and return the result as HH:MM
- */
-export function addMinutes(timeStr: string, minutesToAdd: number): string {
-  const totalMinutes = parseTime(timeStr) + minutesToAdd;
-  return formatTime(totalMinutes);
-}
+  // Try Redis first
+  <span class="missing-if-branch" title="if path not taken" >I</span>if (redisAvailable &amp;&amp; <span class="branch-1 cbranch-no" title="branch not covered" >redisClient) {</span>
+<span class="cstat-no" title="statement not covered" >    try {</span>
+      const count = <span class="cstat-no" title="statement not covered" >await redisClient.incr(key);</span>
 &nbsp;
-/**
- * Check if two dates are on the same day
- */
-export function isSameDay(date1: Date, date2: Date): boolean {
-  return (
-    date1.getFullYear() === date2.getFullYear() &amp;&amp;
-    date1.getMonth() === date2.getMonth() &amp;&amp;
-    date1.getDate() === date2.getDate()
-  );
-}
+<span class="cstat-no" title="statement not covered" >      if (count === 1) {</span>
+        // Set expiration only on first request
+<span class="cstat-no" title="statement not covered" >        await redisClient.expire(key, windowSeconds);</span>
+      }
 &nbsp;
-/**
- * Check if two time slots overlap
- * @param start1 - Start time of first slot (HH:MM format)
- * @param duration1 - Duration of first slot in minutes
- * @param start2 - Start time of second slot (HH:MM format)
- * @param duration2 - Duration of second slot in minutes
- * @returns true if time slots overlap
- */
-export function isTimeConflict(
-  start1: string,
-  duration1: number,
-  start2: string,
-  duration2: number
-): boolean {
-  const end1 = parseTime(start1) + duration1;
-  const end2 = parseTime(start2) + duration2;
-  const startMin1 = parseTime(start1);
-  const startMin2 = parseTime(start2);
+      const ttl = <span class="cstat-no" title="statement not covered" >await redisClient.ttl(key);</span>
+      const resetTime = <span class="cstat-no" title="statement not covered" >ttl &gt; 0 ? Date.now() + ttl * 1000 : 0;</span>
 &nbsp;
-  // Two intervals overlap if: start1 &lt; end2 AND start2 &lt; end1
-  return startMin1 &lt; end2 &amp;&amp; startMin2 &lt; end1;
-}
-&nbsp;
-/**
- * Check if a doctor can be assigned to a time slot
- * @param doctorId - Doctor ID
- * @param timeSlot - Time slot with date, start time, and duration
- * @param appointments - All appointments
- * @returns true if doctor can be assigned (no conflicts)
- */
-export function canAssignDoctor(
-  doctorId: string,
-  timeSlot: { date: Date; start: string; duration: number },
-  appointments: Appointment[]
-): boolean {
-  const conflicts = appointments.filter((apt) =&gt; {
-    // Skip cancelled appointments
-    if (apt.status === "cancelled") return false;
-&nbsp;
-    // Must be same doctor and same day
-    if (apt.doctorId !== doctorId) return false;
-    if (!isSameDay(apt.date, timeSlot.date)) return false;
-&nbsp;
-    // Check for time conflict
-    return isTimeConflict(apt.timeStart, apt.duration, timeSlot.start, timeSlot.duration);
-  });
-&nbsp;
-  return conflicts.length === 0;
-}
-&nbsp;
-/**
- * Get available time slots for a doctor on a specific date
- * @param doctorId - Doctor ID
- * @param date - Date to check
- * @param slotDuration - Duration of each slot in minutes (default 30)
- * @param appointments - All appointments
- * @param doctors - All doctors
- * @returns Array of time slots with availability status
- */
-export function getAvailableSlots(
-  doctorId: string,
-  date: Date,
-  slotDuration: number = <span class="branch-0 cbranch-no" title="branch not covered" >30,</span>
-  appointments: Appointment[],
-  doctors: Doctor[]
-): Array&lt;{ start: string; end: string; available: boolean }&gt; {
-  const doctor = doctors.find((d) =&gt; d.id === doctorId);
-  if (!doctor) return [];
-&nbsp;
-  // Check if the date is a working day for this doctor
-  const dayOfWeek = date.getDay(); // 0 = Sunday, 1 = Monday, etc.
-  if (!doctor.workingHours.daysOfWeek.includes(dayOfWeek)) {
-    return [];
+<span class="cstat-no" title="statement not covered" >      return {</span>
+        allowed: count &lt;= limit,
+        remaining: Math.max(0, limit - count),
+        resetTime,
+      };
+    } catch (error) {
+<span class="cstat-no" title="statement not covered" >      console.error('[Rate Limit] Redis error, falling back to in-memory:', error);</span>
+      // Fall through to in-memory implementation
+    }
   }
 &nbsp;
-  const slots: Array&lt;{ start: string; end: string; available: boolean }&gt; = [];
-  const workStart = parseTime(doctor.workingHours.start);
-  const workEnd = parseTime(doctor.workingHours.end);
+  // In-memory fallback
+  return inMemoryRateLimit(key, limit, windowSeconds);
+}
 &nbsp;
-  // Generate slots from start to end of working hours
-  for (let time = workStart; time &lt; workEnd; time += slotDuration) {
-    const start = formatTime(time);
-    const end = formatTime(time + slotDuration);
+/**
+ * In-memory rate limiter (development/fallback)
+ */
+function inMemoryRateLimit(
+  key: string,
+  limit: number,
+  windowSeconds: number
+): RateLimitResult {
+  const now = Date.now();
+  const windowStart = now - windowSeconds * 1000;
 &nbsp;
-    const available = canAssignDoctor(
-      doctorId,
-      { date, start, duration: slotDuration },
-      appointments
-    );
+  // Get or initialize timestamps for this key
+  let timestamps = rateLimitStore.get(key) || [];
 &nbsp;
-    slots.push({ start, end, available });
+  // Remove old timestamps outside the window
+  timestamps = timestamps.filter(ts =&gt; ts &gt; windowStart);
+&nbsp;
+  if (timestamps.length &gt;= limit) {
+    // Limit exceeded
+    const oldestTimestamp = Math.min(...timestamps);
+    const resetTime = oldestTimestamp + windowSeconds * 1000;
+&nbsp;
+    return {
+      allowed: false,
+      remaining: 0,
+      resetTime,
+    };
   }
 &nbsp;
-  return slots;
-}
+  // Add current timestamp
+  timestamps.push(now);
+  rateLimitStore.set(key, timestamps);
 &nbsp;
-/**
- * Get all appointments for a doctor, optionally filtered by date
- */
-export function <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >getAppointmentsForDoctor(</span></span>
-  doctorId: string,
-  date: Date | undefined,
-  appointments: Appointment[]
-): Appointment[] {
-  const filtered = <span class="cstat-no" title="statement not covered" >appointments.filter(<span class="fstat-no" title="function not covered" >(a</span>pt) =&gt; <span class="cstat-no" title="statement not covered" >apt.doctorId === doctorId);</span></span>
-<span class="cstat-no" title="statement not covered" >  if (!date) <span class="cstat-no" title="statement not covered" >return filtered;</span></span>
-<span class="cstat-no" title="statement not covered" >  return filtered.filter(<span class="fstat-no" title="function not covered" >(a</span>pt) =&gt; <span class="cstat-no" title="statement not covered" >isSameDay(apt.date, date));</span></span>
-}
+  // Clean up old entries periodically (every hour)
+  if (Math.random() &lt; 0.01) {
+    cleanupOldEntries();
+  }
 &nbsp;
-/**
- * Get availability summary for a doctor on a given date
- */
-export function getDoctorAvailabilitySummary(
-  doctorId: string,
-  date: Date,
-  appointments: Appointment[],
-  doctors: Doctor[]
-): { total: number; available: number; booked: number } {
-  const slots = getAvailableSlots(doctorId, date, 30, appointments, doctors);
-  const available = slots.filter((s) =&gt; s.available).length;
   return {
-    total: slots.length,
-    available,
-    booked: slots.length - available,
+    allowed: true,
+    remaining: limit - timestamps.length,
+    resetTime: 0,
+  };
+}
+&nbsp;
+/**
+ * Clean up old rate limit entries to prevent memory leak
+ */
+function cleanupOldEntries(): void {
+  const now = Date.now();
+  const maxAge = 24 * 60 * 60 * 1000; // 24 hours
+&nbsp;
+  for (const [key, timestamps] of rateLimitStore.entries()) {
+    const filtered = timestamps.filter(ts =&gt; now - ts &lt; maxAge);
+    <span class="missing-if-branch" title="if path not taken" >I</span>if (filtered.length === 0) {
+<span class="cstat-no" title="statement not covered" >      rateLimitStore.delete(key);</span>
+    } else {
+      rateLimitStore.set(key, filtered);
+    }
+  }
+}
+&nbsp;
+/**
+ * Reset rate limit for a specific identifier and action
+ * Useful for testing and admin operations
+ */
+export async function resetRateLimit(identifier: string, action: string): Promise&lt;void&gt; {
+  const key = `${identifier}:${action}`;
+&nbsp;
+  <span class="missing-if-branch" title="if path not taken" >I</span>if (redisAvailable &amp;&amp; <span class="branch-1 cbranch-no" title="branch not covered" >redisClient) {</span>
+<span class="cstat-no" title="statement not covered" >    try {</span>
+<span class="cstat-no" title="statement not covered" >      await redisClient.del(key);</span>
+<span class="cstat-no" title="statement not covered" >      return;</span>
+    } catch (error) {
+<span class="cstat-no" title="statement not covered" >      console.error('[Rate Limit] Redis error resetting limit:', error);</span>
+    }
+  }
+&nbsp;
+  rateLimitStore.delete(key);
+}
+&nbsp;
+/**
+ * Get current rate limit status
+ */
+export async function getRateLimitStatus(
+  identifier: string,
+  action: string,
+  limit: number,
+  windowSeconds: number
+): Promise&lt;RateLimitResult&gt; {
+  const key = `${identifier}:${action}`;
+&nbsp;
+  <span class="missing-if-branch" title="if path not taken" >I</span>if (redisAvailable &amp;&amp; <span class="branch-1 cbranch-no" title="branch not covered" >redisClient) {</span>
+<span class="cstat-no" title="statement not covered" >    try {</span>
+      const count = <span class="cstat-no" title="statement not covered" >await redisClient.get(key);</span>
+      const ttl = <span class="cstat-no" title="statement not covered" >count ? await redisClient.ttl(key) : 0;</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >      return {</span>
+        allowed: (count || 0) &lt; limit,
+        remaining: Math.max(0, limit - (count || 0)),
+        resetTime: ttl &gt; 0 ? Date.now() + ttl * 1000 : 0,
+      };
+    } catch (error) {
+<span class="cstat-no" title="statement not covered" >      console.error('[Rate Limit] Redis error getting status:', error);</span>
+    }
+  }
+&nbsp;
+  // In-memory fallback
+  const now = Date.now();
+  const windowStart = now - windowSeconds * 1000;
+  const timestamps = (rateLimitStore.get(key) || []).filter(ts =&gt; ts &gt; windowStart);
+&nbsp;
+  return {
+    allowed: timestamps.length &lt; limit,
+    remaining: Math.max(0, limit - timestamps.length),
+    resetTime: timestamps.length &gt; 0 ? Math.min(...timestamps) + windowSeconds * 1000 : 0,
   };
 }
 &nbsp;</pre></td></tr></table></pre>
@@ -585,14 +699,14 @@ export function getDoctorAvailabilitySummary(
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
                 at 2026-05-16T22:53:15.144Z
             </div>
-        <script src="../../prettify.js"></script>
+        <script src="../prettify.js"></script>
         <script>
             window.onload = function () {
                 prettyPrint();
             };
         </script>
-        <script src="../../sorter.js"></script>
-        <script src="../../block-navigation.js"></script>
+        <script src="../sorter.js"></script>
+        <script src="../block-navigation.js"></script>
     </body>
 </html>
     
