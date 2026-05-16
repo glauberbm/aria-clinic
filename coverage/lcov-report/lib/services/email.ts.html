@@ -3,15 +3,15 @@
 <html lang="en">
 
 <head>
-    <title>Code coverage report for app/api/auth/login/route.ts</title>
+    <title>Code coverage report for lib/services/email.ts</title>
     <meta charset="utf-8" />
-    <link rel="stylesheet" href="../../../../prettify.css" />
-    <link rel="stylesheet" href="../../../../base.css" />
-    <link rel="shortcut icon" type="image/x-icon" href="../../../../favicon.png" />
+    <link rel="stylesheet" href="../../prettify.css" />
+    <link rel="stylesheet" href="../../base.css" />
+    <link rel="shortcut icon" type="image/x-icon" href="../../favicon.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <style type='text/css'>
         .coverage-summary .sorter {
-            background-image: url(../../../../sort-arrow-sprite.png);
+            background-image: url(../../sort-arrow-sprite.png);
         }
     </style>
 </head>
@@ -19,34 +19,34 @@
 <body>
 <div class='wrapper'>
     <div class='pad1'>
-        <h1><a href="../../../../index.html">All files</a> / <a href="index.html">app/api/auth/login</a> route.ts</h1>
+        <h1><a href="../../index.html">All files</a> / <a href="index.html">lib/services</a> email.ts</h1>
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">86.53% </span>
+                <span class="strong">28.88% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>45/52</span>
+                <span class='fraction'>13/45</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">72% </span>
+                <span class="strong">25% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>18/25</span>
+                <span class='fraction'>7/28</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">100% </span>
+                <span class="strong">50% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>5/5</span>
+                <span class='fraction'>2/4</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">86.53% </span>
+                <span class="strong">28.88% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>45/52</span>
+                <span class='fraction'>13/45</span>
             </div>
         
             
@@ -61,7 +61,7 @@
             </div>
         </template>
     </div>
-    <div class='status-line high'></div>
+    <div class='status-line low'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -227,79 +227,45 @@
 <a name='L162'></a><a href='#L162'>162</a>
 <a name='L163'></a><a href='#L163'>163</a>
 <a name='L164'></a><a href='#L164'>164</a>
-<a name='L165'></a><a href='#L165'>165</a>
-<a name='L166'></a><a href='#L166'>166</a>
-<a name='L167'></a><a href='#L167'>167</a>
-<a name='L168'></a><a href='#L168'>168</a>
-<a name='L169'></a><a href='#L169'>169</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">11x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">11x</span>
-<span class="cline-any cline-yes">11x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">11x</span>
-<span class="cline-any cline-yes">9x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">4x</span>
-<span class="cline-any cline-yes">4x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">4x</span>
-<span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L165'></a><a href='#L165'>165</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">15x</span>
-<span class="cline-any cline-yes">15x</span>
-<span class="cline-any cline-yes">15x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">15x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">11x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">11x</span>
-<span class="cline-any cline-yes">11x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -309,58 +275,26 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">11x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">11x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">11x</span>
-<span class="cline-any cline-yes">4x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">4x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">4x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">7x</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">7x</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">7x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -371,8 +305,20 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -383,11 +329,13 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">7x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">4x</span>
-<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -399,172 +347,212 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { createClient } from '@supabase/supabase-js';
-import { NextRequest, NextResponse } from 'next/server';
-import { loginSchema } from '@/lib/validations/auth';
-import { z } from 'zod';
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { Resend } from 'resend';
+import { VerificationEmail, getVerificationEmailText } from '@/lib/email/templates/verification-email';
 &nbsp;
-const getSupabaseClient = () =&gt; {
-  return createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
-  );
-};
+// Initialize Resend with API key (lazy initialization to avoid build-time errors)
+let resend: Resend | null = null;
 &nbsp;
-// Simple in-memory rate limiting (in production, use Redis)
-const failedAttempts = new Map&lt;string, { count: number; resetTime: number }&gt;();
-&nbsp;
-const checkRateLimit = (ip: string): { allowed: boolean; remaining: number } =&gt; {
-  const now = Date.now();
-  const attempt = failedAttempts.get(ip);
-&nbsp;
-  if (!attempt) {
-    return { allowed: true, remaining: 5 };
+function getResendClient() {
+  <span class="missing-if-branch" title="if path not taken" >I</span>if (!resend &amp;&amp; process.env.RESEND_API_KEY) {
+<span class="cstat-no" title="statement not covered" >    resend = new Resend(process.env.RESEND_API_KEY);</span>
   }
+  return resend;
+}
 &nbsp;
-  <span class="missing-if-branch" title="if path not taken" >I</span>if (now &gt; attempt.resetTime) {
-<span class="cstat-no" title="statement not covered" >    failedAttempts.delete(ip);</span>
-<span class="cstat-no" title="statement not covered" >    return { allowed: true, remaining: 5 };</span>
-  }
+export interface SendVerificationEmailOptions {
+  email: string;
+  verificationToken: string;
+  baseUrl?: string;
+}
 &nbsp;
-  const remaining = Math.max(0, 5 - attempt.count);
-  return {
-    allowed: remaining &gt; 0,
-    remaining,
-  };
-};
-&nbsp;
-const recordFailedAttempt = (ip: string) =&gt; {
-  const attempt = failedAttempts.get(ip);
-  const now = Date.now();
-&nbsp;
-  if (!attempt) {
-    failedAttempts.set(ip, {
-      count: 1,
-      resetTime: now + 15 * 60 * 1000, // 15 minutes
-    });
-  } else {
-    attempt.count++;
-  }
-};
-&nbsp;
-const clearFailedAttempts = (ip: string) =&gt; {
-  failedAttempts.delete(ip);
-};
-&nbsp;
-export async function POST(request: NextRequest) {
+/**
+ * Sends a verification email to the user
+ * @param options Email sending options
+ * @returns Promise with the email send result
+ */
+export async function sendVerificationEmail({
+  email,
+  verificationToken,
+  baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000',
+}: SendVerificationEmailOptions) {
   try {
-    const body = await request.json();
+    // Build verification URL
+    const verificationUrl = `${baseUrl}/auth/verify?token=${verificationToken}&amp;email=${encodeURIComponent(email)}`;
 &nbsp;
-    // Validate input
-    const validatedData = loginSchema.parse(body);
-&nbsp;
-    // Get client IP for rate limiting
-    const ip =
-      request.headers.get('x-forwarded-for') ||
-      request.headers.get('x-real-ip') ||
-      'unknown';
-&nbsp;
-    // Check rate limit
-    const rateLimit = checkRateLimit(ip);
-    <span class="missing-if-branch" title="if path not taken" >I</span>if (!rateLimit.allowed) {
-<span class="cstat-no" title="statement not covered" >      return NextResponse.json(</span>
-        {
-          error: 'Muitas tentativas de login. Tente novamente em 15 minutos.',
-          remaining: 0,
-        },
-        { status: 429 }
-      );
+    const resendClient = getResendClient();
+    <span class="missing-if-branch" title="else path not taken" >E</span>if (!resendClient) {
+      throw new Error('Email service not configured. Set RESEND_API_KEY environment variable.');
     }
 &nbsp;
-    const supabase = getSupabaseClient();
-&nbsp;
-    // Attempt authentication
-    const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
-      email: validatedData.email,
-      password: validatedData.password,
+    // Send email using Resend
+    const result = <span class="cstat-no" title="statement not covered" >await resendClient.emails.send({</span>
+      from: process.env.RESEND_FROM_EMAIL || 'noreply@aria-clinic.com',
+      to: email,
+      subject: 'Confirme seu email - ArIA Clinic',
+      react: VerificationEmail({
+        email,
+        verificationUrl,
+      }),
+      text: getVerificationEmailText(email, verificationUrl),
     });
 &nbsp;
-    if (authError) {
-      recordFailedAttempt(ip);
-&nbsp;
-      // Provide specific error messages
-      const isUserNotFound =
-        authError.message.includes('Invalid login credentials') ||
-        authError.message.includes('not found');
-&nbsp;
-      return NextResponse.json(
-        {
-          error: isUserNotFound
-            ? 'Usuário não encontrado'
-            : <span class="branch-1 cbranch-no" title="branch not covered" >'Senha incorreta',</span>
-          remaining: Math.max(0, 5 - (failedAttempts.get(ip)?.count || <span class="branch-1 cbranch-no" title="branch not covered" >0)),</span>
-        },
-        { status: 401 }
-      );
+    // Check for errors
+<span class="cstat-no" title="statement not covered" >    if (result.error) {</span>
+<span class="cstat-no" title="statement not covered" >      console.error('[Email Service] Error sending verification email:', result.error);</span>
+<span class="cstat-no" title="statement not covered" >      throw new Error(`Failed to send email: ${result.error.message}`);</span>
     }
 &nbsp;
-    <span class="missing-if-branch" title="if path not taken" >I</span>if (!authData.session) {
-<span class="cstat-no" title="statement not covered" >      recordFailedAttempt(ip);</span>
-<span class="cstat-no" title="statement not covered" >      return NextResponse.json(</span>
-        { error: 'Falha ao criar sessão' },
-        { status: 401 }
-      );
-    }
-&nbsp;
-    // Clear failed attempts on successful login
-    clearFailedAttempts(ip);
-&nbsp;
-    // Create response with token in httpOnly cookie
-    const response = NextResponse.json(
-      {
-        message: 'Login realizado com sucesso',
-        user: {
-          id: authData.user.id,
-          email: authData.user.email,
-        },
-      },
-      { status: 200 }
-    );
-&nbsp;
-    // Set httpOnly, secure cookie with JWT token
-    response.cookies.set({
-      name: 'auth-token',
-      value: authData.session.access_token,
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      maxAge: authData.session.expires_in,
-      path: '/',
+<span class="cstat-no" title="statement not covered" >    console.log('[Email Service] Verification email sent successfully', {</span>
+      email,
+      messageId: result.data?.id,
     });
 &nbsp;
-    // Also set refresh token in separate httpOnly cookie
-    <span class="missing-if-branch" title="else path not taken" >E</span>if (authData.session.refresh_token) {
-      response.cookies.set({
-        name: 'refresh-token',
-        value: authData.session.refresh_token,
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'lax',
-        maxAge: 30 * 24 * 60 * 60, // 30 days
-        path: '/',
-      });
-    }
-&nbsp;
-    return response;
+<span class="cstat-no" title="statement not covered" >    return {</span>
+      success: true,
+      messageId: result.data?.id,
+    };
   } catch (error) {
-    <span class="missing-if-branch" title="else path not taken" >E</span>if (error instanceof z.ZodError) {
-      return NextResponse.json(
-        { error: 'Validation error', details: error.issues },
-        { status: 400 }
-      );
+    console.error('[Email Service] Exception sending verification email:', error);
+    throw error;
+  }
+}
+&nbsp;
+/**
+ * Sends a password reset email to the user
+ * @param email User email address
+ * @param resetToken Password reset token
+ * @param baseUrl Application base URL for building the reset link
+ * @returns Promise with the email send result
+ */
+export async function <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >sendPasswordResetEmail(</span></span>
+  email: string,
+  resetToken: string,
+  baseUrl = <span class="branch-0 cbranch-no" title="branch not covered" >process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'</span>
+) {
+<span class="cstat-no" title="statement not covered" >  try {</span>
+    const resetUrl = <span class="cstat-no" title="statement not covered" >`${baseUrl}/auth/reset-password?token=${resetToken}&amp;email=${encodeURIComponent(email)}`;</span>
+&nbsp;
+    const resendClient = <span class="cstat-no" title="statement not covered" >getResendClient();</span>
+<span class="cstat-no" title="statement not covered" >    if (!resendClient) {</span>
+<span class="cstat-no" title="statement not covered" >      throw new Error('Email service not configured. Set RESEND_API_KEY environment variable.');</span>
     }
 &nbsp;
-<span class="cstat-no" title="statement not covered" >    console.error('Login error:', error);</span>
-<span class="cstat-no" title="statement not covered" >    return NextResponse.json(</span>
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+    const result = <span class="cstat-no" title="statement not covered" >await resendClient.emails.send({</span>
+      from: process.env.RESEND_FROM_EMAIL || 'noreply@aria-clinic.com',
+      to: email,
+      subject: 'Redefina sua senha - ArIA Clinic',
+      text: `
+Clique no link abaixo para redefinir sua senha:
+${resetUrl}
+&nbsp;
+Este link expira em 1 hora.
+      `.trim(),
+    });
+&nbsp;
+<span class="cstat-no" title="statement not covered" >    if (result.error) {</span>
+<span class="cstat-no" title="statement not covered" >      console.error('[Email Service] Error sending password reset email:', result.error);</span>
+<span class="cstat-no" title="statement not covered" >      throw new Error(`Failed to send email: ${result.error.message}`);</span>
+    }
+&nbsp;
+<span class="cstat-no" title="statement not covered" >    return {</span>
+      success: true,
+      messageId: result.data?.id,
+    };
+  } catch (error) {
+<span class="cstat-no" title="statement not covered" >    console.error('[Email Service] Exception sending password reset email:', error);</span>
+<span class="cstat-no" title="statement not covered" >    throw error;</span>
+  }
+}
+&nbsp;
+/**
+ * Sends a welcome email after successful registration
+ * @param email User email address
+ * @param fullName User full name
+ * @param baseUrl Application base URL
+ * @returns Promise with the email send result
+ */
+export async function <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >sendWelcomeEmail(</span></span>
+  email: string,
+  fullName: string
+) {
+<span class="cstat-no" title="statement not covered" >  try {</span>
+    const resendClient = <span class="cstat-no" title="statement not covered" >getResendClient();</span>
+<span class="cstat-no" title="statement not covered" >    if (!resendClient) {</span>
+<span class="cstat-no" title="statement not covered" >      throw new Error('Email service not configured. Set RESEND_API_KEY environment variable.');</span>
+    }
+&nbsp;
+    const result = <span class="cstat-no" title="statement not covered" >await resendClient.emails.send({</span>
+      from: process.env.RESEND_FROM_EMAIL || 'noreply@aria-clinic.com',
+      to: email,
+      subject: 'Bem-vindo à ArIA Clinic!',
+      text: `
+Olá ${fullName},
+&nbsp;
+Bem-vindo à ArIA Clinic! Sua conta foi criada com sucesso.
+&nbsp;
+Explore nossa plataforma e configure suas preferências.
+&nbsp;
+ArIA Clinic - Plataforma de Gestão Clínica Inteligente
+      `.trim(),
+    });
+&nbsp;
+<span class="cstat-no" title="statement not covered" >    if (result.error) {</span>
+<span class="cstat-no" title="statement not covered" >      console.error('[Email Service] Error sending welcome email:', result.error);</span>
+<span class="cstat-no" title="statement not covered" >      throw new Error(`Failed to send email: ${result.error.message}`);</span>
+    }
+&nbsp;
+<span class="cstat-no" title="statement not covered" >    return {</span>
+      success: true,
+      messageId: result.data?.id,
+    };
+  } catch (error) {
+<span class="cstat-no" title="statement not covered" >    console.error('[Email Service] Exception sending welcome email:', error);</span>
+<span class="cstat-no" title="statement not covered" >    throw error;</span>
   }
 }
 &nbsp;</pre></td></tr></table></pre>
@@ -576,14 +564,14 @@ export async function POST(request: NextRequest) {
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
                 at 2026-05-16T01:48:44.385Z
             </div>
-        <script src="../../../../prettify.js"></script>
+        <script src="../../prettify.js"></script>
         <script>
             window.onload = function () {
                 prettyPrint();
             };
         </script>
-        <script src="../../../../sorter.js"></script>
-        <script src="../../../../block-navigation.js"></script>
+        <script src="../../sorter.js"></script>
+        <script src="../../block-navigation.js"></script>
     </body>
 </html>
     

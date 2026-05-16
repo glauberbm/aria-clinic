@@ -1,0 +1,59 @@
+export default function DashboardPage() {
+  return (
+    <div className="max-w-6xl">
+      <h1 className="text-3xl font-bold text-gray-900 mb-2">Dashboard</h1>
+      <p className="text-gray-600">Welcome to Aria Clinic Dashboard</p>
+
+      {/* Placeholder Grid for KPI Cards (DASH-002) */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-8">
+        {[1, 2, 3, 4].map((i) => (
+          <div
+            key={i}
+            className="bg-white rounded-lg border border-gray-200 p-6 h-24"
+          >
+            <div className="animate-pulse space-y-2">
+              <div className="h-4 bg-gray-200 rounded w-20" />
+              <div className="h-6 bg-gray-200 rounded w-32" />
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Placeholder Charts (DASH-003, DASH-004) */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-8">
+        <div className="bg-white rounded-lg border border-gray-200 p-6 h-64">
+          <h2 className="text-lg font-semibold text-gray-900 mb-4">
+            Protocol Data
+          </h2>
+          <div className="animate-pulse space-y-4">
+            <div className="h-40 bg-gray-200 rounded" />
+          </div>
+        </div>
+
+        <div className="bg-white rounded-lg border border-gray-200 p-6 h-64">
+          <h2 className="text-lg font-semibold text-gray-900 mb-4">
+            Financial Data
+          </h2>
+          <div className="animate-pulse space-y-4">
+            <div className="h-40 bg-gray-200 rounded" />
+          </div>
+        </div>
+      </div>
+
+      {/* Placeholder Patient List (DASH-005) */}
+      <div className="bg-white rounded-lg border border-gray-200 p-6 mt-8">
+        <h2 className="text-lg font-semibold text-gray-900 mb-4">
+          Recent Patients
+        </h2>
+        <div className="animate-pulse space-y-3">
+          {[1, 2, 3].map((i) => (
+            <div
+              key={i}
+              className="h-12 bg-gray-200 rounded"
+            />
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
