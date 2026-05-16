@@ -111,9 +111,39 @@
 
 ---
 
-### ⏳ DASH-004: Financial Chart (4h est.)
+### ✅ DASH-004: Financial Chart (3h 15m)
 
-**Status:** TODO
+**Status:** COMPLETE ✅
+
+**What was built:**
+- `/components/dashboard/FinancialChart.tsx` — Line chart component using Recharts showing 12-month revenue trends with summary stats
+- `/lib/mock/financial-data.ts` — RevenueData interface and 12 months of mock revenue data (Jan-Dec)
+- `/app/dashboard/page.tsx` — Updated to import and render FinancialChart alongside ProtocolChart
+- `/__tests__/dashboard/FinancialChart.test.tsx` — 16 unit tests for chart rendering, statistics, formatting, accessibility
+
+**AC Met:**
+- [x] Line chart displays 12 months of revenue data
+- [x] X-axis: Month labels (Jan-Dec)
+- [x] Y-axis: Currency formatting with $ and K abbreviation ($18.5K format)
+- [x] Tooltip: Shows month and revenue on hover (e.g., "Jun $24.5K")
+- [x] Grid lines: Subtle gray background grid for readability
+- [x] Line styling: Bold 3px blue line with smooth curve interpolation (monotone)
+- [x] Responsive container: Scales to parent width on all sizes
+- [x] Summary stats: Average, Highest, Lowest calculated and displayed in colored boxes
+- [x] Accessible: aria-label with full chart description
+- [x] No loading states (static Phase 1)
+- [x] Tests: ≥70% coverage (16/16 tests passing)
+- [x] No lint errors in new code
+
+**Test Results:**
+- Financial Chart Tests: 16/16 ✅
+- Full Suite: 175/175 ✅ (9 skipped)
+- Lint: 0 errors in DASH-004 code
+
+**Commits:**
+- `55be1ae` feat: financial revenue chart [EPIC-002-DASH-004]
+
+**Time Spent:** 3h 15m ✅
 
 ---
 
@@ -136,10 +166,10 @@
 | DASH-001 | 4h | ✅ DONE | 13/13 ✅ | 91f90e0 |
 | DASH-002 | 2h 15m | ✅ DONE | 15/15 ✅ | 2bcec5e |
 | DASH-003 | 3h 30m | ✅ DONE | 14/14 ✅ | 0f244ca |
-| DASH-004 | 4h | ⏳ TODO | — | — |
-| DASH-005 | 3h | TODO | — | — |
+| DASH-004 | 3h 15m | ✅ DONE | 16/16 ✅ | 55be1ae |
+| DASH-005 | 3h | ⏳ TODO | — | — |
 | DASH-006 | 2h | TODO | — | — |
-| **TOTAL** | **14h 45m** | **3/6 TODO** | — | — |
+| **TOTAL** | **11h 30m** | **2/6 TODO** | — | — |
 
 ---
 
@@ -154,4 +184,4 @@
 
 ---
 
-**Ready for:** DASH-004 Financial Chart
+**Ready for:** DASH-005 Patient List
