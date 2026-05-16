@@ -1,6 +1,7 @@
 import KPICard from '@/components/dashboard/KPICard';
 import ProtocolChart from '@/components/dashboard/ProtocolChart';
 import FinancialChart from '@/components/dashboard/FinancialChart';
+import PatientTable from '@/components/dashboard/PatientTable';
 import { mockKPIs } from '@/lib/mock/dashboard-data';
 import { protocolData, totalPatients } from '@/lib/mock/protocol-data';
 import { revenueData } from '@/lib/mock/financial-data';
@@ -36,19 +37,12 @@ export default function DashboardPage() {
         <FinancialChart data={revenueData} />
       </div>
 
-      {/* Placeholder Patient List (DASH-005) */}
+      {/* Patient Table (DASH-005) */}
       <div className="bg-white rounded-lg border border-gray-200 p-6 mt-8">
         <h2 className="text-lg font-semibold text-gray-900 mb-4">
           Recent Patients
         </h2>
-        <div className="animate-pulse space-y-3">
-          {[1, 2, 3].map((i) => (
-            <div
-              key={i}
-              className="h-12 bg-gray-200 rounded"
-            />
-          ))}
-        </div>
+        <PatientTable />
       </div>
     </div>
   );
