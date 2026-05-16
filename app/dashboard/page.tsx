@@ -1,21 +1,25 @@
+import KPICard from '@/components/dashboard/KPICard';
+import { mockKPIs } from '@/lib/mock/dashboard-data';
+
 export default function DashboardPage() {
   return (
     <div className="max-w-6xl">
       <h1 className="text-3xl font-bold text-gray-900 mb-2">Dashboard</h1>
       <p className="text-gray-600">Welcome to Aria Clinic Dashboard</p>
 
-      {/* Placeholder Grid for KPI Cards (DASH-002) */}
+      {/* KPI Cards Grid (DASH-002) */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-8">
-        {[1, 2, 3, 4].map((i) => (
-          <div
-            key={i}
-            className="bg-white rounded-lg border border-gray-200 p-6 h-24"
-          >
-            <div className="animate-pulse space-y-2">
-              <div className="h-4 bg-gray-200 rounded w-20" />
-              <div className="h-6 bg-gray-200 rounded w-32" />
-            </div>
-          </div>
+        {mockKPIs.map((kpi) => (
+          <KPICard
+            key={kpi.id}
+            label={kpi.label}
+            value={kpi.value}
+            unit={kpi.unit}
+            change={kpi.change}
+            changePercent={kpi.changePercent}
+            icon={kpi.icon}
+            color={kpi.color}
+          />
         ))}
       </div>
 
