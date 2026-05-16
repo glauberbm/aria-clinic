@@ -41,9 +41,7 @@ export const patientRegistrationSchema = z.object({
       'CPF deve conter 11 dígitos'
     ),
   sex: z
-    .enum(['Masculino', 'Feminino', 'Outro'], {
-      errorMap: () => ({ message: 'Sexo inválido' }),
-    })
+    .enum(['Masculino', 'Feminino', 'Outro'])
     .optional(),
   clinicId: z
     .string()
@@ -57,9 +55,7 @@ export type PatientRegistrationInput = z.infer<typeof patientRegistrationSchema>
 
 export const patientProfileSchema = z.object({
   bloodType: z
-    .enum(['O+', 'O-', 'A+', 'A-', 'B+', 'B-', 'AB+', 'AB-'], {
-      errorMap: () => ({ message: 'Tipo de sangue inválido' }),
-    })
+    .enum(['O+', 'O-', 'A+', 'A-', 'B+', 'B-', 'AB+', 'AB-'])
     .optional(),
   heightCm: z
     .number()
@@ -102,18 +98,44 @@ export type InsuranceInfoInput = z.infer<typeof insuranceInfoSchema>;
 
 export const medicalHistorySchema = z.object({
   historyType: z
-    .enum(['condition', 'allergy', 'medication'], {
-      errorMap: () => ({ message: 'Tipo de histórico inválido' }),
-    }),
+    .enum(['condition', 'allergy', 'medication']),
   description: z
     .string()
     .min(1, 'Descrição é obrigatória')
     .max(1000, 'Descrição muito longa'),
   severity: z
-    .enum(['baixa', 'media', 'alta'], {
-      errorMap: () => ({ message: 'Severidade inválida' }),
-    })
+    .enum(['baixa', 'media', 'alta'])
     .optional(),
 });
 
 export type MedicalHistoryInput = z.infer<typeof medicalHistorySchema>;
+
+// Patient form schema for create/update operations
+export const patientSchema = z.object({
+  name: z
+    .string()
+    .min(2, 'Nome deve ter pelo menos 2 caracteres')
+    .max(255, 'Nome muito longo'),
+  email: z
+    .string()
+    .email('Email inválido')
+    .max(255, 'Email muito longo'),
+  phone: z
+    .string()
+    .min(10, 'Telefone inválido')
+    .max(20, 'Telefone muito longo'),
+  dob: z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/, 'Data de nascimento deve estar no formato YYYY-MM-DD'),
+  address: z
+    .string()
+    .max(500, 'Endereço muito longo')
+    .optional()
+    .or(z.literal('')),
+  status: z
+    .enum(['active', 'inactive', 'archived'])
+    .optional()
+    .or(z.literal('active')),
+});
+
+export type PatientInput = z.infer<typeof patientSchema>;

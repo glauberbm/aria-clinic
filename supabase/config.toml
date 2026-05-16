@@ -1,31 +1,6 @@
-# Supabase Local Development Configuration
-# This file is used by the Supabase CLI to manage local development
+# Supabase Project Configuration
+# Minimal config for CLI v2.98.2 compatibility
 
-[project]
-# Project reference (short identifier)
-# Found in: Supabase Dashboard > Project Settings
-project_id = "byzxpksxdywnsfjvazaf"
-
-# Get API URL from Supabase Dashboard > Project Settings > API
-api_url = "https://byzxpksxdywnsfjvazaf.supabase.co"
-
-# Database settings
 [db]
-# Host will be populated from environment
 port = 5432
 major_version = 15
-
-# Auth settings
-[auth]
-# Auth-related configuration
-enable_signup = true
-enable_email_confirmations = false
-
-# Storage settings
-[storage]
-# Storage bucket configuration
-enable_s3 = false
-
-# Vector/Embeddings settings
-[vector]
-enabled = false
