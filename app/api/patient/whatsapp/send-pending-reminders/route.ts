@@ -72,8 +72,8 @@ export async function GET(request: NextRequest) {
 
     const now = new Date();
     const results = {
-      24h_reminders_sent: 0,
-      1h_reminders_sent: 0,
+      ['24h_reminders_sent']: 0,
+      ['1h_reminders_sent']: 0,
       errors: [] as string[],
       duration_ms: 0,
     };
@@ -114,7 +114,7 @@ export async function GET(request: NextRequest) {
           });
 
           if (response.ok) {
-            results['24h_reminders_sent']++;
+            results['24h_reminders_sent'] = (results['24h_reminders_sent'] || 0) + 1;
           } else {
             const errorData = await response.json();
             results.errors.push(
@@ -159,7 +159,7 @@ export async function GET(request: NextRequest) {
           });
 
           if (response.ok) {
-            results['1h_reminders_sent']++;
+            results['1h_reminders_sent'] = (results['1h_reminders_sent'] || 0) + 1;
           } else {
             const errorData = await response.json();
             results.errors.push(

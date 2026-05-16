@@ -33,9 +33,11 @@ export class WhatsAppService {
   private supabase: ReturnType<typeof createClient>;
   private maxRetries = 3;
   private retryDelayMs = 5000;
+  private supabaseAny: any;
 
   constructor(supabaseUrl: string, supabaseKey: string) {
     this.supabase = createClient(supabaseUrl, supabaseKey);
+    this.supabaseAny = this.supabase as any;
   }
 
   /**
@@ -47,7 +49,7 @@ export class WhatsAppService {
         .from('patient_contact_preferences')
         .select('whatsapp_enabled')
         .eq('patient_id', patientId)
-        .single();
+        .single() as { data: { whatsapp_enabled: boolean } | null; error: any };
 
       if (error || !data) {
         console.warn(`Could not fetch contact preferences for patient ${patientId}`);
@@ -70,7 +72,7 @@ export class WhatsAppService {
         .from('patient_contact_preferences')
         .select('appointment_reminder_consent')
         .eq('patient_id', patientId)
-        .single();
+        .single() as { data: { appointment_reminder_consent: boolean } | null; error: any };
 
       if (error || !data) {
         return true; // Default to true if no preference set
@@ -234,7 +236,7 @@ export class WhatsAppService {
     metadata?: Record<string, unknown>
   ): Promise<void> {
     try {
-      await this.supabase.from('patient_communications').insert({
+      const record: Record<string, any> = {
         patient_id: patientId,
         clinic_id: clinicId,
         channel: 'whatsapp',
@@ -247,7 +249,8 @@ export class WhatsAppService {
           ...metadata,
         },
         created_by: userId,
-      });
+      };
+      await this.supabaseAny.from('patient_communications').insert([record]);
     } catch (error) {
       console.error('Error logging message:', error);
       // Don't throw - logging failure shouldn't block message sending
@@ -275,7 +278,7 @@ export class WhatsAppService {
         updateData.error_message = errorMessage;
       }
 
-      await this.supabase
+      await this.supabaseAny
         .from('patient_communications')
         .update(updateData)
         .eq('metadata->message_id', messageId);
@@ -318,7 +321,7 @@ export class WhatsAppService {
     appointmentReminderConsent: boolean
   ): Promise<boolean> {
     try {
-      const { error } = await this.supabase
+      const { error } = await this.supabaseAny
         .from('patient_contact_preferences')
         .update({
           whatsapp_enabled: whatsappEnabled,
