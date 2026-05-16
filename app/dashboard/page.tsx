@@ -1,7 +1,9 @@
 import KPICard from '@/components/dashboard/KPICard';
 import ProtocolChart from '@/components/dashboard/ProtocolChart';
+import FinancialChart from '@/components/dashboard/FinancialChart';
 import { mockKPIs } from '@/lib/mock/dashboard-data';
 import { protocolData, totalPatients } from '@/lib/mock/protocol-data';
+import { revenueData } from '@/lib/mock/financial-data';
 
 export default function DashboardPage() {
   return (
@@ -30,15 +32,8 @@ export default function DashboardPage() {
         {/* Protocol Chart (DASH-003) */}
         <ProtocolChart data={protocolData} total={totalPatients} />
 
-        {/* Financial Chart Placeholder (DASH-004) */}
-        <div className="bg-white rounded-lg border border-gray-200 p-6 h-auto">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">
-            Financial Data
-          </h2>
-          <div className="animate-pulse space-y-4">
-            <div className="h-64 bg-gray-200 rounded" />
-          </div>
-        </div>
+        {/* Financial Chart (DASH-004) */}
+        <FinancialChart data={revenueData} />
       </div>
 
       {/* Placeholder Patient List (DASH-005) */}
