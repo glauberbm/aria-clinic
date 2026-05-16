@@ -130,13 +130,80 @@
 
 ## PHASE 3: EPIC-004 Architecture Prep
 
-**Status:** ⏳ NOT STARTED
+**Status:** ✅ COMPLETED — 4h work
+**Output Files:**
+- docs/EPIC-004-ARCHITECTURE.md (comprehensive architecture decisions)
+- docs/EPIC-004-STORY-SEQUENCE.md (developer roadmap with story categorization)
+
+### Deliverables
+
+1️⃣ **Architecture Document** (docs/EPIC-004-ARCHITECTURE.md)
+- ✅ Story dependency graph with YOLO sequence (1 → 3 → 2 → 4 → {5,6} → 7)
+- ✅ 7 architecture decision sections with implementation code:
+  - Calendar sync (Zustand store structure)
+  - Doctor assignment (conflict detection algorithm)
+  - Waitlist priority (FIFO ordering)
+  - Timezone handling (Intl.DateTimeFormat, risk flagged)
+  - Concurrency mitigation (client-side validation + "Booking..." state)
+  - WhatsApp integration (mock Phase 2, Twilio Phase 3)
+  - Escalation paths (full → waitlist → alternatives)
+- ✅ Risk matrix: HIGH (timezone multi-zone), MEDIUM (double-booking, WhatsApp Phase 3), LOW (scalability, state complexity, responsive design, accessibility)
+- ✅ Component structure hierarchy
+- ✅ Tech stack finalized
+- ✅ 112 SP across 7 stories, 36h estimate with buffer
+
+2️⃣ **Story Sequence Roadmap** (docs/EPIC-004-STORY-SEQUENCE.md)
+- ✅ Story-by-story breakdown:
+  - CALE-001 (Calendar View): 🟢 YOLO, 16 SP, 3h
+  - CALE-003 (Doctor Assignment): 🟢 YOLO, 12 SP, 2h
+  - CALE-005 (Reminders): 🟢 YOLO, 12 SP, 2h
+  - CALE-002 (Create/Edit Appointment): 🟢 YOLO, 20 SP, 4h
+  - CALE-004 (Status Management): 🟡 CAREFUL, 16 SP, 3h
+  - CALE-006 (Waitlist): 🟡 CAREFUL, 16 SP, 3h
+  - CALE-007 (History & Analytics): 🟡 CAREFUL, 16 SP, 3h
+- ✅ Rationale for YOLO vs CAREFUL categorization
+- ✅ Implementation details with code snippets per story
+- ✅ Quality checkpoints (AC checks, tests, responsive design)
+- ✅ Blocker identification with mitigation
+- ✅ Code reuse opportunities (AppointmentForm, StatusBadge, TimeSlotPicker, AppointmentCard)
+- ✅ @dev handoff checklist
+- ✅ Success criteria
+- ✅ Checkpoint timeline (2026-05-16 → 2026-05-19)
+- ✅ Total dev time: 20h (within 21h budget), 10h QA fits in constraint
+
+### Key Findings
+
+**Execution Strategy:**
+- YOLO stories (001, 003, 005): 7h total (rapid, minimal iteration)
+- CAREFUL stories (002, 004, 006, 007): 13h total (test-first, edge cases)
+- Total: 20h dev + 10h QA = 30h (fits 36h budget with 6h buffer)
+
+**Critical Assumption:** ⚠️ **All doctors same timezone**
+- User confirmation required before CALE-001 starts
+- If doctors in different timezones: Escalate to Phase 3 backend design
+
+**Code Reuse Validated:**
+- AppointmentForm: Used in CALE-002 (create/edit) + CALE-006 (accept offer)
+- StatusBadge: Used in CALE-004 (detail) + CALE-007 (history table) + cards
+- TimeSlotPicker: Used in CALE-002 (form) + CALE-006 (offer)
+- AppointmentCard: Used in CALE-001 (calendar) + CALE-007 (history)
+
+**Dependencies Validated:**
+- CALE-001 (calendar): Unblocked, start immediately ✅
+- CALE-003 (doctors): Unblocked, parallel OK ✅
+- CALE-002 (appointment form): **BLOCKED** on CALE-003 (doctor list required) ⚠️
+- CALE-004 (status): **BLOCKED** on CALE-002 (appointment exists) ⚠️
+- CALE-005 (reminders): Unblocked (orthogonal) ✅
+- CALE-006 (waitlist): **BLOCKED** on CALE-004 (cancellation logic required) ⚠️
+- CALE-007 (history): **BLOCKED** on all prior (data source) ⚠️
+
+**PHASE 3 Ready:** @dev can begin CALE-001 immediately upon user confirmation of timezone assumption.
 
 ---
 
 ## Checkpoints
 
-- [ ] RLS verified by 2026-05-16 evening — **IN PROGRESS**
-- [ ] CORS decision made by 2026-05-17 morning
-- [ ] Security audit summary logged by 2026-05-18 morning
-- [ ] EPIC-004 architecture ready by 2026-05-19 morning
+- [x] RLS verified by 2026-05-16 evening — ✅ **COMPLETED 2026-05-15**
+- [x] CORS decision made by 2026-05-17 morning — ✅ **COMPLETED 2026-05-15** (P2, conditional approval)
+- [x] Security audit summary logged by 2026-05-18 morning — ✅ **COMPLETED 2026-05-15**
+- [x] EPIC-004 architecture ready by 2026-05-19 morning — ✅ **COMPLETED 2026-05-15**
