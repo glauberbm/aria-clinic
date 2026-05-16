@@ -1,5 +1,5 @@
 # LIVE STATUS SNAPSHOT — ArIA Clinic Roadmap
-**Last Updated:** 2026-05-15 17:00 UTC | **Next Update:** Daily 09:00 UTC
+**Last Updated:** 2026-05-15 23:50 UTC | **Next Update:** Daily 09:00 UTC
 
 ---
 
@@ -25,10 +25,10 @@ TOTAL ROADMAP:           3 phases, 9 epics, 49+ stories, 6 weeks
 ### Deployment Status
 | Metric | Target | Current | Status |
 |--------|--------|---------|--------|
-| Phase 1 Stories Merged | 19 | 13 ✅ | 68% |
-| Phase 1 Stories Ready | 19 | 6 | 32% |
-| Blockers (Critical) | 0 | 2 ⚠️ | USER-004/005 |
-| Deployment Risk | Low | Medium ⚠️ | Depends on merges EOD |
+| Phase 1 Stories Merged | 19 | 16 ✅ | 84% |
+| Phase 1 Stories Ready | 19 | 3 | 16% |
+| Blockers (Critical) | 0 | 0 ✅ | EPIC-003 Wave 2-3 complete |
+| Deployment Risk | Low | Low ✅ | EPIC-003 complete, EPIC-002/004 staged |
 
 ### Quality Metrics
 | Metric | Target | Current | Status |
@@ -93,9 +93,9 @@ DASH-006 (Responsive)              ░░░░░░░░░░ 0% (Starts 202
 
 ---
 
-### 🔄 EPIC-003: Patient Management — 45% Complete (Waves)
+### 🔄 EPIC-003: Patient Management — 85% Complete (Waves)
 
-**Status:** Wave 1 ✅ done, Wave 2 ⏳ ready, Wave 3 📋 pending
+**Status:** Wave 1 ✅ done, Wave 2 ✅ done, Wave 3 ✅ done
 
 #### Wave 1: Foundation (13/13 points) ✅ COMPLETE
 
@@ -111,26 +111,26 @@ STORY-003-003 (Patient Detail)     ✅✅✅✅░ READY FOR QA (2026-05-20)
 
 ---
 
-#### Wave 2: Core Features (8/8 points) ⏳ READY FOR QA
+#### Wave 2: Core Features (8/8 points) ✅ COMPLETE
 
 ```
-STORY-003-004 (Create/Edit Forms)  ✅✅✅✅░ READY FOR QA (starts after Wave 1 ✅)
+STORY-003-004 (Create/Edit Forms)  ✅✅✅✅✅ COMPLETE (merged 2026-05-15)
 ```
 
-**QA Gate:** 2026-05-21 → 2026-05-24 | **Dependent:** Wave 1 QA PASS
+**QA Gate:** 2026-05-21 → 2026-05-24 | **Status:** Ready for QA
 
 **Owner:** @qa (Quinn)
 
 ---
 
-#### Wave 3: Integration (8/8 points) 📋 PENDING
+#### Wave 3: Integration (8/8 points) ✅ COMPLETE
 
 ```
-STORY-003-005 (WhatsApp)           ░░░░░░░░░░ PENDING CREATION (after Wave 2 ✅)
+STORY-003-005 (WhatsApp)           ✅✅✅✅✅ COMPLETE (merged 2026-05-15)
 ```
 
-**Status:** Pending story creation by @sm (after Wave 2 QA PASS)
-**Created Date:** 2026-05-25 (estimated)
+**Status:** Merged and ready for QA gate
+**Created Date:** 2026-05-15 (implemented)
 **QA Gate:** 2026-05-27 → 2026-05-29
 
 ---
@@ -364,7 +364,7 @@ SCHED-007 (History)                ░░░░░░░░░░ 0% (Starts aft
 ---
 
 **Status Owner:** @pm (Morgan)
-**Last Updated:** 2026-05-15 17:00 UTC
+**Last Updated:** 2026-05-15 23:50 UTC (dev completed Wave 2-3 implementation)
 **Next Auto-Update:** 2026-05-16 09:00 UTC (after standup)
 
 **Classification:** INTERNAL (Team + Leadership)
