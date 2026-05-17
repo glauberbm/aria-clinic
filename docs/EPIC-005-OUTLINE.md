@@ -1,9 +1,10 @@
 # EPIC-005 Story Templates — Integration & Automation
 ## Research Phase Outline (Phase 2.2)
 
-**Document Version:** 1.0
+**Document Version:** 1.1
 **Created:** 2026-05-16
-**Status:** Pre-Implementation Research
+**Last Updated:** 2026-05-17
+**Status:** Phase 1 Implementation — Stories 005.001-005.003 Validated ✅
 **Epic Lead:** @pm
 
 ---
@@ -12,9 +13,17 @@
 
 EPIC-005 extends the Aria Clinic MVP with **third-party integrations** (Stripe, WhatsApp Business API) and **automated workflows** (reminders, invoicing, reporting). This epic contains ~30 stories across 4 themes, estimated 130-150 story points.
 
-**Timeline:** 2026-05-27 → 2026-06-20 (4 weeks)
+**Timeline:** 2026-05-27 → 2026-06-20 (4 weeks) — **Updated: 2026-05-17 Implementation started**
 **Themes:** 4 (Payments, WhatsApp, Reports, Automation)
 **Dependency:** EPIC-004 (scheduler) must be complete and stable
+
+### Phase 1 Status (2026-05-17)
+✅ **Stories 005.001-005.003 validated by @po**
+- **005.001 (PaymentIntent):** 9/10 — GO ✅
+- **005.002 (SetupIntent):** 9/10 — GO ✅
+- **005.003 (Invoice Generation):** 8/10 — GO WITH CONCERNS ⚠️ (pre-requisites pending)
+- **GitHub Issues:** #7, #8, #9
+- **Next:** Assign to @dev for implementation
 
 ---
 
