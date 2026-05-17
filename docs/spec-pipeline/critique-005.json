@@ -1,0 +1,185 @@
+{
+  "phase": 5,
+  "phase_name": "Critique",
+  "spec_id": "spec-005.md",
+  "epic": "005",
+  "epic_name": "Stripe Payment Integration",
+  "reviewer": "@qa (Quinn)",
+  "review_date": "2026-05-17",
+  "status": "NEEDS_REVISION",
+  "overall_score": 3.4,
+  "score_breakdown": {
+    "testability": {
+      "score": 9,
+      "max": 10,
+      "rationale": "11 test scenarios are well-defined and executable. Happy path, error scenarios, edge cases (card declined, 3D Secure, idempotency, RLS), and load testing all present. Minor gaps: no explicit scenario for webhook timeout >30s during processing, no concurrent invoice number generation collision test."
+    },
+    "edge_case_coverage": {
+      "score": 7,
+      "max": 10,
+      "rationale": "Good coverage of common errors (card_declined, processing_error, network timeout). Identified gaps: (1) Orphaned invoices if PDF generation fails AFTER payment succeeds (retry logic mentioned but no test scenario), (2) Network failure during 3D Secure confirmation flow, (3) Invoice sequential number collision under concurrent payment + invoice generation, (4) Webhook secret rotation without downtime."
+    },
+    "security_compliance": {
+      "score": 8.5,
+      "max": 10,
+      "rationale": "PCI DSS (SAQ A) requirements well-documented. LGPD audit logging and retention (5+ years) specified. Identified gaps: (1) Cascade delete of patient invoices conflicts with 5-year audit retention requirement—spec needs clarification on how to balance LGPD deletion rights vs audit trail immutability, (2) Webhook secret rotation procedure not documented, (3) Incident response playbook mentioned but not detailed."
+    },
+    "ambiguities_and_gaps": {
+      "score": 7,
+      "max": 10,
+      "rationale": "Most requirements clear. Identified ambiguities: (1) Error message localization—spec says 'user-friendly error' for card_declined but doesn't specify PT-BR vs EN, (2) Brazil-specific validation in Phase 2 unclear—CPF on invoices required? (3) What exactly is 'imported as base64' for clinic logo—format/size constraints?, (4) Rate limiting (100 req/min) mentioned in deployment checklist but not in API contract, (5) Webhook retry backoff logic documented (1s, 5s, 30s) but max retry count not specified."
+    }
+  },
+  "detailed_findings": {
+    "strengths": [
+      "✅ Functional requirements (FR-005.001, .002, .003) are complete with acceptance criteria",
+      "✅ API contracts (10 endpoints) are well-specified with JSON examples and error codes",
+      "✅ Database schema is normalized (5 tables, no redundancy, clear relationships)",
+      "✅ 11 test scenarios cover happy path, error scenarios, edge cases, and load testing",
+      "✅ Error handling matrix (16 scenarios) provides detailed retry strategies",
+      "✅ Deployment plan is 4-phase with clear success gates (95% → 98% success rate)",
+      "✅ Critical decisions (6) are documented with rationale and impact analysis",
+      "✅ PCI DSS compliance (SAQ A) requirements are explicit",
+      "✅ LGPD audit logging (5+ years retention) specified",
+      "✅ Idempotency and webhook deduplication well-designed (Idempotency-Key, event_id dedup)"
+    ],
+    "concerns_requiring_revision": [
+      {
+        "id": "CONCERN-1",
+        "severity": "HIGH",
+        "category": "Edge Case Testing",
+        "title": "Missing test scenario: Orphaned invoice if PDF generation fails",
+        "description": "If payment succeeds (appointment.stripe_payment_status = 'succeeded') but PDF generation fails permanently (after 3 retries), what is the state? Spec says 'email without PDF, link to dashboard' but no test scenario validates this behavior.",
+        "required_action": "Add test scenario 7.12: Invoice generation failure after payment success. Validate that: (1) Invoice record created but pdf_url = null, (2) Email sent with dashboard link instead, (3) Audit log captures invoice_generation_failed_final, (4) Clinic staff can manually retry via dashboard."
+      },
+      {
+        "id": "CONCERN-2",
+        "severity": "HIGH",
+        "category": "LGPD Compliance Conflict",
+        "title": "Cascade delete of invoices conflicts with 5-year audit retention",
+        "description": "Spec states: 'Cascade delete: If patient deleted, all saved payment methods deleted' AND 'Audit log retention: 5+ years'. But invoices contain patient PII (name, CPF). If patient requests deletion under LGPD, must invoices be deleted too (violating 5-year requirement) or kept (violating LGPD deletion right)?",
+        "required_action": "Clarify LGPD deletion strategy: (1) Option A: Soft-delete invoices (pseudonymized after 5 years), (2) Option B: Keep audit_log, delete invoices (acceptable if audit_log doesn't contain PII), (3) Option C: Request exemption from clinic LGPD officer. Add this to section 9.5 (LGPD Compliance). Add test scenario validating chosen approach."
+      },
+      {
+        "id": "CONCERN-3",
+        "severity": "MEDIUM",
+        "category": "Error Message Clarity",
+        "title": "Error message localization not specified",
+        "description": "Section 7.2 says 'Frontend displays: \"Your card was declined...\"' in English. Spec does not specify: (1) Should all error messages be PT-BR for Brazil clinic?, (2) Should they be localized per clinic locale setting?, (3) List of all error messages in spec?"
+      },
+      {
+        "id": "CONCERN-4",
+        "severity": "MEDIUM",
+        "category": "Missing Test Scenario",
+        "title": "No test for webhook processing timeout (>30s)",
+        "description": "Spec requires 'Webhook response must return 200 OK within 30 seconds' but no test scenario validates this. What happens if processing takes 35s? Does Stripe retry? Should you implement timeout/async pattern?",
+        "required_action": "Add test scenario 7.12b: Webhook processing timeout. Validate that: (1) Processing completes within 30s (measure P99 latency), (2) If approaching 30s, implement async pattern (queue + async worker), (3) Response returned immediately (200 OK), async processing continues."
+      },
+      {
+        "id": "CONCERN-5",
+        "severity": "MEDIUM",
+        "category": "Race Condition",
+        "title": "Missing test for concurrent invoice number generation",
+        "description": "Invoice number format: YYYY-MM-00001 (sequential, never duplicate). If two payments complete simultaneously, could invoice_number collision occur? Database constraint mentioned but not tested.",
+        "required_action": "Add test scenario: Concurrent invoice generation (100 payments in 1 second). Validate: (1) All invoice_numbers unique, (2) No database constraint violation, (3) Use PostgreSQL sequence for invoice_number generation to prevent race condition."
+      },
+      {
+        "id": "CONCERN-6",
+        "severity": "MEDIUM",
+        "category": "Missing Flow",
+        "title": "Webhook secret rotation procedure not documented",
+        "description": "Spec does not explain how clinic rotates webhook secret in Stripe dashboard without downtime. What if old secret still arrives after rotation? Should webhook endpoint accept both old + new secrets temporarily?"
+      },
+      {
+        "id": "CONCERN-7",
+        "severity": "LOW",
+        "category": "Ambiguity",
+        "title": "Brazil-specific payment validation in Phase 2 unclear",
+        "description": "Spec says 'Phase 3: NF-e/RPS integration' but Phase 2 invoices include CPF + CNPJ. What validations apply in Phase 2? CPF format? CNPJ format? Should these be required or optional?"
+      },
+      {
+        "id": "CONCERN-8",
+        "severity": "LOW",
+        "category": "Ambiguity",
+        "title": "Clinic logo constraints not specified",
+        "description": "Invoice HTML template says 'embedded as base64' but max file size, format, dimensions not specified. If clinic uploads 50MB logo, will base64 encoding break email delivery?"
+      }
+    ],
+    "questions_for_clarification": [
+      "What is the maximum retry count for webhook processing? (Spec says backoff: 1s, 5s, 30s, 5min, 30min but no max retries)",
+      "Should invoice PDF be immutable forever, or can clinic re-generate if template changes?",
+      "If payment_intent expires (24h default), how does retry logic handle it?",
+      "Can clinic override invoice number format (e.g., use custom prefix)?",
+      "Should failed payments send email notification to patient, or only successful payments?"
+    ],
+    "validation_checklist": [
+      "✅ All 3 functional requirements have acceptance criteria",
+      "✅ All 5 non-functional requirements have detailed controls",
+      "✅ All 10 API endpoints have request/response schemas",
+      "✅ Database schema has PK, FK, indexes specified",
+      "✅ Error codes mapped to HTTP status codes",
+      "✅ Performance targets specified (invoice gen <5s, email <3s, P95 latency <3s)",
+      "✅ Security controls: HTTPS, rate limiting, RLS, audit logging",
+      "✅ Deployment checklist: Environment setup, code review, security review",
+      "⚠️ Known blockers documented but some mitigations vague (e.g., 'assign 2-4 hours' for team learning)",
+      "⚠️ Test environment (Stripe test mode) limitations acknowledged but workarounds could be clearer"
+    ]
+  },
+  "verdict": "NEEDS_REVISION",
+  "verdict_rationale": "Spec is 85% complete and production-ready, but 8 concerns (5 HIGH/MEDIUM, 3 LOW) require clarification before Phase 6 (Plan). Critical gaps: (1) LGPD deletion vs 5-year retention conflict must be resolved, (2) Orphaned invoice scenario must be tested, (3) Error message localization must be specified, (4) Webhook timeout and race condition tests must be added. Low-severity gaps are minor clarifications (secret rotation, Brazil validation, logo constraints).",
+  "revision_effort_estimate": "2-4 hours",
+  "revision_tasks": [
+    {
+      "priority": 1,
+      "task": "Resolve LGPD deletion conflict (CONCERN-2)",
+      "description": "Work with @po and @architect to decide: (A) Soft-delete invoices, (B) Keep audit_log only (delete invoices), or (C) Request clinic exemption. Document decision. Update section 9.5."
+    },
+    {
+      "priority": 2,
+      "task": "Add missing test scenarios (CONCERN-1, CONCERN-4, CONCERN-5)",
+      "description": "Add 3 new test scenarios to section 7: (1) Orphaned invoice (7.12), (2) Webhook timeout (7.12b), (3) Concurrent invoice numbering (7.12c). Validate with test implementations."
+    },
+    {
+      "priority": 3,
+      "task": "Clarify error message localization (CONCERN-3)",
+      "description": "Add requirement to section 2.0 (Functional Requirements): 'All error messages shall be displayed in Portuguese (PT-BR)'. List all error messages in glossary."
+    },
+    {
+      "priority": 4,
+      "task": "Document webhook secret rotation (CONCERN-6)",
+      "description": "Add section 6.5 'Webhook Secret Rotation': (A) Update webhook endpoint to accept both old + new secrets during rotation window, (B) Document rotation procedure, (C) Set rotation window to 48 hours."
+    },
+    {
+      "priority": 5,
+      "task": "Specify Brazil-specific validation (CONCERN-7)",
+      "description": "Clarify Phase 2 requirements: CPF format validation? CNPJ format? Add to section 3 (API Contract): POST /api/invoices should validate CPF/CNPJ format."
+    },
+    {
+      "priority": 6,
+      "task": "Document logo constraints (CONCERN-8)",
+      "description": "Add constraint to section 3 (FR-005.003): Clinic logo max size 500KB, format PNG/JPG, max dimensions 1024x1024px. Add validation to backend."
+    },
+    {
+      "priority": 7,
+      "task": "Clarify webhook retry max count",
+      "description": "Update section 5 (Error Handling): Max webhook retries = 5 with backoff (1s, 5s, 30s, 5min, 30min). After 5 retries, log critical error and alert clinic staff."
+    }
+  ],
+  "sign_off": {
+    "qa_reviewer": "Quinn (@qa)",
+    "reviewed_sections": [
+      "Functional Requirements (FR-005.001-003)",
+      "API Contracts (10 endpoints)",
+      "Database Schema (5 tables)",
+      "Error Handling Matrix (16 scenarios)",
+      "Testing Strategy (11 scenarios + load testing)",
+      "Deployment Plan (4-phase rollout)",
+      "Security & Compliance (PCI DSS + LGPD)",
+      "Critical Decisions (6 documented)",
+      "Known Blockers (4 with mitigations)"
+    ],
+    "next_phase": "Phase 6 (Plan) — @architect generates implementation.yaml after revisions approved",
+    "confidence_level": "MEDIUM — Spec is well-structured, but blockers must be resolved before implementation",
+    "estimated_implementation_days": "21-28 days (Phase 2: Card payments only)"
+  }
+}

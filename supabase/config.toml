@@ -1,0 +1,6 @@
+# Supabase Project Configuration
+# Minimal config for CLI v2.98.2 compatibility
+
+[db]
+port = 5432
+major_version = 15

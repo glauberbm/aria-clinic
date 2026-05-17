@@ -5,7 +5,7 @@ import { Shell } from '@/components/layout/Shell';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Calendar, Check, X } from 'lucide-react';
+import { Calendar, Check } from 'lucide-react';
 
 const mockPagamentos = [
   {

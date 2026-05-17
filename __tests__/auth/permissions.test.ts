@@ -6,20 +6,15 @@ import {
   assignRole,
   removeRole,
 } from '@/lib/auth/permissions';
-import { createClient as createSupabaseClient } from '@supabase/supabase-js';
 import type { SupabaseClient } from '@supabase/supabase-js';
 
-// Mock Supabase
-jest.mock('@supabase/supabase-js', () => ({
-  createClient: jest.fn(),
-}));
-
 describe('Permission Functions', () => {
-  let mockCreateClient: jest.MockedFunction<typeof createSupabaseClient>;
+  let mockClient: Partial<SupabaseClient>;
 
   beforeEach(() => {
-    jest.clearAllMocks();
-    mockCreateClient = jest.mocked(createSupabaseClient);
+    mockClient = {
+      from: jest.fn(),
+    };
   });
 
   describe('getUserRole', () => {
@@ -32,13 +27,13 @@ describe('Permission Functions', () => {
       const mockSecondEq = jest.fn().mockReturnValue({ single: mockSingle });
       const mockFirstEq = jest.fn().mockReturnValue({ eq: mockSecondEq });
       const mockSelect = jest.fn().mockReturnValue({ eq: mockFirstEq });
-      const mockFrom = jest.fn().mockReturnValue({ select: mockSelect });
+      (mockClient.from as jest.Mock).mockReturnValue({ select: mockSelect });
 
-      mockCreateClient.mockReturnValue({
-        from: mockFrom,
-      } as unknown as SupabaseClient);
-
-      const role = await getUserRole('user-123', 'clinic-456');
+      const role = await getUserRole(
+        mockClient as SupabaseClient,
+        'user-123',
+        'clinic-456'
+      );
       expect(role).toBe('doctor');
     });
 
@@ -51,22 +46,26 @@ describe('Permission Functions', () => {
       const mockSecondEq = jest.fn().mockReturnValue({ single: mockSingle });
       const mockFirstEq = jest.fn().mockReturnValue({ eq: mockSecondEq });
       const mockSelect = jest.fn().mockReturnValue({ eq: mockFirstEq });
-      const mockFrom = jest.fn().mockReturnValue({ select: mockSelect });
+      (mockClient.from as jest.Mock).mockReturnValue({ select: mockSelect });
 
-      mockCreateClient.mockReturnValue({
-        from: mockFrom,
-      } as unknown as SupabaseClient);
-
-      const role = await getUserRole('user-999', 'clinic-999');
+      const role = await getUserRole(
+        mockClient as SupabaseClient,
+        'user-999',
+        'clinic-999'
+      );
       expect(role).toBeNull();
     });
 
     it('should handle errors gracefully', async () => {
-      mockCreateClient.mockImplementation(() => {
+      (mockClient.from as jest.Mock).mockImplementation(() => {
         throw new Error('Connection error');
       });
 
-      const role = await getUserRole('user-123', 'clinic-456');
+      const role = await getUserRole(
+        mockClient as SupabaseClient,
+        'user-123',
+        'clinic-456'
+      );
       expect(role).toBeNull();
     });
   });
@@ -81,13 +80,14 @@ describe('Permission Functions', () => {
       const mockSecondEq = jest.fn().mockReturnValue({ single: mockSingle });
       const mockFirstEq = jest.fn().mockReturnValue({ eq: mockSecondEq });
       const mockSelect = jest.fn().mockReturnValue({ eq: mockFirstEq });
-      const mockFrom = jest.fn().mockReturnValue({ select: mockSelect });
+      (mockClient.from as jest.Mock).mockReturnValue({ select: mockSelect });
 
-      mockCreateClient.mockReturnValue({
-        from: mockFrom,
-      } as unknown as SupabaseClient);
-
-      const hasAdmin = await hasRole('user-123', 'clinic-456', 'admin');
+      const hasAdmin = await hasRole(
+        mockClient as SupabaseClient,
+        'user-123',
+        'clinic-456',
+        'admin'
+      );
       expect(hasAdmin).toBe(true);
     });
 
@@ -100,13 +100,14 @@ describe('Permission Functions', () => {
       const mockSecondEq = jest.fn().mockReturnValue({ single: mockSingle });
       const mockFirstEq = jest.fn().mockReturnValue({ eq: mockSecondEq });
       const mockSelect = jest.fn().mockReturnValue({ eq: mockFirstEq });
-      const mockFrom = jest.fn().mockReturnValue({ select: mockSelect });
+      (mockClient.from as jest.Mock).mockReturnValue({ select: mockSelect });
 
-      mockCreateClient.mockReturnValue({
-        from: mockFrom,
-      } as unknown as SupabaseClient);
-
-      const hasAdmin = await hasRole('user-123', 'clinic-456', 'admin');
+      const hasAdmin = await hasRole(
+        mockClient as SupabaseClient,
+        'user-123',
+        'clinic-456',
+        'admin'
+      );
       expect(hasAdmin).toBe(false);
     });
   });
@@ -127,13 +128,14 @@ describe('Permission Functions', () => {
       const mockSecondEq = jest.fn().mockReturnValue({ single: mockSingle });
       const mockFirstEq = jest.fn().mockReturnValue({ eq: mockSecondEq });
       const mockSelect = jest.fn().mockReturnValue({ eq: mockFirstEq });
-      const mockFrom = jest.fn().mockReturnValue({ select: mockSelect });
+      (mockClient.from as jest.Mock).mockReturnValue({ select: mockSelect });
 
-      mockCreateClient.mockReturnValue({
-        from: mockFrom,
-      } as unknown as SupabaseClient);
-
-      const hasWrite = await hasPermission('user-123', 'clinic-456', 'write');
+      const hasWrite = await hasPermission(
+        mockClient as SupabaseClient,
+        'user-123',
+        'clinic-456',
+        'write'
+      );
       expect(hasWrite).toBe(true);
     });
 
@@ -152,13 +154,14 @@ describe('Permission Functions', () => {
       const mockSecondEq = jest.fn().mockReturnValue({ single: mockSingle });
       const mockFirstEq = jest.fn().mockReturnValue({ eq: mockSecondEq });
       const mockSelect = jest.fn().mockReturnValue({ eq: mockFirstEq });
-      const mockFrom = jest.fn().mockReturnValue({ select: mockSelect });
+      (mockClient.from as jest.Mock).mockReturnValue({ select: mockSelect });
 
-      mockCreateClient.mockReturnValue({
-        from: mockFrom,
-      } as unknown as SupabaseClient);
-
-      const canDelete = await hasPermission('user-123', 'clinic-456', 'delete');
+      const canDelete = await hasPermission(
+        mockClient as SupabaseClient,
+        'user-123',
+        'clinic-456',
+        'delete'
+      );
       expect(canDelete).toBe(false);
     });
 
@@ -171,13 +174,14 @@ describe('Permission Functions', () => {
       const mockSecondEq = jest.fn().mockReturnValue({ single: mockSingle });
       const mockFirstEq = jest.fn().mockReturnValue({ eq: mockSecondEq });
       const mockSelect = jest.fn().mockReturnValue({ eq: mockFirstEq });
-      const mockFrom = jest.fn().mockReturnValue({ select: mockSelect });
+      (mockClient.from as jest.Mock).mockReturnValue({ select: mockSelect });
 
-      mockCreateClient.mockReturnValue({
-        from: mockFrom,
-      } as unknown as SupabaseClient);
-
-      const hasPerm = await hasPermission('user-999', 'clinic-999', 'read');
+      const hasPerm = await hasPermission(
+        mockClient as SupabaseClient,
+        'user-999',
+        'clinic-999',
+        'read'
+      );
       expect(hasPerm).toBe(false);
     });
   });
@@ -193,13 +197,12 @@ describe('Permission Functions', () => {
       });
 
       const mockSelect = jest.fn().mockReturnValue({ eq: mockEq });
-      const mockFrom = jest.fn().mockReturnValue({ select: mockSelect });
+      (mockClient.from as jest.Mock).mockReturnValue({ select: mockSelect });
 
-      mockCreateClient.mockReturnValue({
-        from: mockFrom,
-      } as unknown as SupabaseClient);
-
-      const roles = await getUserRoles('user-123');
+      const roles = await getUserRoles(
+        mockClient as SupabaseClient,
+        'user-123'
+      );
       expect(roles).toHaveLength(2);
       expect(roles[0]).toEqual({ clinicId: 'clinic-1', role: 'admin' });
       expect(roles[1]).toEqual({ clinicId: 'clinic-2', role: 'doctor' });
@@ -212,13 +215,12 @@ describe('Permission Functions', () => {
       });
 
       const mockSelect = jest.fn().mockReturnValue({ eq: mockEq });
-      const mockFrom = jest.fn().mockReturnValue({ select: mockSelect });
+      (mockClient.from as jest.Mock).mockReturnValue({ select: mockSelect });
 
-      mockCreateClient.mockReturnValue({
-        from: mockFrom,
-      } as unknown as SupabaseClient);
-
-      const roles = await getUserRoles('user-999');
+      const roles = await getUserRoles(
+        mockClient as SupabaseClient,
+        'user-999'
+      );
       expect(roles).toEqual([]);
     });
   });
@@ -230,7 +232,7 @@ describe('Permission Functions', () => {
         error: null,
       });
 
-      const mockSelect = jest.fn().mockReturnValue({
+      const mockRoleSelect = jest.fn().mockReturnValue({
         eq: jest.fn().mockReturnValue({
           single: jest.fn().mockResolvedValue({
             data: { id: 'role-admin' },
@@ -239,15 +241,16 @@ describe('Permission Functions', () => {
         }),
       });
 
-      const mockFrom = jest.fn()
-        .mockReturnValueOnce({ select: mockSelect })
+      (mockClient.from as jest.Mock)
+        .mockReturnValueOnce({ select: mockRoleSelect })
         .mockReturnValueOnce({ upsert: mockUpsert });
 
-      mockCreateClient.mockReturnValue({
-        from: mockFrom,
-      } as unknown as SupabaseClient);
-
-      const success = await assignRole('user-123', 'clinic-456', 'admin');
+      const success = await assignRole(
+        mockClient as SupabaseClient,
+        'user-123',
+        'clinic-456',
+        'admin'
+      );
       expect(success).toBe(true);
     });
 
@@ -259,13 +262,14 @@ describe('Permission Functions', () => {
 
       const mockEq = jest.fn().mockReturnValue({ single: mockSingle });
       const mockSelect = jest.fn().mockReturnValue({ eq: mockEq });
-      const mockFrom = jest.fn().mockReturnValue({ select: mockSelect });
+      (mockClient.from as jest.Mock).mockReturnValue({ select: mockSelect });
 
-      mockCreateClient.mockReturnValue({
-        from: mockFrom,
-      } as unknown as SupabaseClient);
-
-      const success = await assignRole('user-123', 'clinic-456', 'invalid');
+      const success = await assignRole(
+        mockClient as SupabaseClient,
+        'user-123',
+        'clinic-456',
+        'invalid'
+      );
       expect(success).toBe(false);
     });
   });
@@ -284,15 +288,16 @@ describe('Permission Functions', () => {
       const mockSelectEq = jest.fn().mockReturnValue({ single: mockSingle });
       const mockSelect = jest.fn().mockReturnValue({ eq: mockSelectEq });
 
-      const mockFrom = jest.fn()
+      (mockClient.from as jest.Mock)
         .mockReturnValueOnce({ select: mockSelect })
         .mockReturnValueOnce({ delete: mockDelete });
 
-      mockCreateClient.mockReturnValue({
-        from: mockFrom,
-      } as unknown as SupabaseClient);
-
-      const success = await removeRole('user-123', 'clinic-456', 'admin');
+      const success = await removeRole(
+        mockClient as SupabaseClient,
+        'user-123',
+        'clinic-456',
+        'admin'
+      );
       expect(success).toBe(true);
     });
 
@@ -304,13 +309,14 @@ describe('Permission Functions', () => {
 
       const mockEq = jest.fn().mockReturnValue({ single: mockSingle });
       const mockSelect = jest.fn().mockReturnValue({ eq: mockEq });
-      const mockFrom = jest.fn().mockReturnValue({ select: mockSelect });
+      (mockClient.from as jest.Mock).mockReturnValue({ select: mockSelect });
 
-      mockCreateClient.mockReturnValue({
-        from: mockFrom,
-      } as unknown as SupabaseClient);
-
-      const success = await removeRole('user-123', 'clinic-456', 'invalid');
+      const success = await removeRole(
+        mockClient as SupabaseClient,
+        'user-123',
+        'clinic-456',
+        'invalid'
+      );
       expect(success).toBe(false);
     });
   });

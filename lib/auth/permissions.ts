@@ -1,19 +1,15 @@
-import { createClient } from '@supabase/supabase-js';
-
-const getSupabaseClient = () => {
-  return createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
-  );
-};
+import { SupabaseClient } from '@supabase/supabase-js';
 
 /**
  * Get the user's role for a specific clinic
+ * NOTE: Pass a Supabase client with appropriate permissions (auth token or service role)
  */
-export async function getUserRole(userId: string, clinicId: string): Promise<string | null> {
+export async function getUserRole(
+  supabase: SupabaseClient,
+  userId: string,
+  clinicId: string
+): Promise<string | null> {
   try {
-    const supabase = getSupabaseClient();
-
     const { data, error } = await supabase
       .from('user_roles')
       .select('roles(name)')
@@ -37,24 +33,30 @@ export async function getUserRole(userId: string, clinicId: string): Promise<str
 
 /**
  * Check if a user has a specific role
+ * NOTE: Pass a Supabase client with appropriate permissions
  */
-export async function hasRole(userId: string, clinicId: string, roleName: string): Promise<boolean> {
-  const userRole = await getUserRole(userId, clinicId);
+export async function hasRole(
+  supabase: SupabaseClient,
+  userId: string,
+  clinicId: string,
+  roleName: string
+): Promise<boolean> {
+  const userRole = await getUserRole(supabase, userId, clinicId);
   return userRole === roleName;
 }
 
 /**
  * Check if a user has permission to perform an action
  * This checks the permissions array in the roles table
+ * NOTE: Pass a Supabase client with appropriate permissions
  */
 export async function hasPermission(
+  supabase: SupabaseClient,
   userId: string,
   clinicId: string,
   permission: string
 ): Promise<boolean> {
   try {
-    const supabase = getSupabaseClient();
-
     const { data, error } = await supabase
       .from('user_roles')
       .select('roles(permissions)')
@@ -80,11 +82,13 @@ export async function hasPermission(
 
 /**
  * Get all roles for a user across all clinics
+ * NOTE: Pass a Supabase client with appropriate permissions
  */
-export async function getUserRoles(userId: string): Promise<Array<{ clinicId: string; role: string }>> {
+export async function getUserRoles(
+  supabase: SupabaseClient,
+  userId: string
+): Promise<Array<{ clinicId: string; role: string }>> {
   try {
-    const supabase = getSupabaseClient();
-
     const { data, error } = await supabase
       .from('user_roles')
       .select('clinic_id, roles(name)')
@@ -113,12 +117,15 @@ export async function getUserRoles(userId: string): Promise<Array<{ clinicId: st
 
 /**
  * Assign a role to a user in a clinic
- * Only callable by admins or service role
+ * NOTE: Pass a Supabase client with service role (admin operations only)
  */
-export async function assignRole(userId: string, clinicId: string, roleName: string): Promise<boolean> {
+export async function assignRole(
+  supabase: SupabaseClient,
+  userId: string,
+  clinicId: string,
+  roleName: string
+): Promise<boolean> {
   try {
-    const supabase = getSupabaseClient();
-
     // Get role ID
     const { data: roleData, error: roleError } = await supabase
       .from('roles')
@@ -161,12 +168,15 @@ export async function assignRole(userId: string, clinicId: string, roleName: str
 
 /**
  * Remove a role from a user in a clinic
- * Only callable by admins or service role
+ * NOTE: Pass a Supabase client with service role (admin operations only)
  */
-export async function removeRole(userId: string, clinicId: string, roleName: string): Promise<boolean> {
+export async function removeRole(
+  supabase: SupabaseClient,
+  userId: string,
+  clinicId: string,
+  roleName: string
+): Promise<boolean> {
   try {
-    const supabase = getSupabaseClient();
-
     // Get role ID
     const { data: roleData, error: roleError } = await supabase
       .from('roles')

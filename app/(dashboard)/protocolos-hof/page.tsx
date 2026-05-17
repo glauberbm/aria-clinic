@@ -43,17 +43,6 @@ const protocolOptions = {
   ],
 };
 
-const regions = [
-  "Testa",
-  "Glabela",
-  "Olhos",
-  "Bochechas",
-  "Nariz",
-  "Lábios",
-  "Mandíbula",
-  "Pescoço",
-];
-
 const professionals = [
   "Dra. Sabryna",
   "Dra. Cristina",
@@ -118,7 +107,7 @@ export default function ProtocolosHOFPage() {
   const updateProtocolItem = (
     id: number,
     field: keyof ProtocolItem,
-    value: any
+    value: string | string[] | number
   ) => {
     setProtocolItems(
       protocolItems.map((item) =>

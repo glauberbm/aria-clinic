@@ -1,0 +1,269 @@
+---
+epic_id: EPIC-003
+epic_title: Patient Management Module
+execution_mode: waves
+execution_date: 2026-05-15
+execution_owner: "@pm (Morgan)"
+
+wave_structure:
+  total_waves: 3
+  total_story_points: 29
+  sequential_duration: "~2.5 weeks"
+  parallel_duration: "~1.5 weeks"
+  efficiency_gain: "40% faster via parallelization"
+
+waves:
+  wave_1:
+    title: "Foundation - Patient Data & Core Views"
+    duration_days: 4
+    story_points: 13
+    parallelization: "SEQUENTIAL (database is blocker)"
+    stories:
+      - id: STORY-003-001
+        title: "Patient Database Schema"
+        points: 5
+        priority: CRITICAL
+        status: Done ✅
+        dependencies: "None"
+        blocking_for: "Waves 2-3 (all features depend on schema)"
+        completion_date: "2026-05-15"
+
+      - id: STORY-003-002
+        title: "Patient List View with Search & Pagination"
+        points: 4
+        priority: HIGH
+        status: Ready for Review
+        dependencies: "STORY-003-001 ✅"
+        blocking_for: "Wave 2"
+
+      - id: STORY-003-003
+        title: "Patient Detail Page"
+        points: 4
+        priority: HIGH
+        status: Ready for Review
+        dependencies: "STORY-003-001 ✅"
+        blocking_for: "Wave 2"
+
+    description: |
+      Wave 1 establishes the patient database foundation and core read-only views.
+      STORY-003-001 is COMPLETE — comprehensive schema with RLS policies, LGPD compliance, and audit logging.
+      STORY-003-002 & STORY-003-003 are Ready for Review — patient list and detail pages fully implemented.
+      Critical: Schema RLS policies must be validated before Wave 2 begins (write operations).
+
+    risks:
+      - RLS policies edge cases with role-based access
+      - Query performance at scale (1000+ patients)
+      - LGPD audit log retention and access
+
+    qate_gates:
+      - "STORY-003-001: Schema deployed, RLS policies tested"
+      - "STORY-003-002: Patient list loads < 500ms, search/filter working"
+      - "STORY-003-003: Patient detail fully responsive, audit log visible to admins"
+      - "All AC met, CodeRabbit approval, no CRITICAL issues"
+
+  wave_2:
+    title: "Core Features - Patient Management (Parallel)"
+    duration_days: 5
+    story_points: 8
+    parallelization: "SEQUENTIAL (create/edit depends on list/detail from Wave 1)"
+    stories:
+      - id: STORY-003-004
+        title: "Patient Create/Edit Forms"
+        points: 8
+        priority: HIGH
+        status: Ready for Review
+        dependencies: "STORY-003-001 ✅, STORY-003-002 ✅, STORY-003-003 ✅"
+        blocking_for: "Wave 3 (WhatsApp integration)"
+
+    description: |
+      Wave 2 implements write operations for patient management.
+      STORY-003-004 is Ready for Review — forms with validation, auto-save, and Supabase integration complete.
+      Remaining tasks: File upload for documents, delete confirmation, audit trail verification.
+      Critical: Must validate RLS policies for write operations before production.
+
+    risks:
+      - Form state management with auto-save
+      - File upload quota and storage
+      - Concurrent edit conflicts (optimistic locking)
+      - Audit trail completeness
+
+    qate_gates:
+      - "Create patient form submits successfully to Supabase"
+      - "Edit form loads patient data and persists changes"
+      - "Form validation prevents invalid data"
+      - "File upload working (if configured)"
+      - "Delete confirmation present"
+      - "Audit trail logging all changes"
+
+  wave_3:
+    title: "Integration - WhatsApp Notifications"
+    duration_days: 3
+    story_points: 8
+    parallelization: "SEQUENTIAL (depends on Wave 2 completion)"
+    stories:
+      - id: STORY-003-005
+        title: "WhatsApp Notification Integration"
+        points: 8
+        priority: MEDIUM
+        status: Pending
+        dependencies: "STORY-003-001 ✅, STORY-003-004 ✅"
+        blocking_for: "EPIC-003 COMPLETE"
+
+    description: |
+      Wave 3 integrates ArIA Agent WhatsApp for patient communications.
+      Connects patient communication system to automated appointment reminders, treatment updates, and patient engagement.
+      Includes message templates, delivery tracking, conversation history, and opt-in/opt-out preferences.
+      Final integration story — completes patient engagement loop.
+
+    risks:
+      - WhatsApp API rate limits and delivery SLA
+      - Message template localization
+      - Opt-in/opt-out preference synchronization
+      - Conversation history storage
+      - Error handling and retry logic
+
+    qate_gates:
+      - "WhatsApp message templates configured"
+      - "Appointment reminders sent 24h before"
+      - "Patient preferences (opt-in/opt-out) respected"
+      - "Message delivery tracking working"
+      - "Conversation history stored in system"
+      - "Error handling and retries functioning"
+
+timeline:
+  wave_1_start: "Completed (2026-05-15)"
+  wave_1_end: "2026-05-15"
+
+  wave_2_start: "Mon 2026-05-20 (Ready for QA)"
+  wave_2_end: "Fri 2026-05-24"
+
+  wave_3_start: "Mon 2026-05-27"
+  wave_3_end: "Wed 2026-05-29"
+
+  epic_complete: "2026-05-29 (EOD)"
+
+team_assignments:
+  wave_1:
+    create: "@sm (River) - COMPLETED"
+    validate: "@po (Pax) - PENDING"
+    implement: "@dev (Dex) - COMPLETED"
+    qa: "@qa (Quinn) - PENDING (Ready for Review)"
+
+  wave_2:
+    create: "@sm (River) - COMPLETED"
+    validate: "@po (Pax) - PENDING"
+    implement: "@dev (Dex) - COMPLETED (Ready for Review)"
+    qa: "@qa (Quinn) - PENDING (Ready for Review)"
+
+  wave_3:
+    create: "@sm (River) - Create STORY-003-005"
+    validate: "@po (Pax) - Validate story"
+    implement: "@dev (Dex) - Implement WhatsApp integration"
+    qa: "@qa (Quinn) - QA gate"
+
+critical_path:
+  sequence: "STORY-003-001 (DB) → STORY-003-002/003 (Read) → STORY-003-004 (Write) → STORY-003-005 (Integration)"
+  blocking_stories: ["STORY-003-001", "STORY-003-004"]
+  parallel_opportunities: "None — linear dependency chain"
+
+infrastructure_dependencies:
+  supabase:
+    - RLS policies for patient tables (COMPLETED)
+    - Patient medical history tables (COMPLETED)
+    - Medications/allergies tables (COMPLETED)
+    - Contact preferences table (COMPLETED)
+    - Audit log table (COMPLETED)
+    - Indexes for search performance (COMPLETED)
+
+  external_apis:
+    - ArIA Agent WhatsApp API (Wave 3)
+    - File storage (documents/uploads if needed in Wave 2)
+
+  frontend_components:
+    - Patient list with search/filter/pagination (COMPLETED)
+    - Patient detail view (COMPLETED)
+    - Patient form (create/edit) (COMPLETED)
+    - WhatsApp settings and notification UI (Wave 3)
+
+risks_and_mitigations:
+  high_priority:
+    - risk: "RLS policies not fully tested for edge cases"
+      mitigation: "Extra security review in Wave 1 QA gate, use Supabase RLS testing tools"
+      owner: "@architect (Aria)"
+      status: "PENDING - needs architect review"
+
+    - risk: "WhatsApp API integration complexity (message templates, rate limits)"
+      mitigation: "Wave 3 includes research phase, consider ArIA Agent documentation review"
+      owner: "@pm (Morgan)"
+      status: "PENDING - for Wave 3 planning"
+
+  medium_priority:
+    - risk: "Patient search performance at scale (1000+ patients)"
+      mitigation: "Database indexes created in Wave 1, monitor performance metrics"
+      owner: "@data-engineer (Dara)"
+      status: "MITIGATED - indexes in place"
+
+    - risk: "Form state management with concurrent updates"
+      mitigation: "Implement optimistic locking, add conflict resolution in Wave 2"
+      owner: "@dev (Dex)"
+      status: "PENDING - for Wave 2 QA"
+
+quality_gates:
+  pre_wave_1: "EPIC-003 design document approved"
+  post_wave_1: "RLS security audit, schema performance validation, CodeRabbit approval"
+  post_wave_2: "Write operation security testing, form validation testing, file upload (if enabled)"
+  post_wave_3: "WhatsApp integration testing, message delivery verification, opt-in/opt-out validation"
+  epic_complete: "All 5 stories marked Done, full regression test, clinic staff UAT sign-off"
+
+success_criteria:
+  - All 5 stories marked "Done" with QA approval
+  - All acceptance criteria met for each story
+  - CodeRabbit review passing (0 CRITICAL issues)
+  - Patient search < 500ms, list loads < 1s
+  - RLS policies validated by security team
+  - LGPD compliance audit passed
+  - WhatsApp delivery working with proper error handling
+  - Staff UAT sign-off from clinic
+
+dependencies_on_other_epics:
+  - "EPIC-001 (Authentication) — ✅ COMPLETED (provides user/role system)"
+  - "EPIC-002 (Dashboard) — ✅ COMPLETED (provides base layout)"
+
+blockers_for_future_epics:
+  - "EPIC-004 (Scheduling) — depends on patient records (EPIC-003 Wave 1-2)"
+  - "EPIC-005 (Budgets) — depends on patient data (EPIC-003)"
+  - "EPIC-008 (CRM) — depends on patient communication (EPIC-003 Wave 3)"
+
+completion_summary:
+  wave_1_status: "COMPLETE (1/1 story Done, 2/2 stories Ready for Review)"
+  wave_2_status: "READY FOR QA (1/1 story Ready for Review)"
+  wave_3_status: "PENDING CREATION (0/1 story drafted)"
+  overall_progress: "13/29 points complete (45%), 8/29 points Ready for QA (27%), 8/29 points Pending (28%)"
+
+next_steps:
+  immediate:
+    - "@qa activates to review STORY-003-001, STORY-003-002, STORY-003-003"
+    - "@qa reviews STORY-003-004 after Wave 1 QA gate passes"
+    - "@architect conducts security review of RLS policies"
+
+  post_wave_1_qa:
+    - "@sm creates STORY-003-005 for Wave 3 (WhatsApp integration)"
+    - "@dev begins STORY-003-004 implementation if not started"
+    - "@pm finalizes Wave 3 timeline with DevOps"
+
+  post_wave_2_qa:
+    - "@dev starts STORY-003-005 implementation"
+    - "@qa prepares WhatsApp integration test plan"
+    - "@architect reviews WhatsApp API security considerations"
+
+  post_wave_3_complete:
+    - "EPIC-003 marked COMPLETE"
+    - "Roadmap advances to EPIC-004 (Scheduling) — depends on EPIC-003 Wave 1-2"
+    - "Clinic staff UAT scheduled"
+
+execution_notes:
+  - "3 stories (STORY-003-001, 002, 003) are already implemented and Ready for QA review"
+  - "STORY-003-004 (forms) is Ready for QA review — needs validation and testing"
+  - "STORY-003-005 (WhatsApp) is Pending creation — will be drafted after Wave 2 QA gate"
+  - "Wave 1 completion accelerates full patient management capability by 2 weeks vs sequential approach"
+  - "Tight 3-wave execution enables EPIC-004 (Scheduling) to begin immediately after Wave 2"

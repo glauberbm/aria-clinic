@@ -1,9 +1,9 @@
 "use client";
 
 import { Shell } from "@/components/layout/Shell";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { MessageCircle } from "lucide-react";
 import { useState } from "react";
@@ -60,10 +60,6 @@ export default function CRCPage() {
     { id: "faltou", label: "Faltou" },
     { id: "desmarcados", label: "Desmarcados" },
   ];
-
-  const getData = () => mockCRCData[activeTab];
-  const tabData = getData();
-  const tabCount = tabData.length;
 
   const renderTabContent = () => {
     switch (activeTab) {
