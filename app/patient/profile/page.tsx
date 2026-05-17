@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
@@ -171,6 +170,7 @@ export default function PatientProfilePage() {
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex flex-col items-center mb-6">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={profile.avatarUrl || '/default-avatar.png'}
                     alt="Avatar"

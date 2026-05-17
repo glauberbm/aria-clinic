@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { registerSchema } from '@/lib/validations/auth';
 import { z } from 'zod';
 import { generateVerificationToken } from '@/lib/auth/verification';
-import { rateLimit } from '@/lib/middleware/rate-limit';
+import { checkRateLimit } from '@/lib/rate-limit';
 import { sendVerificationEmail } from '@/lib/services/email';
 
 const getSupabaseClient = () => {
@@ -20,7 +20,7 @@ export async function POST(request: NextRequest) {
                      request.headers.get('x-real-ip') ||
                      'unknown';
 
-    const rateLimitResult = await rateLimit(clientIp, 'register', 5, 3600);
+    const rateLimitResult = await checkRateLimit(clientIp, 'register', 5, 3600);
     if (!rateLimitResult.allowed) {
       return NextResponse.json(
         { error: 'Muitas tentativas de registro. Tente novamente mais tarde.' },

@@ -87,7 +87,10 @@ export async function POST(request: NextRequest) {
     if (patientError) {
       console.error('Error creating patient record:', patientError);
       // Cleanup: delete auth user if patient creation fails
-      await supabase.auth.admin.deleteUser(authData.user.id);
+      const { error: deleteError } = await supabase.auth.admin.deleteUser(authData.user.id);
+      if (deleteError) {
+        console.error('Error cleaning up auth user:', deleteError);
+      }
       return NextResponse.json(
         { error: 'Erro ao criar registro de paciente' },
         { status: 500 }
@@ -104,7 +107,10 @@ export async function POST(request: NextRequest) {
     if (profileError) {
       console.error('Error creating patient profile:', profileError);
       // Cleanup: delete auth user and patient if profile creation fails
-      await supabase.auth.admin.deleteUser(authData.user.id);
+      const { error: deleteError } = await supabase.auth.admin.deleteUser(authData.user.id);
+      if (deleteError) {
+        console.error('Error cleaning up auth user:', deleteError);
+      }
       return NextResponse.json(
         { error: 'Erro ao criar perfil do paciente' },
         { status: 500 }
@@ -135,9 +141,9 @@ export async function POST(request: NextRequest) {
     }
 
     // Send verification email
-    const { error: emailError } = await supabase.auth.resendOtp({
-      email: validatedData.email,
+    const { error: emailError } = await supabase.auth.resend({
       type: 'email_change',
+      email: validatedData.email,
     });
 
     if (emailError) {

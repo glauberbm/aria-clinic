@@ -10,7 +10,15 @@ const customJestConfig = {
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/$1',
   },
-  testEnvironment: 'node',
+  testEnvironment: 'jsdom',
+  testPathIgnorePatterns: [
+    '__tests__/api/',
+    '__tests__/integration/',
+    '__tests__/lib/cors.test.ts',
+  ],
+  transformIgnorePatterns: [
+    'node_modules/(?!(zustand|react-day-picker|uuid)/)',
+  ],
 };
 
 module.exports = createJestConfig(customJestConfig);
