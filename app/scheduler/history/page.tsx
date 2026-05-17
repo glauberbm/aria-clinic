@@ -29,6 +29,7 @@ const STATUS_OPTIONS: AppointmentStatus[] = [
   "completed",
   "cancelled",
   "noshow",
+  "rescheduled",
 ];
 
 const STATUS_LABELS: Record<AppointmentStatus, string> = {
@@ -37,6 +38,7 @@ const STATUS_LABELS: Record<AppointmentStatus, string> = {
   completed: "Concluído",
   cancelled: "Cancelado",
   noshow: "Não Compareceu",
+  rescheduled: "Reagendado",
 };
 
 export default function HistoryPage() {

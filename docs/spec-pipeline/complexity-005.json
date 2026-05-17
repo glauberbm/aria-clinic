@@ -1,0 +1,213 @@
+{
+  "pipeline": "Spec Pipeline Phase 2",
+  "epic_id": "EPIC-005",
+  "epic_title": "Stripe Payment Integration & Automation",
+  "stories": ["005.001", "005.002", "005.003"],
+  "conducted_by": "architect",
+  "execution_date": "2026-05-17",
+  "assessment_date": "2026-05-17",
+  "complexity_scoring": {
+    "dimensions": [
+      {
+        "dimension": "1. Scope (Files & Components Affected)",
+        "description": "How many files/components must be modified or created?",
+        "analysis": {
+          "new_files": [
+            "/api/payments/process.ts",
+            "/api/webhooks/stripe.ts",
+            "/api/patient/[id]/payment-methods.ts",
+            "/api/invoices/generate.ts",
+            "/lib/stripe-client.ts",
+            "/lib/invoice-generator.ts",
+            "/components/PaymentForm.tsx",
+            "/components/SavedPaymentMethods.tsx",
+            "migrations/add_payment_tables.sql",
+            "tests/payments.test.ts",
+            "tests/invoices.test.ts"
+          ],
+          "modified_files": [
+            "lib/supabase.ts (add invoice/payment schema)",
+            "app/(dashboard)/appointments/[id]/page.tsx (add payment button)",
+            "app/(dashboard)/patient/profile/page.tsx (add saved methods section)",
+            ".env.example (add STRIPE_* variables)"
+          ],
+          "file_count": "11 new + 4 modified = 15 files affected",
+          "scope_score": 4,
+          "reasoning": "Moderate scope. Core payment functionality integrated into appointment & patient modules. Clear separation of concerns (API routes, components, utilities)."
+        }
+      },
+      {
+        "dimension": "2. Integration Complexity (External APIs & Services)",
+        "description": "How many external APIs must be integrated? Authentication? Webhook handling?",
+        "analysis": {
+          "external_apis": [
+            {
+              "name": "Stripe API",
+              "complexity": "HIGH",
+              "why": "PaymentIntent creation, SetupIntent for tokenization, webhook signature validation, error handling, idempotency keys required"
+            },
+            {
+              "name": "Email Service (Resend/SendGrid)",
+              "complexity": "LOW-MEDIUM",
+              "why": "Simple send() call. Already in use in the project (Resend confirmed). Invoice as PDF attachment is the only novel part."
+            },
+            {
+              "name": "Supabase PostgreSQL",
+              "complexity": "LOW",
+              "why": "New tables (invoices, payment_methods) but standard schema. RLS policies required but straightforward."
+            }
+          ],
+          "webhook_requirements": [
+            "Must validate webhook signature using STRIPE_WEBHOOK_SECRET",
+            "Must handle payment_intent.succeeded and payment_intent.payment_failed events",
+            "Must implement idempotency (prevent double-processing same event)",
+            "Must handle timeouts gracefully (Stripe expects 30s response)"
+          ],
+          "integration_score": 5,
+          "reasoning": "HIGH complexity. Stripe webhook reliability is critical. Idempotency and signature validation are non-trivial. Email integration is simple, but PDF generation adds complexity."
+        }
+      },
+      {
+        "dimension": "3. Infrastructure Changes (Database, Deployment, Config)",
+        "description": "Must database schema be altered? Deployment changes? Environment variables?",
+        "analysis": {
+          "database_changes": {
+            "tables_to_add": [
+              "invoices (id, appointment_id, clinic_id, patient_id, invoice_number, amount_cents, currency, pdf_url, sent_at, created_at)",
+              "payment_methods (id, patient_id, clinic_id, stripe_payment_method_id, card_last_4, brand, exp_month, exp_year, is_default, created_at)",
+              "payment_audit_log (id, clinic_id, user_id, operation, payment_method_id, amount_cents, success, result, created_at)"
+            ],
+            "tables_to_modify": [
+              "appointments (add: payment_intent_id, stripe_payment_status, paid_at)"
+            ],
+            "migrations_required": 2,
+            "rls_policies_required": ["invoices (patient sees own)", "payment_methods (patient sees own)", "payment_audit_log (admin only)"]
+          },
+          "environment_variables": [
+            "STRIPE_PUBLIC_KEY (publishable key)",
+            "STRIPE_SECRET_KEY (secret key)",
+            "STRIPE_WEBHOOK_SECRET (webhook signing secret)",
+            "RESEND_API_KEY (email service)"
+          ],
+          "deployment_changes": [
+            "Webhook endpoint must be publicly accessible at fixed URL",
+            "Environment variables must be set in production",
+            "PDF generation may require additional dependencies (puppeteer, html2pdf) — check bundle size"
+          ],
+          "infrastructure_score": 3,
+          "reasoning": "MODERATE complexity. Database changes are standard (3 new tables, 1 modified). RLS policies straightforward. Webhook endpoint requires no new infrastructure. Key risk: PDF library bundle size."
+        }
+      },
+      {
+        "dimension": "4. Knowledge & Team Familiarity",
+        "description": "How familiar is the team with Stripe API, PCI compliance, PDF generation?",
+        "analysis": {
+          "team_experience": {
+            "stripe_api": "LOW - No current Stripe integration in the codebase. Team has not implemented PaymentIntent or SetupIntent before. Stripe webhook handling is new.",
+            "pci_compliance": "LOW - No existing PCI audit in the project. Team unfamiliar with PCI DSS requirements. External auditor may be required.",
+            "pdf_generation": "LOW - html2pdf/Puppeteer not yet in the project. Image rendering (logo, charts) in PDF is a known pain point.",
+            "webhook_handling": "MEDIUM - Existing webhook handling for WhatsApp in EPIC-005. Similar pattern can be reused (signature validation, idempotency).",
+            "typescript_react": "HIGH - Team is proficient in Next.js, TypeScript, React."
+          },
+          "learning_curve": [
+            "Stripe API documentation (2-4 hours)",
+            "PCI DSS self-assessment (3-5 hours)",
+            "PDF generation library selection and testing (3-5 hours)",
+            "Webhook reliability patterns (2-3 hours)"
+          ],
+          "knowledge_score": 4,
+          "reasoning": "HIGH learning curve. Stripe API and PCI compliance are new to the team. However, team has strong TypeScript/React foundation. External guidance (Stripe docs, PCI auditor) readily available."
+        }
+      },
+      {
+        "dimension": "5. Risk & Criticality (Payment Processing = Critical)",
+        "description": "Payment processing is business-critical. Failure = no revenue. Risk of PCI non-compliance = legal liability.",
+        "analysis": {
+          "business_criticality": "CRITICAL - Payments are revenue stream. Failure blocks clinic operations.",
+          "compliance_risk": [
+            "PCI DSS non-compliance: Legal penalties + card network fines ($1000-100K per incident)",
+            "Data breach risk: Card data exposure would be catastrophic (LGPD + PCI)",
+            "Webhook reliability: Failed payments must be detected and retried. Loss of webhook = lost revenue."
+          ],
+          "technical_risks": [
+            "Idempotency bug: Duplicate charges if webhook retry not handled → customer refunds + reputation damage",
+            "Stripe error handling: Declined cards, timeouts, network failures must not lose payment state",
+            "Invoice generation: If PDF fails, customer has no receipt → support tickets",
+            "Integration with appointment workflow: Payment status must sync correctly with appointment state"
+          ],
+          "mitigation_strategy": [
+            "Stripe-provided testing environment (test cards, test webhooks)",
+            "Pre-launch security audit (PCI DSS self-assessment + external auditor)",
+            "Comprehensive error scenarios testing (declined card, timeout, network failure, duplicate webhook)",
+            "Audit logging for all payment operations (immutable)",
+            "Staged rollout: Internal testing → UAT with clinic staff → Go-live"
+          ],
+          "risk_score": 5,
+          "reasoning": "CRITICAL risk. Payment processing is highest-risk feature. PCI compliance is non-negotiable. Strong testing and audit strategy required."
+        }
+      }
+    ],
+    "dimension_scores": [
+      {
+        "dimension": "1. Scope",
+        "score": 4,
+        "scale": "1-5 (1=trivial, 5=massive)"
+      },
+      {
+        "dimension": "2. Integration",
+        "score": 5,
+        "scale": "1-5 (1=trivial, 5=massive)"
+      },
+      {
+        "dimension": "3. Infrastructure",
+        "score": 3,
+        "scale": "1-5 (1=trivial, 5=massive)"
+      },
+      {
+        "dimension": "4. Knowledge",
+        "score": 4,
+        "scale": "1-5 (1=trivial, 5=massive)"
+      },
+      {
+        "dimension": "5. Risk",
+        "score": 5,
+        "scale": "1-5 (1=trivial, 5=massive)"
+      }
+    ]
+  },
+  "complexity_calculation": {
+    "total_score": 21,
+    "max_possible": 25,
+    "percentage": 84,
+    "complexity_class": "COMPLEX",
+    "class_definition": "COMPLEX (≥16): High scope, multiple external integrations, significant knowledge gaps, critical business risk. Requires 6-phase spec pipeline with detailed architecture & risk review."
+  },
+  "classification_details": {
+    "class": "COMPLEX",
+    "threshold": "score >= 16",
+    "rationale": [
+      "Integration with Stripe API is HIGH complexity (webhook reliability, idempotency, error handling)",
+      "PCI DSS compliance is non-negotiable and team has low familiarity",
+      "Payment processing is CRITICAL to business — failure = no revenue",
+      "Multiple external dependencies (Stripe, Email service, PDF generation)",
+      "Scope: 15 files affected across API, components, database, migrations"
+    ],
+    "phases_required": "All 6 phases (gather → assess → research → write → critique → plan)"
+  },
+  "next_steps": [
+    "PROCEED to Phase 3: Research",
+    "ASSIGN to @analyst: Stripe API v2024-04 deep-dive, PCI DSS requirements, webhook best practices, PDF generation options",
+    "TIMELINE: Phase 3 research should complete by 2026-05-18 EOD",
+    "PHASE 4 GATE: Write spec.md only after Phase 3 research is complete"
+  ],
+  "blockers": [],
+  "phase_2_output": {
+    "complexity_score_total": 21,
+    "complexity_score_percentage": 84,
+    "complexity_class": "COMPLEX",
+    "complexity_class_threshold": "score >= 16",
+    "phases_required": "6 (full pipeline)",
+    "next_phase": "Phase 3 - Research (assign to @analyst)",
+    "status": "ASSESSED"
+  }
+}

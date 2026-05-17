@@ -66,7 +66,7 @@ export default function CalendarPage() {
           <div className="lg:col-span-1">
             <CalendarView
               selectedDate={selectedDate}
-              onSelectDate={handleSelectDate}
+              onDateSelect={handleSelectDate}
             />
           </div>
 
