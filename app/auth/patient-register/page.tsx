@@ -8,14 +8,14 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { patientRegistrationSchema } from '@/lib/validations/patient';
-import type { PatientRegistration } from '@/lib/validations/patient';
+import type { PatientRegistrationInput } from '@/lib/validations/patient';
 
 export default function PatientRegisterPage() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const form = useForm<PatientRegistration>({
+  const form = useForm<PatientRegistrationInput>({
     resolver: zodResolver(patientRegistrationSchema),
     defaultValues: {
       name: '',
@@ -28,7 +28,7 @@ export default function PatientRegisterPage() {
     },
   });
 
-  async function onSubmit(values: PatientRegistration) {
+  async function onSubmit(values: PatientRegistrationInput) {
     setIsLoading(true);
     setError(null);
 
@@ -43,8 +43,6 @@ export default function PatientRegisterPage() {
         const data = await response.json();
         throw new Error(data.message || 'Erro ao registrar paciente');
       }
-
-      const data = await response.json();
 
       // Redirect to email verification
       router.push(`/auth/verify-email?email=${encodeURIComponent(values.email)}`);

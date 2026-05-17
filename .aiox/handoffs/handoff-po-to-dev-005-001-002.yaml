@@ -1,0 +1,93 @@
+handoff:
+  from_agent: po
+  to_agent: dev
+  timestamp: "2026-05-17T14:30:00Z"
+  story_context:
+    epic_id: EPIC-005
+    epic_title: "Stripe Payment Integration & Automation"
+    stories_assigned:
+      - story_id: "005.001"
+        title: "PaymentIntent Integration with 3D Secure"
+        verdict: "GO ✅"
+        github_issue: "#7"
+        priority: "HIGH"
+        path: "docs/stories/005.001.story.md"
+      - story_id: "005.002"
+        title: "SetupIntent & Payment Methods (PCI Compliance)"
+        verdict: "GO ✅"
+        github_issue: "#8"
+        priority: "HIGH"
+        path: "docs/stories/005.002.story.md"
+    conditional_story:
+      - story_id: "005.003"
+        title: "Invoice Generation & Delivery"
+        verdict: "GO WITH CONCERNS ⚠️"
+        github_issue: "#9"
+        path: "docs/stories/005.003.story.md"
+        blocker: "Pre-requisites validation required"
+        blockers_detail:
+          - "html2pdf performance validation (base64 logo, P95 <5s)"
+          - "Resend API SLA confirmation (<3s delivery)"
+          - "PostgreSQL SEQUENCE concurrency test (100+ inserts)"
+
+  research_completed:
+    analyst_report: "docs/spec-pipeline/research-005.json"
+    key_findings:
+      - "Stripe API v2024-04: Use PaymentIntent (modern), not Charge"
+      - "SDK: stripe@14.x for Node.js"
+      - "Brazil support: Pix + Boleto + Card via PaymentIntent"
+      - "Webhook reliability: Stripe retries 5x over 36h, but app-level queue required"
+      - "Idempotency: Use Idempotency-Key header to prevent duplicate charges"
+      - "RPS (invoice) integration deferred to Phase 3 (complexity)"
+
+  acceptance_criteria_highlights:
+    "005.001":
+      - "PaymentIntent creation with metadata & client secret"
+      - "3D Secure (Stripe 3DS2) support"
+      - "Error handling with fallback for network issues"
+      - "Audit logging to PatientPaymentAudit table"
+      - "Schema: PaymentIntents table with RLS"
+      - "Unit + integration tests"
+    "005.002":
+      - "SetupIntent for secure payment method storage"
+      - "CRUD: save, update, delete, list payment methods"
+      - "RLS enforcement for patient data isolation"
+      - "LGPD: cascade delete on account deletion"
+      - "Test scenarios for concurrency"
+
+  architecture_notes:
+    performance_baseline: "Baseline 149-250ms total latency (within <500ms budget)"
+    tech_stack:
+      - "Next.js 16.2.6 with API routes"
+      - "Supabase PostgreSQL with RLS"
+      - "stripe@14.x SDK"
+      - "Upstash Redis (webhooks queue)"
+    key_patterns:
+      - "Webhook signature validation: stripe.webhooks.constructEvent()"
+      - "Idempotent requests: Idempotency-Key header UUID"
+      - "RLS: Enable on PaymentIntents, PaymentMethods, PaymentAudit tables"
+      - "Webhook queue: Implement application-level retry logic"
+
+  files_modified:
+    - "EPIC-005-OUTLINE.md (status updated: Phase 1 Implementation)"
+    - "GitHub Issues: #7, #8, #9 created"
+
+  decisions:
+    - "005.001 & 005.002: Implement immediately (GO verdict)"
+    - "005.003: Hold until pre-requisites validated (5s PDF, 3s email, SEQUENCE safety)"
+    - "Research complete: analyst provided full dependency mapping"
+    - "No Stripe SDK version pinned yet: choose stable 14.x branch"
+
+  branch: main
+  next_action: "@dev begins implementation of 005.001 PaymentIntent (foundation story)"
+  suggested_sequence:
+    - "1. Install stripe@14.x package"
+    - "2. Create PaymentIntents table with RLS + indexes"
+    - "3. Implement POST /api/payment-intents endpoint"
+    - "4. Integrate Stripe.js on frontend (Story 005.001 AC #1)"
+    - "5. Add webhook handler for payment_intent.succeeded"
+    - "6. Implement error handling & audit logging"
+    - "7. Unit tests for all endpoints"
+    - "8. Mark subtasks complete as you go"
+
+consumed: false

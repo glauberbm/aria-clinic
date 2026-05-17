@@ -1,0 +1,208 @@
+{
+  "pipeline": "Spec Pipeline Phase 1",
+  "epic_id": "EPIC-005",
+  "epic_title": "Stripe Payment Integration & Automation",
+  "stories": ["005.001", "005.002", "005.003"],
+  "conducted_by": "architect",
+  "execution_date": "2026-05-17",
+  "requirements_gathering": {
+    "functional_requirements": [
+      {
+        "id": "FR-005.001",
+        "title": "Stripe Payment Provider Integration",
+        "description": "Clinic admin configures Stripe API keys. Payment endpoint processes appointment payments securely via Stripe Elements (PCI compliant). Webhook receives payment events (success/failure).",
+        "acceptance_criteria": [
+          "Stripe account created and API keys configured in environment",
+          "POST /api/payments/process endpoint created and tested",
+          "Card tokenization via Stripe.js (no card data stored locally)",
+          "Payment status saved to appointments table",
+          "Webhook /api/webhooks/stripe receives payment.success and payment.failed events",
+          "Error handling for declined cards, timeouts, idempotency duplicates",
+          "PCI DSS compliance audit passed",
+          "Test coverage >= 80% (happy path + error scenarios)"
+        ],
+        "story_points": 13,
+        "priority": "HIGH",
+        "complexity": "HIGH"
+      },
+      {
+        "id": "FR-005.002",
+        "title": "Payment Method Storage & PCI Compliance",
+        "description": "Stripe Payment Method tokens stored securely in Supabase (no raw card data). Patients can save payment methods for future transactions. Audit logging captures all tokenization events.",
+        "acceptance_criteria": [
+          "Stripe Payment Method tokens stored (payment_method_id only)",
+          "Saved payment methods listed in patient profile",
+          "DELETE endpoint for removing saved payment methods",
+          "Payment method selectable as default for future transactions",
+          "Audit log captures: user, operation, timestamp, success/failure",
+          "No card data ever touches application servers",
+          "RLS policies prevent cross-patient access to payment methods",
+          "External PCI audit (if required by clinic)"
+        ],
+        "story_points": 8,
+        "priority": "HIGH",
+        "complexity": "MEDIUM"
+      },
+      {
+        "id": "FR-005.003",
+        "title": "Invoice Generation & Email Delivery",
+        "description": "On appointment completion, system automatically generates PDF invoice with clinic details, patient info, service description, amount, and date. Email sent to patient with invoice attached.",
+        "acceptance_criteria": [
+          "Invoice PDF generated on appointment completion (trigger)",
+          "Invoice includes: clinic name/CNPJ, patient name/CPF, service details, amount, payment method, date",
+          "Email sent to patient automatically via configured email service",
+          "Invoice stored in audit log (path to PDF)",
+          "Invoice number unique and sequential (audit-friendly)",
+          "Email template customizable by clinic admin",
+          "Resend invoice endpoint available (manual retry)",
+          "Invoice preview available in patient dashboard"
+        ],
+        "story_points": 8,
+        "priority": "HIGH",
+        "complexity": "MEDIUM"
+      }
+    ],
+    "non_functional_requirements": [
+      {
+        "id": "NFR-005.001",
+        "title": "PCI DSS Compliance (Level 1)",
+        "description": "Payment processing must be PCI Level 1 compliant. No raw card data stored or logged. Stripe handles tokenization.",
+        "requirement": "All payment operations must pass PCI DSS self-assessment (SAQ A or A-EP). Third-party audit may be required."
+      },
+      {
+        "id": "NFR-005.002",
+        "title": "Brazil Payment Methods",
+        "description": "Support Brazil-specific payment methods (PIX, boleto, credit card). Currency in BRL.",
+        "requirement": "Stripe must be configured for Brazil (currency BRL, payment methods: card, pix, boleto)"
+      },
+      {
+        "id": "NFR-005.003",
+        "title": "Security & Webhook Reliability",
+        "description": "Webhook signature validation required. Retry logic for delivery failures. Idempotency to prevent duplicate charges.",
+        "requirement": "Webhook signature validated using Stripe-provided secret. Max 30s response time. Implement exponential backoff retry (1s, 5s, 30s)."
+      },
+      {
+        "id": "NFR-005.004",
+        "title": "Performance",
+        "description": "Payment processing latency < 3 seconds. Invoice generation < 5 seconds.",
+        "requirement": "P95 latency for /api/payments/process: < 3s. PDF generation: < 5s."
+      },
+      {
+        "id": "NFR-005.005",
+        "title": "Audit Logging & LGPD Compliance",
+        "description": "All payment operations logged with full audit trail (user, operation, timestamp, result, amount, method). Compliant with Brazil LGPD (data retention, access control).",
+        "requirement": "Audit log immutable. Retain for 5+ years. Access restricted to clinic owner/accountant."
+      }
+    ],
+    "external_integrations": [
+      {
+        "name": "Stripe API v2024-04",
+        "type": "Payment Processing",
+        "endpoints": [
+          "POST /v1/payment_intents (create payment)",
+          "POST /v1/setup_intents (tokenize card)",
+          "POST /v1/refunds (process refund)",
+          "GET /v1/webhooks (event delivery)"
+        ],
+        "authentication": "Bearer token (STRIPE_SECRET_KEY)",
+        "rate_limit": "100 requests/second (standard account)"
+      },
+      {
+        "name": "Email Service (Resend or SendGrid)",
+        "type": "Transactional Email",
+        "endpoints": [
+          "POST /send (send email with attachment)"
+        ],
+        "authentication": "API key (RESEND_API_KEY or SENDGRID_API_KEY)",
+        "rate_limit": "300 emails/min (Resend standard)"
+      },
+      {
+        "name": "Supabase (Database + Storage)",
+        "type": "Data Persistence",
+        "tables": ["appointments", "patients", "audit_logs", "invoices (new)"],
+        "authentication": "Service role key (SUPABASE_SERVICE_ROLE_KEY)",
+        "rate_limit": "Not applicable (owned infrastructure)"
+      },
+      {
+        "name": "PDF Generation (html2pdf or Puppeteer)",
+        "type": "Document Generation",
+        "endpoints": ["Internal library - no external call"],
+        "authentication": "None",
+        "rate_limit": "Depends on server resources"
+      }
+    ],
+    "data_flows": [
+      {
+        "flow_id": "DF-005.001",
+        "name": "Patient Payment Flow",
+        "steps": [
+          "Patient selects 'Pay Now' for appointment",
+          "Frontend renders Stripe Elements (card form)",
+          "Patient enters card details (never touch backend)",
+          "Frontend tokenizes card → Stripe → returns payment_method_id",
+          "Frontend calls POST /api/payments/process { payment_method_id, amount, appointment_id }",
+          "Backend creates PaymentIntent in Stripe",
+          "Stripe returns payment_intent status",
+          "Backend stores payment_intent_id in appointments.payment_intent",
+          "Webhook receives payment_intent.succeeded event",
+          "Backend updates appointment status → 'paid'",
+          "Trigger invoice generation workflow",
+          "Invoice PDF generated and emailed to patient"
+        ]
+      },
+      {
+        "flow_id": "DF-005.002",
+        "name": "Save Payment Method Flow",
+        "steps": [
+          "Patient clicks 'Save this card for future use'",
+          "Frontend creates SetupIntent with Stripe",
+          "Patient confirms card",
+          "Stripe returns payment_method_id",
+          "Backend stores payment_method_id in patients.saved_payment_methods table",
+          "Audit log records: 'payment_method_saved' with timestamp, user_id, payment_method_id (no card number)"
+        ]
+      },
+      {
+        "flow_id": "DF-005.003",
+        "name": "Invoice Generation & Email Flow",
+        "steps": [
+          "Appointment status changes to 'completed'",
+          "Trigger invoice_generate() function",
+          "Generate unique invoice number (sequential)",
+          "Create invoice record in invoices table",
+          "Render HTML template with appointment + patient + clinic details",
+          "Convert HTML → PDF using html2pdf library",
+          "Upload PDF to cloud storage (or embed in email)",
+          "Send email to patient via Resend/SendGrid with PDF attachment",
+          "Record invoice_sent event in audit_log",
+          "Update appointment.invoice_id with reference"
+        ]
+      }
+    ],
+    "constraints": [
+      "No raw card data can be stored or logged",
+      "Stripe Setup Intents must be used for tokenization",
+      "All webhook events must be idempotent (prevent duplicate processing)",
+      "Invoice generation must be triggered automatically (not manual)",
+      "Payment method deletion must cascade safely (no orphaned references)",
+      "Audit logs must be immutable and tamper-proof",
+      "Brazil tax compliance: invoices may need NF-e or RPS integration (deferred to Phase 3)"
+    ],
+    "assumptions": [
+      "Stripe account already exists (clinic provided credentials)",
+      "Supabase database schema already includes appointments, patients, audit_logs tables",
+      "Email service (Resend or SendGrid) already configured",
+      "Next.js 16+ with Edge Functions support available",
+      "LGPD compliance officer will review audit log schema",
+      "Clinic does NOT require NF-e (Brazilian tax document) in Phase 2 (deferred to Phase 3)"
+    ]
+  },
+  "phase_1_output": {
+    "functional_requirements_count": 3,
+    "non_functional_requirements_count": 5,
+    "external_integrations_count": 4,
+    "data_flows_documented": 3,
+    "total_story_points": 29,
+    "status": "GATHERED"
+  }
+}

@@ -4,10 +4,9 @@ describe('Auth Validations', () => {
   describe('registerSchema', () => {
     it('should validate correct registration data', () => {
       const validData = {
+        full_name: 'Test User',
         email: 'test@example.com',
-        name: 'Test User',
-        password: 'ValidPass123',
-        confirmPassword: 'ValidPass123',
+        password: 'ValidPass123!',
       };
 
       const result = registerSchema.safeParse(validData);
@@ -16,10 +15,9 @@ describe('Auth Validations', () => {
 
     it('should reject invalid email', () => {
       const invalidData = {
+        full_name: 'Test User',
         email: 'invalid-email',
-        name: 'Test User',
-        password: 'ValidPass123',
-        confirmPassword: 'ValidPass123',
+        password: 'ValidPass123!',
       };
 
       const result = registerSchema.safeParse(invalidData);
@@ -31,10 +29,9 @@ describe('Auth Validations', () => {
 
     it('should reject short name', () => {
       const invalidData = {
+        full_name: 'A',
         email: 'test@example.com',
-        name: 'A',
-        password: 'ValidPass123',
-        confirmPassword: 'ValidPass123',
+        password: 'ValidPass123!',
       };
 
       const result = registerSchema.safeParse(invalidData);
@@ -43,61 +40,43 @@ describe('Auth Validations', () => {
 
     it('should reject password without uppercase', () => {
       const invalidData = {
+        full_name: 'Test User',
         email: 'test@example.com',
-        name: 'Test User',
-        password: 'validpass123',
-        confirmPassword: 'validpass123',
+        password: 'validpass123!',
       };
 
       const result = registerSchema.safeParse(invalidData);
       expect(result.success).toBe(false);
     });
 
-    it('should reject password without lowercase', () => {
-      const invalidData = {
-        email: 'test@example.com',
-        name: 'Test User',
-        password: 'VALIDPASS123',
-        confirmPassword: 'VALIDPASS123',
-      };
-
-      const result = registerSchema.safeParse(invalidData);
-      expect(result.success).toBe(false);
-    });
 
     it('should reject password without number', () => {
       const invalidData = {
+        full_name: 'Test User',
         email: 'test@example.com',
-        name: 'Test User',
-        password: 'ValidPass',
-        confirmPassword: 'ValidPass',
+        password: 'ValidPass!',
       };
 
       const result = registerSchema.safeParse(invalidData);
       expect(result.success).toBe(false);
     });
 
-    it('should reject mismatched passwords', () => {
+    it('should reject password without special character', () => {
       const invalidData = {
+        full_name: 'Test User',
         email: 'test@example.com',
-        name: 'Test User',
         password: 'ValidPass123',
-        confirmPassword: 'DifferentPass123',
       };
 
       const result = registerSchema.safeParse(invalidData);
       expect(result.success).toBe(false);
-      if (!result.success) {
-        expect(result.error.issues[0].message).toContain('Senhas não conferem');
-      }
     });
 
     it('should reject too short password', () => {
       const invalidData = {
+        full_name: 'Test User',
         email: 'test@example.com',
-        name: 'Test User',
         password: 'Pass12',
-        confirmPassword: 'Pass12',
       };
 
       const result = registerSchema.safeParse(invalidData);

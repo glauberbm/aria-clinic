@@ -93,21 +93,51 @@ export function PatientForm({ initialData, patientId, isEditing = false }: Patie
 
         if (updateError) throw updateError;
 
+        // Log audit trail for patient update
+        try {
+          await supabase.from('audit_logs').insert({
+            patient_id: patientId,
+            action: 'UPDATE',
+            user_id: user.id,
+            description: `Paciente ${data.name} atualizado`,
+            created_at: new Date().toISOString(),
+          });
+        } catch (auditError) {
+          console.warn('Failed to log audit trail:', auditError);
+          // Don't throw - audit logging failure shouldn't block patient update
+        }
+
         // Clear draft after successful save
         localStorage.removeItem(`patient-draft-${patientId}`);
 
         router.push(`/pacientes/${patientId}`);
       } else {
         // Create new patient
-        const { error: createError } = await supabase
+        const { data: newPatient, error: createError } = await supabase
           .from('patients')
           .insert({
             ...data,
             clinic_id: profile.clinic_id,
             registered_date: new Date().toISOString(),
-          });
+          })
+          .select()
+          .single();
 
         if (createError) throw createError;
+
+        // Log audit trail for patient creation
+        try {
+          await supabase.from('audit_logs').insert({
+            patient_id: newPatient?.id,
+            action: 'CREATE',
+            user_id: user.id,
+            description: `Novo paciente ${data.name} criado`,
+            created_at: new Date().toISOString(),
+          });
+        } catch (auditError) {
+          console.warn('Failed to log audit trail:', auditError);
+          // Don't throw - audit logging failure shouldn't block patient creation
+        }
 
         // Clear draft after successful save
         localStorage.removeItem('patient-draft-new');
@@ -228,6 +258,30 @@ export function PatientForm({ initialData, patientId, isEditing = false }: Patie
               {errors.address && (
                 <p className="text-red-600 text-xs mt-1">{errors.address.message}</p>
               )}
+            </div>
+
+            {/* Document Upload */}
+            <div>
+              <label className="block font-body text-sm mb-2" style={{ color: 'var(--color-text-muted)' }}>
+                Documentos do Paciente
+              </label>
+              <input
+                type="file"
+                multiple
+                accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                onChange={(e) => {
+                  const files = e.target.files;
+                  if (files && files.length > 0) {
+                    // File handling can be extended to upload to storage
+                    console.log(`${files.length} arquivo(s) selecionado(s)`);
+                  }
+                }}
+                className="w-full px-4 py-2 border rounded-lg font-body text-sm"
+                style={{ borderColor: 'var(--color-divider)', color: 'var(--color-text)' }}
+              />
+              <p className="font-body text-xs mt-1" style={{ color: 'var(--color-text-muted)' }}>
+                Formatos aceitos: PDF, DOC, DOCX, JPG, PNG (máx. 10MB por arquivo)
+              </p>
             </div>
 
             {/* Status */}

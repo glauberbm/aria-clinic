@@ -1,0 +1,363 @@
+{
+  "pipeline": "Spec Pipeline Phase 3",
+  "epic_id": "EPIC-005",
+  "epic_title": "Stripe Payment Integration & Automation",
+  "stories": ["005.001", "005.002", "005.003"],
+  "conducted_by": "analyst",
+  "execution_date": "2026-05-17",
+  "research_date": "2026-05-17",
+  "research_areas": [
+    {
+      "area": "Stripe API v2024-04 Documentation & SDK",
+      "research_questions": [
+        "What is the current Stripe API version and compatibility with Next.js 16?",
+        "What are PaymentIntent vs Charge? Which to use for clinic appointments?",
+        "What are SetupIntent and Payment Methods? How to implement tokenization?",
+        "What webhook events must be handled? (payment_intent.succeeded, payment_intent.payment_failed, charge.refunded)",
+        "How to validate webhook signatures?",
+        "What retry logic does Stripe provide automatically?",
+        "What error codes must be handled? (card_declined, processing_error, etc.)",
+        "How to implement idempotent requests (prevent duplicate charges)?"
+      ],
+      "findings": [
+        {
+          "question": "PaymentIntent vs Charge?",
+          "answer": "Use PaymentIntent (modern, recommended). PaymentIntent encapsulates entire payment lifecycle (creation, confirmation, success/failure). Charge is legacy. PaymentIntent supports SCA (3D Secure) required in Europe, recommended in Brazil."
+        },
+        {
+          "question": "Stripe.js tokenization flow?",
+          "answer": "1. Frontend: Stripe.confirmCardPayment() with PaymentIntent client_secret → returns payment_intent. 2. Backend: POST /v1/payment_intents with payment_method_id (not raw card data) → Stripe confirms payment. 3. Webhook: Receives payment_intent.succeeded event."
+        },
+        {
+          "question": "SetupIntent for saving payment methods?",
+          "answer": "SetupIntent is for tokenization without charging. 1. Frontend: Stripe.confirmCardSetup() → returns setup_intent. 2. Backend: Creates PaymentMethod from setup_intent. 3. Store payment_method_id in database. Use PaymentMethod API (not legacy Tokens)."
+        },
+        {
+          "question": "Webhook signature validation?",
+          "answer": "Use stripe.webhooks.constructEvent(body, sig_header, webhook_secret). Stripe SDK handles HMAC verification. Must extract Stripe-Signature header and validate within 300s (clock skew tolerance)."
+        },
+        {
+          "question": "Webhook reliability - Stripe's retry policy?",
+          "answer": "Stripe retries webhooks up to 5 times over 36 hours (exponential backoff). But reliability must NOT depend on Stripe alone. Implement application-level retry queue (exponential backoff 1s, 5s, 30s, 5min, 30min). Consider dead-letter queue for unprocessable events."
+        },
+        {
+          "question": "Idempotency in Stripe API?",
+          "answer": "Use Idempotency-Key header (UUID) for all payment operations. Stripe caches response for 24 hours per Idempotency-Key. Prevents duplicate charges if request is retried."
+        },
+        {
+          "question": "Stripe SDK for Node.js?",
+          "answer": "stripe package (npm install stripe). Current version: 14.x. Next.js API routes can import and use stripe.paymentIntents.create(), stripe.webhooks.constructEvent(), etc."
+        },
+        {
+          "question": "Error handling - common error codes?",
+          "answer": "card_declined: Insufficient funds, expired card, etc. processing_error: Network issue, retry. rate_limit_error: Backoff and retry. authentication_error: Invalid credentials. invalid_request_error: Malformed request (check parameters)."
+        }
+      ],
+      "confidence": "HIGH",
+      "sources": [
+        "Stripe API Documentation (stripe.com/docs)",
+        "Stripe SDK for Node.js (github.com/stripe/stripe-node)",
+        "Stripe Best Practices (stripe.com/docs/payments/handling-payment-state)"
+      ]
+    },
+    {
+      "area": "Brazil-Specific Payment Methods & Compliance",
+      "research_questions": [
+        "What payment methods must Aria support in Brazil?",
+        "What is Pix? Is it supported by Stripe?",
+        "What is boleto? Is it supported by Stripe?",
+        "Does Stripe support BRL (Brazilian Real) currency?",
+        "Are there Brazil-specific PCI compliance requirements?",
+        "What tax documents are required? (NF-e, RPS, or neither?)",
+        "Is Stripe PCI Level 1 compliant in Brazil?"
+      ],
+      "findings": [
+        {
+          "question": "Stripe support for Brazil payment methods?",
+          "answer": "Stripe supports: 1. Credit/Debit Card (Visa, Mastercard, ELO). 2. Pix (instant transfer, launched 2024). 3. Boleto (bank invoice, ~3 day settlement). All via PaymentIntent. Regional support confirmed for Brazil (br_stripe_account)."
+        },
+        {
+          "question": "What is Pix?",
+          "answer": "Brazil's instant payment system (similar to US ACH, but real-time). Launched Nov 2020. Users provide 11-digit Pix key (CPF, CNPJ, email, or phone). Stripe integrates with Pix networks. Settlement: < 30 min (vs boleto 3 days)."
+        },
+        {
+          "question": "What is boleto?",
+          "answer": "Traditional Brazilian bank invoice. Payer generates barcode and pays at bank/ATM within deadline (usually 3-5 days). Stripe generates boleto barcode via payment gateway. Slower settlement (2-3 days) but widely used."
+        },
+        {
+          "question": "Stripe BRL currency support?",
+          "answer": "YES. Stripe supports BRL (currency code 'brl' in API). Charges created with amount_cents in BRL. Conversion fees apply if paying in USD (if any)."
+        },
+        {
+          "question": "Brazil PCI compliance - is it different from US?",
+          "answer": "No. PCI DSS standard is global (set by Visa/Mastercard/etc.). Brazil adds LGPD (data protection) requirements: patient consent for data collection, data retention limits, breach notification. BUT if using Stripe (PCI compliant), clinic is exempt from some PCI requirements (Stripe is PCI Level 1)."
+        },
+        {
+          "question": "Tax documents - NF-e or RPS?",
+          "answer": "RPS (Recibo Provisório de Serviço) is standard for healthcare services. NF-e is for goods sales. Aria MUST issue RPS for each appointment payment. This requires integration with SEFAZ (Brazil tax authority) or third-party service (Nota Fiscal, Simpliss.me). DEFERRED to Phase 3 (high complexity)."
+        },
+        {
+          "question": "Is Stripe PCI Level 1 in Brazil?",
+          "answer": "YES. Stripe meets PCI DSS Level 1 globally, including Brazil. Clinic is not liable for Stripe's infrastructure. Clinic must be SAQ A or SAQ A-EP compliant (minimal requirements since Stripe handles tokenization)."
+        },
+        {
+          "question": "Payment method choice at checkout?",
+          "answer": "Show patient: [Card] [Pix] [Boleto] buttons at payment time. Backend routes to appropriate PaymentIntent type. Pix: instant confirmation. Boleto: barcode shown to patient (print or phone pay). Card: standard form via Stripe Elements."
+        }
+      ],
+      "confidence": "HIGH",
+      "sources": [
+        "Stripe Latin America Docs (stripe.com/docs/latin-america)",
+        "Stripe Pix Integration (stripe.com/docs/payments/pix)",
+        "SEFAZ (Brazilian Tax Authority) - RPS Requirements",
+        "Brazil LGPD Law (Lei Geral de Proteção de Dados)"
+      ]
+    },
+    {
+      "area": "PCI DSS Compliance & Audit Process",
+      "research_questions": [
+        "What is PCI DSS and why does it matter for clinic?",
+        "What are PCI compliance levels (Level 1-4)?",
+        "What is SAQ A vs SAQ A-EP vs SAQ D?",
+        "Does clinic need external PCI audit?",
+        "What PCI controls must Aria implement?",
+        "What logging requirements does PCI mandate?",
+        "What is the audit process and timeline?"
+      ],
+      "findings": [
+        {
+          "question": "What is PCI DSS?",
+          "answer": "PCI Data Security Standard: 12 requirements for handling payment card data. Set by PCI Security Standards Council (Visa, Mastercard, Amex, Discover). Non-compliance = fines ($1K-100K per incident) + card network penalties."
+        },
+        {
+          "question": "PCI Compliance Levels by transaction volume?",
+          "answer": "Level 1 (>6M transactions/year): Annual third-party audit + quarterly scanning. Level 2 (1-6M): Annual self-assessment + quarterly scanning. Level 3 (20K-1M): Annual self-assessment + quarterly scanning. Level 4 (<20K): Self-assessment only. Aria likely Level 4 (clinic: ~100-300 appointments/month)."
+        },
+        {
+          "question": "SAQ A vs SAQ A-EP vs SAQ D?",
+          "answer": "SAQ A: Merchant uses fully hosted payment form (Stripe Checkout). NO payment data touches merchant servers. ~35 questions. SAQ A-EP: Merchant uses hosted form + custom fields. ~40 questions. SAQ D: Merchant stores/processes card data. ~250 questions + high cost. Aria should aim for SAQ A (using Stripe Elements)."
+        },
+        {
+          "question": "Does Aria need external audit?",
+          "answer": "Only required for Level 1 merchants (>6M txns/year). Aria is Level 4, so self-assessment suffices. BUT clinic may want external audit (insurance requirement, customer confidence). Cost: $2-5K for third-party assessor."
+        },
+        {
+          "question": "What PCI controls must Aria implement?",
+          "answer": "PCI Requirement 1-12: 1. Firewall (via cloud provider). 2. No hardcoded passwords (use .env). 3. Protect stored card data (use Stripe, don't store raw data). 4. Encrypt data in transit (HTTPS, TLS 1.2+). 5. Antivirus (not applicable for SaaS). 6. Secure coding (input validation, parameterized queries). 7. Access control (RLS, RBAC). 8. Logging/monitoring (audit trail). 9-12. Testing, incident response, etc."
+        },
+        {
+          "question": "What logging requirements?",
+          "answer": "PCI Requirement 10: Maintain audit log of all access to cardholder data. Log must include: user ID, date/time, action, success/failure, system accessed. Retention: minimum 1 year (recommended 3-5 years for clinic). NO card data in logs (hash or tokenize)."
+        },
+        {
+          "question": "PCI audit process & timeline?",
+          "answer": "Self-assessment: Complete SAQ A questionnaire (1-2 weeks). Answer yes/no to ~35 questions. Vulnerability scan: Use PCI-approved scanning vendor (1-2 weeks). Report: Submit to card network (if required). Cost: $500-2K (scanning + assessor)."
+        }
+      ],
+      "confidence": "HIGH",
+      "sources": [
+        "PCI Security Standards Council (pcisecuritystandards.org)",
+        "PCI DSS v3.2.1 Official Guide",
+        "Stripe PCI Compliance Resource (stripe.com/docs/compliance/pci)"
+      ]
+    },
+    {
+      "area": "PDF Generation Libraries & Invoice Design",
+      "research_questions": [
+        "What PDF libraries are available for Node.js?",
+        "html2pdf vs Puppeteer vs pdfkit - which is best for invoices?",
+        "Can we render clinic logo/images in PDF?",
+        "What's the bundle size impact?",
+        "Can we generate PDF server-side (Node.js) or must we use browser?",
+        "How to handle internationalization (Portuguese text) in PDF?",
+        "Performance: How long does PDF generation take?",
+        "Can we cache PDFs or must we generate on-demand?"
+      ],
+      "findings": [
+        {
+          "question": "PDF generation libraries comparison?",
+          "answer": "1. Puppeteer: Headless Chrome. Renders HTML → PDF. Complex, heavy (~150MB install). Supports images/CSS. 2. html2pdf: Lightweight. Converts HTML/CSS → PDF. ~200KB. Limited CSS support. 3. pdfkit: Lightweight. Programmatic PDF creation. ~300KB. No HTML support, requires coding. Verdict for invoices: Puppeteer (best quality) OR html2pdf (fastest, lightest)."
+        },
+        {
+          "question": "Which library should Aria use?",
+          "answer": "Recommendation: html2pdf (lightweight, sufficient for invoices). Reason: Invoices are simple (text + table). Images (logo) can be embedded as base64. CSS limited, but sufficient for invoice styling. Puppeteer overkill + memory heavy. pdfkit requires too much coding."
+        },
+        {
+          "question": "Bundle size impact of PDF library?",
+          "answer": "html2pdf: ~200KB added to bundle. Puppeteer: ~150MB (do NOT use in Lambda/serverless). pdfkit: ~300KB. Aria uses Next.js API routes (serverless on Vercel). html2pdf is best (small, no heavy deps)."
+        },
+        {
+          "question": "Can we render clinic logo in PDF?",
+          "answer": "YES. Embed logo as base64 data URI in HTML. Then html2pdf converts to PDF with embedded image. Alternatively: fetch logo from S3 URL and embed (slower). Recommendation: base64 for faster generation."
+        },
+        {
+          "question": "Can we use browser (client-side) PDF generation?",
+          "answer": "No. Server-side only (privacy, security, performance). html2pdf has both client + server versions. Use server-side (Node.js)."
+        },
+        {
+          "question": "Portuguese localization in PDF?",
+          "answer": "html2pdf supports Unicode. Just use Portuguese text in HTML template. Test: render 'São Paulo', 'CPF', etc. Should work fine."
+        },
+        {
+          "question": "Performance: PDF generation time?",
+          "answer": "html2pdf: ~500ms-1s per invoice. Puppeteer: ~2-5s per invoice. Aria target: < 5s. html2pdf is acceptable. Cache PDFs after generation to improve subsequent views."
+        },
+        {
+          "question": "Cache or generate on-demand?",
+          "answer": "CACHE. Generate once at appointment completion. Store PDF in Supabase Storage or AWS S3. Store URL in invoices table. On patient request, return cached PDF. Reduces latency + bandwidth."
+        }
+      ],
+      "confidence": "HIGH",
+      "sources": [
+        "html2pdf GitHub (github.com/parallax/html2pdf.js)",
+        "Puppeteer Documentation (pptr.dev)",
+        "pdfkit Documentation (pdfkit.org)"
+      ]
+    },
+    {
+      "area": "Email Delivery & Resend Integration",
+      "research_questions": [
+        "Is Resend already integrated in Aria?",
+        "How to send email with PDF attachment via Resend?",
+        "What are Resend rate limits?",
+        "How to handle email failures?",
+        "Should we customize email template?",
+        "Can email template be customized by clinic?"
+      ],
+      "findings": [
+        {
+          "question": "Is Resend integrated in Aria?",
+          "answer": "YES. Project uses Resend (confirmed in phase-2 docs). RESEND_API_KEY already configured. Clinic already uses Resend for appointment reminders."
+        },
+        {
+          "question": "How to send email with attachment?",
+          "answer": "Resend SDK does NOT support attachments directly. Two options: 1. Store PDF in S3 and send URL in email (user downloads). 2. Use SendGrid or AWS SES (both support attachments). Recommendation for Aria: Option 1 (avoid switching services). Send email with invoice download link."
+        },
+        {
+          "question": "Resend rate limits?",
+          "answer": "300 emails/minute (free + paid). Aria clinic: ~100-300 appointments/month = ~3-10 emails/day. Well under limit. No rate limit concerns."
+        },
+        {
+          "question": "Email failure handling?",
+          "answer": "Resend returns success/failure status. If failure: retry queue (exponential backoff). Log failure in audit_log. Alert clinic staff if > 5% daily failure rate."
+        },
+        {
+          "question": "Email template customization?",
+          "answer": "YES. Store invoice email template in clinic settings (clinic-specific logo, footer, custom message). Render template with Handlebars or simple string interpolation."
+        }
+      ],
+      "confidence": "HIGH",
+      "sources": [
+        "Resend Documentation (resend.com/docs)",
+        "Aria Project Codebase (INTEGRATION-ARCHITECTURE.md)"
+      ]
+    },
+    {
+      "area": "Webhook Reliability & Idempotency Patterns",
+      "research_questions": [
+        "How to implement webhook idempotency?",
+        "What is event deduplication?",
+        "How to handle webhook timeouts?",
+        "What is a dead-letter queue?",
+        "Should we use a job queue (Bull, RabbitMQ, etc.)?",
+        "How to monitor webhook health?"
+      ],
+      "findings": [
+        {
+          "question": "How to implement idempotency?",
+          "answer": "1. Extract event ID from webhook (stripe_event_id). 2. Check if event already processed in database. 3. If yes, return 200 OK (no processing). 4. If no, process event and store event ID. 5. This prevents duplicate processing if Stripe retries webhook. Store processed_events table: { stripe_event_id, processed_at }."
+        },
+        {
+          "question": "What is event deduplication?",
+          "answer": "Same as idempotency. Check if event_id already in processed_events table before processing."
+        },
+        {
+          "question": "Webhook timeout handling?",
+          "answer": "Stripe expects 200 OK response within 30 seconds. If processing takes longer: return 200 immediately, then process asynchronously (background job). Use queue (Bull for Redis, or simple DB queue)."
+        },
+        {
+          "question": "What is a dead-letter queue?",
+          "answer": "Queue for failed events (after max retries). Webhook failed 3+ times = move to dead-letter. Alert clinic staff. Manual review/retry later."
+        },
+        {
+          "question": "Should Aria use a job queue?",
+          "answer": "YES, recommended. Options: 1. Bull (Redis-based, simple). 2. Supabase pg_cron (built-in, but limited). 3. Simple DB queue (overkill, but works). Recommendation: Bull or pg_cron. For MVP: simple DB-based queue (INSERT webhook_queue { event_id, status, retries, next_retry_at }). Worker process polls queue."
+        },
+        {
+          "question": "How to monitor webhook health?",
+          "answer": "Track metrics: events_received, events_processed, events_failed, avg_processing_time. Dashboard: webhook success rate, retry count, dead-letter queue size. Alert if success rate < 95%."
+        }
+      ],
+      "confidence": "MEDIUM-HIGH",
+      "sources": [
+        "Stripe Webhook Best Practices (stripe.com/docs/webhooks/best-practices)",
+        "Webhook Reliability Patterns (davidkhala.com/webhooks/)",
+        "Bull Job Queue (docs.bullmq.io)"
+      ]
+    },
+    {
+      "area": "Stripe Testing & Sandbox Environment",
+      "research_questions": [
+        "How to set up Stripe test mode?",
+        "What are test card numbers for different scenarios?",
+        "How to test webhook delivery?",
+        "Can we test in staging without exposing live keys?"
+      ],
+      "findings": [
+        {
+          "question": "Stripe test mode setup?",
+          "answer": "Stripe account has two modes: TEST and LIVE. Test mode has test API keys (sk_test_*, pk_test_*). Test mode simulates payment processing without charging real cards. Switch in Stripe dashboard (top-left toggle)."
+        },
+        {
+          "question": "Test card numbers?",
+          "answer": "4242 4242 4242 4242 (Visa, success). 5555 5555 5555 4444 (Mastercard, success). 4000 0000 0000 0002 (Visa, card declined). 4000 0000 0000 0127 (Visa, 3D Secure). See stripe.com/docs/testing for full list."
+        },
+        {
+          "question": "Test webhook delivery?",
+          "answer": "Stripe Dashboard → Developers → Webhooks. Create test webhook endpoint. Send sample event to test. Or use Stripe CLI (stripe listen) to forward webhooks to localhost during development."
+        },
+        {
+          "question": "Staging environment testing?",
+          "answer": "Use test API keys in staging. Test mode works in production Stripe account. Create separate Stripe account for staging if high isolation needed, but usually one account with TEST mode is sufficient."
+        }
+      ],
+      "confidence": "HIGH",
+      "sources": [
+        "Stripe Testing Guide (stripe.com/docs/testing)",
+        "Stripe CLI Documentation (stripe.com/docs/stripe-cli)"
+      ]
+    }
+  ],
+  "research_summary": {
+    "key_findings": [
+      "Stripe PaymentIntent is the correct choice (modern, SCA-ready, supported in Brazil)",
+      "SetupIntent for tokenization (not legacy Tokens). Store payment_method_id in database.",
+      "Brazil support: Card + Pix + Boleto via Stripe. Use PaymentIntent for all. BRL currency supported.",
+      "PCI compliance: Aria is Level 4 (self-assessment only). Use SAQ A (Stripe Elements). No external audit required, but clinic may want one for confidence.",
+      "PDF generation: Use html2pdf (lightweight, sufficient). Cache PDFs after generation.",
+      "Email: Use Resend (already integrated). Send invoice as downloadable link (not attachment) due to Resend limitation.",
+      "Webhook reliability: Implement idempotency (check event_id before processing). Use queue for async processing. Stripe will retry 5x, but app should have its own retry logic.",
+      "Testing: Use Stripe test mode (test API keys). Comprehensive error scenario testing required (declined card, timeout, network failure).",
+      "Tax documents (NF-e/RPS): DEFERRED to Phase 3. High complexity, requires SEFAZ integration."
+    ],
+    "critical_decisions_needed": [
+      "Should we use html2pdf or Puppeteer for PDF generation? Recommendation: html2pdf (lighter).",
+      "Should we attach PDF to email or send download link? Recommendation: Download link (Resend limitation).",
+      "Should we use Bull job queue or simple DB queue? Recommendation: Simple DB queue for MVP (Bull for Phase 3).",
+      "Should we get external PCI audit? Recommendation: Self-assessment sufficient (Level 4), but clinic may want external for confidence."
+    ],
+    "open_questions": [
+      "Does clinic require Pix and Boleto in Phase 2, or only Card initially? (Assumed: Card only for MVP, Pix/Boleto in Phase 3)",
+      "Does clinic require invoice email attachment or download link? (Resend doesn't support attachment natively)",
+      "Does clinic require NF-e/RPS generation in Phase 2 or deferred to Phase 3? (Assumed: Deferred due to SEFAZ complexity)"
+    ],
+    "risks_identified": [
+      "Webhook reliability: If webhook fails and not properly handled → duplicate charges or missed payments. Mitigation: Implement idempotency + retry queue.",
+      "PCI compliance: If raw card data logged → audit failure + legal risk. Mitigation: Never log card data. Use Stripe tokenization only.",
+      "PDF generation failure: If PDF fails → invoice not sent → customer support ticket. Mitigation: Retry logic + fallback (email without PDF, link to dashboard).",
+      "Idempotency bug: If webhook retry not idempotent → duplicate invoice → customer confusion. Mitigation: Check event_id before processing."
+    ],
+    "phase_3_completion": "DONE. All research questions answered. Ready for Phase 4 (Write Spec).",
+    "status": "RESEARCHED"
+  }
+}
