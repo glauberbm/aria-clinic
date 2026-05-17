@@ -17,6 +17,7 @@ const statusColors: Record<AppointmentStatus, string> = {
   completed: "bg-gray-100 text-gray-800 hover:bg-gray-200",
   cancelled: "bg-red-100 text-red-800 hover:bg-red-200",
   noshow: "bg-orange-100 text-orange-800 hover:bg-orange-200",
+  rescheduled: "bg-purple-100 text-purple-800 hover:bg-purple-200",
 };
 
 const statusLabels: Record<AppointmentStatus, string> = {
@@ -25,6 +26,7 @@ const statusLabels: Record<AppointmentStatus, string> = {
   completed: "Concluído",
   cancelled: "Cancelado",
   noshow: "Não Compareceu",
+  rescheduled: "Reagendado",
 };
 
 export function AppointmentCard({

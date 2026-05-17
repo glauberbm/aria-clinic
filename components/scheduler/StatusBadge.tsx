@@ -9,6 +9,7 @@ const statusColors: Record<AppointmentStatus, string> = {
   completed: "bg-gray-100 text-gray-800",
   cancelled: "bg-red-100 text-red-800",
   noshow: "bg-orange-100 text-orange-800",
+  rescheduled: "bg-purple-100 text-purple-800",
 };
 
 const statusLabels: Record<AppointmentStatus, string> = {
@@ -17,6 +18,7 @@ const statusLabels: Record<AppointmentStatus, string> = {
   completed: "Concluído",
   cancelled: "Cancelado",
   noshow: "Não Compareceu",
+  rescheduled: "Reagendado",
 };
 
 interface StatusBadgeProps {

@@ -19,7 +19,8 @@ export type AppointmentStatus =
   | "confirmed"
   | "completed"
   | "cancelled"
-  | "noshow";
+  | "noshow"
+  | "rescheduled";
 export type AppointmentType = "consultation" | "followup" | "procedure";
 
 export interface Appointment {
